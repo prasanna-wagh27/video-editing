@@ -7,8 +7,7 @@ import {
 /* ---------- fonts ---------- */
 const fontHandle = delayRender('fonts', {timeoutInMilliseconds: 120000});
 const FONTS = {baloo: ['Baloo', 'fonts/Baloo2.ttf', '400 800'], anek: ['Anek', 'fonts/AnekDevanagari.ttf', '100 800']};
-const BRAND_FONT = ['Inter', 'fonts/Inter.ttf', '100 900'];
-Promise.all([...Object.values(FONTS), BRAND_FONT].map(([name, file, weight]) =>
+Promise.all(Object.values(FONTS).map(([name, file, weight]) =>
   new FontFace(name, `url(${staticFile(file)})`, {weight}).load().then((ff) => document.fonts.add(ff))))
   .catch(() => {}).finally(() => continueRender(fontHandle));
 // never let a stalled font fetch hang a render tab
@@ -234,7 +233,7 @@ const Mark = ({size = 60, color = INK, style = {}}) => (
     <path d={MARK_D} fill={color} fillRule="evenodd" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
   </svg>
 );
-const BRAND = {fontFamily: 'Inter, sans-serif', letterSpacing: '-0.02em'};
+const BRAND = {fontFamily: 'Anek, sans-serif', paddingTop: '0.12em', lineHeight: 1}; // Anek sits high; nudge Latin down to centre on the mark
 const Lockup = ({size = 46, color = INK, text = 'Outgrid Labs', weight = 600}) => (
   <div style={{display: 'flex', alignItems: 'center', gap: size * 0.3}}>
     <Mark size={size} color={color} />
@@ -391,7 +390,7 @@ const Divider = ({F, t, label}) => (
 );
 const DocCard = () => (
   <div style={{display: 'flex', alignItems: 'center', gap: 16, background: '#F5F3EE', borderRadius: 16, padding: 14, width: 420, boxSizing: 'border-box'}}>
-    <div style={{width: 64, height: 78, borderRadius: 10, background: RED, color: '#fff', fontSize: 20, fontWeight: 800, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 10, boxSizing: 'border-box', fontFamily: 'sans-serif'}}>PDF</div>
+    <div style={{width: 64, height: 78, borderRadius: 10, background: RED, color: '#fff', fontSize: 20, fontWeight: 800, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: 10, boxSizing: 'border-box'}}>PDF</div>
     <div>
       <div style={{fontSize: 26, fontWeight: 700}}>Prescription.pdf</div>
       <div style={{fontSize: 19, color: '#8a8478'}}>1 page · 84 KB</div>
