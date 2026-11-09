@@ -7,9 +7,12 @@ import {
 /* ---------- fonts ---------- */
 const fontHandle = delayRender('fonts', {timeoutInMilliseconds: 120000});
 const FONTS = {baloo: ['Baloo', 'fonts/Baloo2.ttf', '400 800'], anek: ['Anek', 'fonts/AnekDevanagari.ttf', '100 800']};
-Promise.all(Object.values(FONTS).map(([name, file, weight]) =>
+const BRAND_FONT = ['Inter', 'fonts/Inter.ttf', '100 900'];
+Promise.all([...Object.values(FONTS), BRAND_FONT].map(([name, file, weight]) =>
   new FontFace(name, `url(${staticFile(file)})`, {weight}).load().then((ff) => document.fonts.add(ff))))
   .catch(() => {}).finally(() => continueRender(fontHandle));
+// never let a stalled font fetch hang a render tab
+setTimeout(() => continueRender(fontHandle), 30000);
 
 /* ---------- helpers ---------- */
 const FPS = 30;
@@ -29,10 +32,12 @@ const abs = (left, top, extra = {}) => ({position: 'absolute', left, top, ...ext
 const rise = (F, t, d = 14) => ({opacity: io(F, s(t), s(t) + d), transform: `translateY(${io(F, s(t), s(t) + d, 40, 0)}px)`});
 const pop = (F, t, damping = 12) => spring({frame: F - s(t), fps: FPS, config: {damping, mass: 0.7}});
 
-const TOTAL = 2040; // 68 s, VO is 67.4 s
+const TOTAL = 2100; // 70 s: VO is 67.4 s + brand outro
 // scene cuts in seconds, each one sits inside a VO pause
-const CUTS = [0, 7.9, 14.95, 24.55, 29.42, 33.93, 38.47, 43.19, 50.5, 58.74, 68];
-const KEYS = ['hook', 'night', 'chat', 'reminder', 'rx', 'followup', 'review', 'recall', 'lesson', 'cta'];
+const CUTS = [0, 7.9, 14.95, 24.55, 29.42, 33.93, 38.47, 43.19, 50.5, 58.74, 67.6, 70];
+const KEYS = ['hook', 'night', 'chat', 'reminder', 'rx', 'followup', 'review', 'recall', 'lesson', 'cta', 'outro'];
+const OUTRO = s(67.6);
+const SceneCtx = React.createContext(0); // scene start frame, so Hi can use absolute cue seconds
 const SC = Object.fromEntries(KEYS.map((k, i) => [k, [s(CUTS[i]), s(CUTS[i + 1]) - s(CUTS[i])]]));
 
 /* ---------- VO segments (seconds, from ffmpeg silencedetect -30dB / 0.18 s) ---------- */
@@ -222,31 +227,61 @@ const Twinkle = ({x, y, size = 50, o = 1, color = GOLD}) => (
   </svg>
 );
 
+/* ---------- brand: Outgrid Labs ---------- */
+const MARK_D = 'M23 3H55Q62 3 62 10V38L44 61H9Q2 61 2 54V24Z M22.5 18H42.5Q47 18 47 22.5V42.5Q47 47 42.5 47H22.5Q18 47 18 42.5V22.5Q18 18 22.5 18Z';
+const Mark = ({size = 60, color = INK, style = {}}) => (
+  <svg viewBox="0 0 64 64" width={size} height={size} style={style}>
+    <path d={MARK_D} fill={color} fillRule="evenodd" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
+  </svg>
+);
+const BRAND = {fontFamily: 'Inter, sans-serif', letterSpacing: '-0.02em'};
+const Lockup = ({size = 46, color = INK, text = 'Outgrid Labs', weight = 600}) => (
+  <div style={{display: 'flex', alignItems: 'center', gap: size * 0.3}}>
+    <Mark size={size} color={color} />
+    <div style={{width: 2, height: size * 0.82, background: color, opacity: 0.25}} />
+    <div style={{...BRAND, fontSize: size * 0.62, fontWeight: weight, color, whiteSpace: 'nowrap'}}>{text}</div>
+  </div>
+);
+const Watermark = ({f}) => (
+  <div style={{...abs(60, 90), opacity: 0.92 * io(f, 0, 12) * io(f, OUTRO, OUTRO + 8, 1, 0)}}><Lockup size={48} /></div>
+);
+
 /* ---------- shared text ---------- */
 const H = ({children, size = 88, color = INK, style = {}}) => (
   <div style={{fontSize: size, fontWeight: 600, color, lineHeight: 1.2, whiteSpace: 'nowrap', ...style}}>{children}</div>
 );
-const Hi = ({children, rot = -2}) => (
-  <span style={{background: Y, color: INK, padding: '0.04em 0.24em 0', borderRadius: 16, display: 'inline-block', transform: `rotate(${rot}deg)`}}>{children}</span>
-);
+const Hi = ({children, rot = -2, t}) => {
+  const from = React.useContext(SceneCtx);
+  const F = useCurrentFrame() + from;
+  const w = t === undefined ? 1 : io(F, s(t) + 3, s(t) + 14, 0, 1, Easing.inOut(Easing.quad));
+  return (
+    <span style={{background: `linear-gradient(${Y}, ${Y}) no-repeat left / ${w * 100}% 100%`, color: INK, padding: '0.04em 0.24em 0', borderRadius: 16, display: 'inline-block',
+      transform: `rotate(${rot}deg)`, boxShadow: w > 0.98 ? '0 6px 0 rgba(217,154,0,0.25)' : 'none'}}>{children}</span>
+  );
+};
 const Center = ({top, children, style = {}}) => (
   <div style={{position: 'absolute', left: 0, right: 0, top, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', ...style}}>{children}</div>
 );
 
 /* ---------- background + HUD ---------- */
-const Bg = () => (
-  <AbsoluteFill style={{background: '#F7F3EA'}}>
-    <AbsoluteFill style={{backgroundImage: 'linear-gradient(rgba(0,0,0,0.04) 2px, transparent 2px), linear-gradient(90deg, rgba(0,0,0,0.04) 2px, transparent 2px)', backgroundSize: '72px 72px'}} />
-    <AbsoluteFill style={{background: 'radial-gradient(circle at 0% 100%, rgba(255,197,46,0.30), transparent 45%), radial-gradient(circle at 100% 0%, rgba(255,197,46,0.22), transparent 40%)'}} />
-  </AbsoluteFill>
-);
+const Bg = ({f}) => {
+  const ax = 10 + Math.sin(f / 110) * 12, ay = 90 + Math.cos(f / 130) * 8;
+  const bx = 90 + Math.cos(f / 120) * 10, by = 8 + Math.sin(f / 100) * 8;
+  return (
+    <AbsoluteFill style={{background: '#F7F3EA'}}>
+      <AbsoluteFill style={{backgroundImage: 'linear-gradient(rgba(0,0,0,0.04) 2px, transparent 2px), linear-gradient(90deg, rgba(0,0,0,0.04) 2px, transparent 2px)', backgroundSize: '72px 72px', backgroundPosition: `0 ${-f * 0.3}px`}} />
+      <AbsoluteFill style={{background: `radial-gradient(circle at ${ax}% ${ay}%, rgba(255,197,46,0.32), transparent 45%), radial-gradient(circle at ${bx}% ${by}%, rgba(255,197,46,0.24), transparent 40%)`}} />
+      <Mark size={760} color={INK} style={{...abs(560, 1180), opacity: 0.035, transform: `rotate(${-12 + Math.sin(f / 150) * 4}deg)`}} />
+    </AbsoluteFill>
+  );
+};
 
 const Dashes = ({f}) => {
-  const list = Object.values(SC);
+  const list = KEYS.filter((k) => k !== 'outro').map((k) => SC[k]);
   return (
-    <div style={{...abs(1080 - 80 - list.length * 58 + 10, 112), display: 'flex', gap: 10}}>
+    <div style={{...abs(1080 - 80 - list.length * 50 + 8, 110), display: 'flex', gap: 8, opacity: io(f, OUTRO, OUTRO + 8, 1, 0)}}>
       {list.map(([from, dur], i) => (
-        <div key={i} style={{width: 48, height: 10, borderRadius: 5, background: '#DDD4C2', overflow: 'hidden'}}>
+        <div key={i} style={{width: 42, height: 10, borderRadius: 5, background: '#DDD4C2', overflow: 'hidden'}}>
           <div style={{height: '100%', width: `${io(f, from, from + dur, 0, 100, Easing.linear)}%`, background: GOLD}} />
         </div>
       ))}
@@ -286,7 +321,10 @@ const Captions = ({f}) => {
 const SceneWrap = ({dur, first, last, children}) => {
   const f = useCurrentFrame();
   const o = Math.min(first ? 1 : io(f, 0, 8), last ? 1 : io(f, dur - 8, dur, 1, 0));
-  return <AbsoluteFill style={{opacity: o, transform: `scale(${first ? 1 : io(f, 0, 12, 1.04, 1)})`}}>{children}</AbsoluteFill>;
+  const inY = first ? 0 : io(f, 0, 14, 60, 0);
+  const outY = last ? 0 : io(f, dur - 8, dur, 0, -50, Easing.in(Easing.quad));
+  const sc = (first ? 1 : io(f, 0, 14, 1.05, 1)) * (last ? 1 : io(f, dur - 8, dur, 1, 0.96, Easing.in(Easing.quad))) * (1 + 0.015 * (f / dur));
+  return <AbsoluteFill style={{opacity: o, transform: `translateY(${inY + outY}px) scale(${sc})`}}>{children}</AbsoluteFill>;
 };
 
 /* ---------- chat mockup ---------- */
@@ -371,7 +409,7 @@ const Hook = ({from}) => {
     <AbsoluteFill>
       <Center top={195}>
         <H size={80} style={rise(F, 0.05)}>तुमच्या क्लिनिकची</H>
-        <H size={104} style={{...rise(F, 0.55), marginTop: 4}}><Hi>ग्रोथ…</Hi></H>
+        <H size={104} style={{...rise(F, 0.55), marginTop: 4}}><Hi t={0.55}>ग्रोथ…</Hi></H>
       </Center>
       <Sparks x={720} y={270} o={io(F, s(0.8), s(1.0))} />
       {/* social post card */}
@@ -394,7 +432,10 @@ const Hook = ({from}) => {
           <ChatI size={36} color="#333" />
           <div style={{marginLeft: 'auto', fontSize: 24, fontWeight: 700, color: '#555'}}>{12 + Math.floor(io(F, s(1.6), s(2.8), 0, 11, Easing.linear))} likes</div>
         </div>
-        <div style={{...abs(20, 190), width: 640, height: 14, borderRadius: 7, background: RED, transform: `rotate(-14deg) scaleX(${no})`, transformOrigin: 'left'}} />
+      </div>
+      <div style={{...abs(820, 440), width: 110, height: 110, borderRadius: 55, background: RED, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxShadow: '0 14px 30px rgba(229,72,77,0.35)', transform: `scale(${pop(F, 2.85, 9)}) rotate(${(1 - no) * -90}deg)`}}>
+        <svg viewBox="0 0 64 64" width="56" height="56"><path d="M16 16l32 32M48 16 16 48" stroke="#fff" strokeWidth="10" strokeLinecap="round" /></svg>
       </div>
       <div style={{...abs(440, 770), width: 520, height: 140, borderRadius: 30, background: INK, display: 'flex', alignItems: 'center', justifyContent: 'center',
         transform: `rotate(-6deg) scale(${stamp})`, opacity: Math.min(1, stamp * 2), boxShadow: '0 30px 80px rgba(0,0,0,0.25)'}}>
@@ -404,7 +445,7 @@ const Hook = ({from}) => {
       <div style={{...abs(110, 960), width: 860, padding: '32px 46px 26px', boxSizing: 'border-box', borderRadius: 40, background: CREAM,
         boxShadow: CARD_SHADOW, transform: `rotate(-2deg) scale(${pop(F, 4.15)})`}}>
         <H size={56} color={GREY}>त्यासाठी पेशंटचा</H>
-        <H size={96} style={{marginTop: 4}}><Hi rot={-1}>'एक्सपिरियन्स'</Hi></H>
+        <H size={96} style={{marginTop: 4}}><Hi rot={-1} t={4.6}>'एक्सपिरियन्स'</Hi></H>
         <H size={60} style={{...rise(F, 5.6), marginTop: 4}}>बदलावा लागेल!</H>
       </div>
       <div style={{...abs(540 - 160, 1300), width: 320, height: 86, borderRadius: 43, background: INK, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14,
@@ -442,7 +483,7 @@ const Night = ({from}) => {
         <div style={{...abs(60, 330), transform: `scale(${pop(F, 9.35)})`}}><Neha size={160} mood={pain ? 'sad' : 'neutral'} /></div>
         <div style={{...abs(250, 336)}}>
           <H size={46} color="#b9c0e0" style={rise(F, 9.5)}>नेहाला अचानक</H>
-          <H size={80} style={{...rise(F, 10.05), marginTop: 4}}><Hi>दातदुखी!</Hi></H>
+          <H size={80} style={{...rise(F, 10.05), marginTop: 4}}><Hi t={10.05}>दातदुखी!</Hi></H>
         </div>
         <div style={{...abs(700, 300), transform: `scale(${pop(F, 10.0)}) rotate(${pain ? Math.sin(F * 0.9) * 6 : 0}deg)`}}>
           <Tooth size={170} mood="sad" />
@@ -497,6 +538,22 @@ const ApptCard = ({F, ok}) => {
     </div>
   );
 };
+const Ticket = ({F, t}) => {
+  const p = pop(F, t, 11);
+  return (
+    <div style={{...abs(580, 1070), width: 440, borderRadius: 30, background: '#fff', boxShadow: '0 30px 70px rgba(0,0,0,0.25)', overflow: 'hidden',
+      transform: `rotate(5deg) scale(${p}) translateY(${(1 - p) * 60}px)`, opacity: Math.min(1, p * 2), transformOrigin: '20% 50%'}}>
+      <div style={{background: Y, padding: '14px 26px 8px', display: 'flex', alignItems: 'center', gap: 10, fontSize: 24, fontWeight: 800}}><Cal size={30} /> APPOINTMENT</div>
+      <div style={{padding: '14px 26px 22px', display: 'flex', alignItems: 'center', gap: 20}}>
+        <div>
+          <div style={{fontSize: 28, fontWeight: 600, color: GREY}}>उद्या, सकाळी</div>
+          <div style={{fontSize: 70, fontWeight: 700, lineHeight: 1}}>10:30 AM</div>
+        </div>
+        <div style={{marginLeft: 'auto'}}><Check size={78} /></div>
+      </div>
+    </div>
+  );
+};
 const ChatSc = ({from}) => {
   const F = useCurrentFrame() + from;
   const ph = pop(F, 14.95, 14);
@@ -507,7 +564,7 @@ const ChatSc = ({from}) => {
           <Moon size={62} color={GOLD} />
           <H size={66} color={GREY}>तुम्ही झोपला होतात…</H>
         </div>
-        <H size={80} style={{...rise(F, 16.25), marginTop: 10}}>पण <Hi>AI</Hi> ने लगेच रिप्लाय दिला!</H>
+        <H size={80} style={{...rise(F, 16.25), marginTop: 10}}>पण <Hi t={16.25}>AI</Hi> ने लगेच रिप्लाय दिला!</H>
       </Center>
       {['z', 'z', 'Z'].map((z, i) => {
         const t = ((F + i * 12) % 36) / 36;
@@ -524,6 +581,7 @@ const ChatSc = ({from}) => {
           <Msg F={F} t={21.05} ai h={286} time="11:03 PM"><ApptCard F={F} ok={23.55} /></Msg>
         </ChatScreen>
       </Phone>
+      <Ticket F={F} t={23.6} />
     </AbsoluteFill>
   );
 };
@@ -542,7 +600,7 @@ const Reminder = ({from}) => {
     <AbsoluteFill>
       <Center top={190}>
         <H size={72} style={rise(F, 24.6)}>अपॉइंटमेंटच्या</H>
-        <H size={96} style={{...rise(F, 25.15), marginTop: 6}}><Hi>२ तास</Hi> आधी</H>
+        <H size={96} style={{...rise(F, 25.15), marginTop: 6}}><Hi t={25.15}>२ तास</Hi> आधी</H>
       </Center>
       <div style={{...abs(80, 500), width: 220, transform: `scale(${pop(F, 24.8)})`}}>
         <svg viewBox="0 0 200 200" width="220" height="220">
@@ -566,7 +624,7 @@ const Reminder = ({from}) => {
       <div style={{...abs(80, 820), width: 920, height: 510, borderRadius: 40, background: '#fff', boxShadow: CARD_SHADOW, ...rise(F, 27.6)}}>
         <div style={{...abs(50, 40)}}>
           <H size={48} color={GREY}>त्यामुळे ती</H>
-          <H size={76}><Hi>वेळेवर</Hi> पोहोचली!</H>
+          <H size={76}><Hi t={27.9}>वेळेवर</Hi> पोहोचली!</H>
         </div>
         <div style={{...abs(40, 300)}}><House size={150} /></div>
         <div style={{...abs(640, 160)}}><Clinic w={230} /></div>
@@ -593,7 +651,7 @@ const Rx = ({from}) => {
         <Twinkle key={i} x={x} y={y} size={sz} o={tooth * (0.5 + 0.5 * Math.sin(F / 5 + i * 1.7))} />
       ))}
       <div style={{...abs(700, 200), transform: `scale(${pop(F, 29.8, 10)})`}}><Check size={80} /></div>
-      <Center top={460}><H size={80} style={rise(F, 29.55)}><Hi>ट्रीटमेंट झाली!</Hi></H></Center>
+      <Center top={460}><H size={80} style={rise(F, 29.55)}><Hi t={29.55}>ट्रीटमेंट झाली!</Hi></H></Center>
       <div style={{...abs(130, 620), width: 820, height: 720, borderRadius: 44, overflow: 'hidden', boxShadow: '0 40px 90px rgba(0,0,0,0.18)', ...rise(F, 30.3)}}>
         <ChatScreen top={112} sub="AI Assistant">
           <Msg F={F} t={30.55} ai h={176} time="12:15 PM"><DocCard /></Msg>
@@ -634,7 +692,7 @@ const Followup = ({from}) => {
         </div>
       </div>
       <div style={{...abs(730, 220), padding: '8px 26px 0', borderRadius: 24, background: Y, transform: `rotate(8deg) scale(${pop(F, 35.15, 10)})`}}><H size={52}>+३ दिवस</H></div>
-      <Center top={530}><H size={66} style={rise(F, 35.0)}>AI ने <Hi>पुन्हा मेसेज</Hi> केला</H></Center>
+      <Center top={530}><H size={66} style={rise(F, 35.0)}>AI ने <Hi t={35.0}>पुन्हा मेसेज</Hi> केला</H></Center>
       <Phone x={210} y={650} w={660} h={740} rot={2} ty={(1 - ph) * 800}>
         <ChatScreen>
           <Msg F={F} t={0} ai h={148} time="Mon"><DocCard /></Msg>
@@ -698,7 +756,7 @@ const Recall = ({from}) => {
     <AbsoluteFill>
       <Center top={185}>
         <H size={66} color={GREY} style={rise(F, 43.3)}>आणि बरोबर</H>
-        <H size={100} style={{...rise(F, 43.75), marginTop: 2}}><Hi>६ महिन्यांनी…</Hi></H>
+        <H size={100} style={{...rise(F, 43.75), marginTop: 2}}><Hi t={43.75}>६ महिन्यांनी…</Hi></H>
       </Center>
       <div style={{...abs(80, 470), display: 'flex', gap: 16}}>
         {MONTHS.map((l, i) => {
@@ -727,7 +785,7 @@ const Recall = ({from}) => {
       </div>
       <div style={{...abs(80, 910), width: 920, height: 430, borderRadius: 40, background: '#fff', boxShadow: CARD_SHADOW, overflow: 'hidden', ...rise(F, 48.2)}}>
         <div style={{...abs(50, 40)}}>
-          <H size={76}>नेहा <Hi>पुन्हा</Hi> आली!</H>
+          <H size={76}>नेहा <Hi t={48.5}>पुन्हा</Hi> आली!</H>
           <H size={44} color={GREY} style={{marginTop: 4}}>तुमच्याच क्लिनिकमध्ये</H>
         </div>
         <div style={{...abs(0, 400), width: 920, height: 6, background: '#eee6d4'}} />
@@ -743,7 +801,10 @@ const Recall = ({from}) => {
 };
 
 /* ---------- 9. Lesson ---------- */
-const RING = [ChatI, Cal, Bell, Doc, (p) => <Star {...p} />, Loop];
+const StarI = ({size = 46, color = INK}) => (
+  <svg viewBox="0 0 64 64" width={size} height={size}><polygon points="32,4 40,23 60,24 45,37 50,58 32,47 14,58 19,37 4,24 24,23" fill={color} strokeLinejoin="round" /></svg>
+);
+const RING = [ChatI, Cal, Bell, Doc, StarI, Loop];
 const Lesson = ({from}) => {
   const F = useCurrentFrame() + from;
   const dim = io(F, s(54.85), s(55.3), 1, 0.45);
@@ -778,7 +839,7 @@ const Lesson = ({from}) => {
         })}
         <Center top={420}>
           <H size={52}>तर जुन्या पेशंट्सचा</H>
-          <H size={92} style={{margin: '4px 0'}}><Hi>विश्वास</Hi> जिंकून,</H>
+          <H size={92} style={{margin: '4px 0'}}><Hi t={55.6}>विश्वास</Hi> जिंकून,</H>
           <H size={58} style={rise(F, 57.0)}>त्यांना पुन्हा बोलावण्यात आहे!</H>
         </Center>
       </div>
@@ -798,7 +859,7 @@ const Cta = ({from}) => {
       <div style={{...abs(540 - 80, 215), transform: `scale(${pop(F, 58.8)})`}}><Gear size={160} rot={F * 2} /></div>
       <Center top={400}>
         <H size={62} style={rise(F, 58.95)}>तुमच्या क्लिनिकमध्येही अशी</H>
-        <H size={92} style={{...rise(F, 60.2), marginTop: 6}}><Hi>'ॲटोमॅटिक सिस्टीम'?</Hi></H>
+        <H size={92} style={{...rise(F, 60.2), marginTop: 6}}><Hi t={60.2}>'ॲटोमॅटिक सिस्टीम'?</Hi></H>
       </Center>
       <Sparks x={890} y={600} rot={10} o={p1} />
       <div style={{...abs(70, 690), width: 940, height: 250, borderRadius: 125, background: Y, display: 'flex', alignItems: 'center', gap: 30, padding: '0 60px', boxSizing: 'border-box',
@@ -817,27 +878,58 @@ const Cta = ({from}) => {
           <H size={80} color="#fff" style={{lineHeight: 1.05}}>आम्ही <span style={{color: Y}}>DM करू!</span></H>
         </div>
       </div>
+      <Center top={1262}>
+        <div style={{padding: '12px 34px 12px 22px', borderRadius: 50, border: `3px solid ${INK}`, background: '#fff', transform: `scale(${pop(F, 65.3, 11)})`}}>
+          <Lockup size={52} text="@outgridlabs" weight={500} />
+        </div>
+      </Center>
+    </AbsoluteFill>
+  );
+};
+
+/* ---------- 11. Brand outro ---------- */
+const Outro = ({from}) => {
+  const F = useCurrentFrame() + from;
+  const m = pop(F, 67.65, 10);
+  const word = io(F, s(67.9), s(68.3));
+  const bar = io(F, s(68.25), s(68.6), 0, 1, Easing.inOut(Easing.quad));
+  const burst = io(F, s(67.65), s(68.3));
+  return (
+    <AbsoluteFill>
+      <div style={{...abs(540 - 230, 420), width: 460, height: 460, borderRadius: 230, border: `6px solid ${Y}`, opacity: (1 - burst) * 0.9, transform: `scale(${0.4 + burst * 0.9})`}} />
+      <div style={{...abs(540 - 140, 510), transform: `scale(${m}) rotate(${(1 - m) * -120}deg)`}}><Mark size={280} /></div>
+      <Center top={870}>
+        <div style={{...BRAND, fontSize: 132, fontWeight: 700, lineHeight: 1, color: INK, opacity: word, transform: `translateY(${(1 - word) * 40}px)`}}>Outgrid Labs</div>
+        <div style={{width: 200 * bar, height: 16, borderRadius: 8, background: Y, marginTop: 30}} />
+        <div style={{...BRAND, fontSize: 48, fontWeight: 500, color: '#555', marginTop: 36, ...rise(F, 68.5)}}>@outgridlabs</div>
+        <div style={{marginTop: 50, padding: '14px 36px 6px', borderRadius: 40, background: INK, ...rise(F, 68.8)}}>
+          <H size={46} color="#fff"><span style={{color: Y}}>"WHATSAPP"</span> कमेंट करा</H>
+        </div>
+      </Center>
     </AbsoluteFill>
   );
 };
 
 /* ---------- main ---------- */
-const SCENES = {hook: Hook, night: Night, chat: ChatSc, reminder: Reminder, rx: Rx, followup: Followup, review: Review, recall: Recall, lesson: Lesson, cta: Cta};
+const SCENES = {outro: Outro, hook: Hook, night: Night, chat: ChatSc, reminder: Reminder, rx: Rx, followup: Followup, review: Review, recall: Recall, lesson: Lesson, cta: Cta};
 const Video = ({font}) => {
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{fontFamily: `${FONTS[font][0]}, sans-serif`}}>
-      <Bg />
+      <Bg f={f} />
       <Audio src={staticFile('vo.mp3')} />
       {KEYS.map((k, i) => {
         const [from, dur] = SC[k];
         const Comp = SCENES[k];
         return (
           <Sequence key={k} from={from} durationInFrames={dur}>
-            <SceneWrap dur={dur} first={i === 0} last={i === KEYS.length - 1}><Comp from={from} /></SceneWrap>
+            <SceneCtx.Provider value={from}>
+              <SceneWrap dur={dur} first={i === 0} last={i === KEYS.length - 1}><Comp from={from} /></SceneWrap>
+            </SceneCtx.Provider>
           </Sequence>
         );
       })}
+      <Watermark f={f} />
       <Dashes f={f} />
       <Captions f={f} />
     </AbsoluteFill>
