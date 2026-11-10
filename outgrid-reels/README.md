@@ -32,3 +32,4 @@ With Claude Code, open `outgrid-reels/` and ask for a reel. The skill in `.claud
 | Reel | Length | Final file |
 |---|---|---|
 | `clinic-whatsapp-ai`: clinic patient journey with a WhatsApp AI assistant (Marathi) | 70 s | `out/clinic_reel_outgrid.mp4` (earlier: `_v1`, `_v2_inter`) |
+| `blinkit-small-town-delivery`: small-town grocery delivery, zero-inventory model, unit economics, 4 apps (Marathi) | 99 s | `out/blinkit_small_town_v1.mp4` |
