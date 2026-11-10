@@ -14,11 +14,24 @@ Long-form YouTube explainers for the **तरुण उद्योजक** chan
 | Style | Direction B "soft UI cards" + C-style bars/timelines for numbers (see `videos/turf-business/frames/`) |
 | Chrome | `तरुण उद्योजक` mark top-left, chapter chip top-right, thin progress bar with chapter ticks at the bottom |
 
+## Editing rules v2 (from feedback on the Turf video)
+
+1. **Less text.** The voiceover tells the sentence; the screen shows a picture, a number, or 1–5 keywords. No full sentences on screen (we don't burn in subtitles). If a line would need more than ~5 words, show a photo, logo, icon or diagram instead.
+2. **More colour, not more colours.** Colour comes from *colour-blocked backdrops*: rotate scenes between dark, **paper** `#F2ECDF`, full **brand yellow**, and full-bleed **photo**. Each scene uses at most one accent besides yellow (coral `#FF6B57` = loss, sky `#4DA8FF` = info, pink `#FF7A9A` = people/brands, violet for schools). Still no green in our own UI. Real photos and brand logos keep their real colours.
+3. **Real images and logos wherever possible.** Photos of the actual thing (place, product, company, person) beat drawn icons. Logos for every company named. Fetch with `scripts/fetch_media.py`; every file is logged in `videos/<v>/credits.md` (paste into the description). Logos only refer to the company, never imply endorsement.
+4. **Explainer-style editing (Vox-inspired, not copied):** photo prints with tape and slow Ken Burns push, torn paper clippings with a marker highlight, pointer callouts on photos, camera push-ins (`Cam`) into the detail being discussed, colour wipes between chapters, film grain over everything, one big word/number at a time.
+5. **Sound effects on every visual event.** Pop when something appears, swish/whoosh on moves and cuts, shutter on photos, paper on clippings, stamp/thud on big claims, tick/coin/cash on numbers and money, ding/chime on answers, buzz on losses, riser into reveals. Keep them under the voice (v 0.3–0.6). All SFX are synthesised by `scripts/make_sfx.py` (no copyright).
+6. Keep what worked: diagrams, counters, timelines, motion on every beat.
+
 ## Layout
 
 | Path | What |
 |---|---|
 | `shared/kit.jsx` | Tokens, `useT()` (VO seconds), motion helpers, Bg/Chrome/Scenes, Card, Head, Hi (highlighter), Stamp, Count, Chip, line icons |
+| `shared/vox.jsx` | v2 pieces: `Sfx`, `Backdrop` (paper/yellow), `PhotoBg`, `Photo`, `Sticker`, `Logo`, `Pointer`, `Word`, `Clip`, `Cam`, `Wipe`, `Grain` |
+| `shared/sfx/` | 20 synthesised sound effects (`scripts/make_sfx.py`); each video links `public/sfx -> ../../../shared/sfx` |
+| `scripts/fetch_media.py` | Search Wikimedia Commons (numbered contact sheet), download photos/logos, simple-icons brand logos, auto-credits |
+| `scripts/make_sfx.py` | Regenerates the SFX library |
 | `scripts/align_vo.py` | Script + VO → `timing.json` (sentence and word times from silence gaps, no ASR needed) |
 | `scripts/make_music.py` | Original background music, synthesised from scratch (no samples → no copyright issues) |
 | `scripts/make_srt.py` | `timing.json` → `.srt` captions for YouTube |
@@ -35,7 +48,16 @@ python3 scripts/align_vo.py $D/public/vo.mp3 $D/script.txt $D/timing.json  # onl
 python3 scripts/make_music.py $D/public/music.wav 267                      # only to regenerate music
 scripts/stills.sh $D 10 50 90                                              # check frames
 scripts/render.sh $D turf_business_v1                                      # ~25 min on 4 cores
+
+# real media
+python3 scripts/fetch_media.py search "pune street food stall"            # prints names + /tmp/tu-media/sheet.jpg
+python3 scripts/fetch_media.py get $D stall "File:<name from the list>"   # -> $D/public/img/stall.jpg + credits.md
+python3 scripts/fetch_media.py icon $D zomato zomato                      # simple-icons logo in brand colour
 ```
+
+New video folder: `mkdir -p videos/<v>/public && ln -s ../../../shared/fonts videos/<v>/public/fonts && ln -s ../../../shared/sfx videos/<v>/public/sfx`.
+Photo-heavy videos run ~10 Mbps at CRF 18. GitHub refuses files over 100 MB, so for long videos upload the CRF 18 master to YouTube and commit a lighter copy (`CRF=23`) if it must live in git.
+`render.sh` renders the picture muted, then an audio-only pass of the same composition to collect every `<Sfx>` cue, and mixes VO + ducked music + SFX. Network note: the cloud environment `video-editing` allows `commons.wikimedia.org`, `upload.wikimedia.org`, `thumb.wikimedia.org`.
 
 Cues in `video.jsx` are tied to words: `WT(18, 'लाईटचे')` = when sentence 18 says that word. If something lands early or late, add or subtract seconds there.
 
@@ -44,6 +66,7 @@ Cues in `video.jsx` are tied to words: `WT(18, 'लाईटचे')` = when sen
 | Folder | Length | Output |
 |---|---|---|
 | `videos/turf-business/` | 4:27 | `out/turf_business_v1.mp4`, captions `out/turf_business.mr.srt` |
+| `videos/_style-demo/` | 0:13 | `out/style_demo.mp4`: v2 look test (photo, paper, yellow scenes, logos, SFX) |
 
 ### Turf business: scene timeline
 

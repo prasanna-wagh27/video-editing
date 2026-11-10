@@ -30,7 +30,7 @@ export const fr = (t) => Math.round(t * FPS);
 export const inr = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
 
 /* ---------- time ---------- */
-const TCtx = createContext(0);
+export const TCtx = createContext(0); // frame where the current scene Sequence starts
 export const useT = () => (useCurrentFrame() + useContext(TCtx)) / FPS;
 const C = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'};
 export const OUT = Easing.bezier(0.16, 1, 0.3, 1);

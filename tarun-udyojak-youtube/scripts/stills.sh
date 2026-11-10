@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# usage (from tarun-udyojak-youtube/): scripts/stills.sh videos/<name> <seconds...>  -> videos/<name>/stills/sheet.jpg (3 per row)
+# usage (from tarun-udyojak-youtube/): [COMP=Id] scripts/stills.sh videos/<name> <seconds...>  -> videos/<name>/stills/sheet.jpg (3 per row)
 set -euo pipefail
 DIR=${1%/}; shift
 B=$(bash ../outgrid-reels/scripts/find_browser.sh)
 mkdir -p "$DIR/stills"; ins=(); n=0
 for s in "$@"; do
   f=$(python3 -c "print(round($s*30))")
-  npx remotion still "$DIR/video.jsx" Turf "$DIR/stills/s_$s.png" --frame="$f" --public-dir="$DIR/public" --browser-executable="$B" --log=error --props='{"withAudio":false}' >/dev/null
+  npx remotion still "$DIR/video.jsx" "${COMP:-Turf}" "$DIR/stills/s_$s.png" --frame="$f" --public-dir="$DIR/public" --browser-executable="$B" --log=error --props='{"withAudio":false}' >/dev/null
   ins+=(-i "$DIR/stills/s_$s.png"); n=$((n+1))
 done
 c=$(( n < 3 ? n : 3 ))
