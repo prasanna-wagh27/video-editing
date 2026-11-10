@@ -346,10 +346,10 @@ const Supply = () => {
     <AbsoluteFill>
       <Title t={t} at={a} y={160} s={60}>माल मिळणार <span style={{color: BRAND}}>कुठून?</span></Title>
       <T s={32} c={MUTED} style={abs(150, 330, ro(t, WT(15, 'UltraTech') - 0.3))}>सिमेंट कंपन्या</T>
-      <Logo t={t} at={WT(15, 'UltraTech')} src="img/ultratech.jpg" x={150} y={390} />
+      <Logo t={t} at={WT(15, 'UltraTech')} src="img/ultratech.png" x={150} y={390} />
       <Logo t={t} at={WT(15, 'ACC')} src="img/acc.png" x={470} y={390} />
-      <Logo t={t} at={WT(15, 'Ambuja')} name="Ambuja" x={150} y={570} />
-      <Logo t={t} at={WT(15, 'Birla')} name="Birla" x={470} y={570} />
+      <Logo t={t} at={WT(15, 'Ambuja')} src="img/ambuja.png" x={150} y={570} />
+      <Logo t={t} at={WT(15, 'Birla')} src="img/birla.png" x={470} y={570} />
       <Node t={t} at={shop} x={1030} y={570} icon="shop" label="तुमचं दुकान" glow r={100} />
       <Arrow t={t} at={dl - 0.2} x1={790} y1={570} x2={905} y2={570} c={BRAND} w={5} />
       <YPill t={t} at={dl} x={848} y={440} center s={30}>डीलरशिप</YPill>
@@ -381,7 +381,7 @@ const Steel = () => {
         <T s={60} w={500} style={{marginTop: 26}}>इथेही हेच मॉडेल</T>
       </div>
       <Logo t={t} at={WT(19, 'Tata')} src="img/tata-steel.png" sub="Tata Tiscon" x={940} y={480} w={280} h={140} />
-      <Logo t={t} at={WT(19, 'JSW')} src="img/jsw.png" sub="JSW Neosteel" x={1250} y={480} w={280} h={140} />
+      <Logo t={t} at={WT(19, 'JSW')} src="img/jsw-neosteel.svg" sub="JSW Neosteel" x={1250} y={480} w={280} h={140} />
       <Logo t={t} at={WT(19, 'SAIL')} src="img/sail.png" sub="SAIL" x={1560} y={480} w={240} h={140} />
       <Pill t={t} at={WT(19, 'इतर')} x={940} y={760} icon="star" c={MUTED}>+ इतर ब्रँड</Pill>
       <Sfx at={a} n="shutter" v={0.25} />

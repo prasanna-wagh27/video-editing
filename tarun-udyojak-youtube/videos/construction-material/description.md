@@ -13,13 +13,7 @@
 8:17 मार्जिन कमी, तरी व्यापारी मोठे कसे?
 9:32 दुकान सुरू करण्याआधी हे करा
 
-## Media credits (paste under the chapters)
+## Note (optional, no credit is required)
 
-फोटो: Wikimedia Commons
-• A bunch of rebar up close: W.carter, CC BY-SA 4.0
-• Rebar 01: Vsolymossy, CC BY 3.0
-• India - Varanasi bricks - 1556: Jorge Royan, CC BY-SA 3.0
-• Pile of fine sand at Brastad Arena 2: W.carter, CC BY-SA 4.0
-• Gravel Pile - geograph.org.uk - 8067081: Dave Thompson, CC BY-SA 2.0
-Logos: trademarks of their respective owners, shown for reference only.
+Logos are trademarks of their respective owners, shown for reference only.
 Music and sound effects: original, made for this channel.
