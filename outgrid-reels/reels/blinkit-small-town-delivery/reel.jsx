@@ -69,7 +69,7 @@ const CHUNKS = buildChunks(SEGS);
 const DEV = '०१२३४५६७८९';
 const dev = (n) => String(n).replace(/[0-9]/g, (d) => DEV[d]);
 const inr = (n) => dev(Math.round(n).toLocaleString('en-IN'));
-const BLINKIT_Y = '#F8CB46';
+const BLINKIT_Y = '#FFE141';
 const SOFT = '#FFF4D1';
 const SW = 5; // icon stroke width (viewBox units)
 
