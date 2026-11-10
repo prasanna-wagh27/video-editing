@@ -4,3 +4,5 @@ node_modules/
 
 # generated, too big for GitHub (rebuild: python3 scripts/make_music.py <v>/public/music.wav <sec> "$(cat <v>/music_plan.txt)")
 videos/construction-material/public/music.wav
+# full-quality master is over GitHub's 100 MB limit; the _light copy (CRF 24) is committed instead
+videos/construction-material/out/construction_material_v1.mp4

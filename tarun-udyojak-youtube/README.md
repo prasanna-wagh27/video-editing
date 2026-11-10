@@ -66,6 +66,7 @@ Cues in `video.jsx` are tied to words: `WT(18, 'लाईटचे')` = when sen
 | Folder | Length | Output |
 |---|---|---|
 | `videos/turf-business/` | 4:27 | `out/turf_business_v1.mp4`, captions `out/turf_business.mr.srt` |
+| `videos/construction-material/` | 10:43 | `out/construction_material_v1_light.mp4` (CRF 24 copy; the CRF 18 master is not in git), `description.md` (chapters) |
 | `videos/_style-demo/` | 0:13 | `out/style_demo.mp4`: v2 look test (photo, paper, yellow scenes, logos, SFX) |
 
 ### Turf business: scene timeline
