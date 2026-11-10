@@ -24,11 +24,18 @@ ffmpeg -hide_banner -loglevel error -y -f concat -safe 0 -i "$TMP/list.txt" -c c
 fi
 
 # sound effects: audio-only render of the same composition (VO/music off via withAudio=false, only <Sfx> cues remain)
-for try in 1 2 3; do
-  npx remotion render "$DIR/video.jsx" "$COMP" "$TMP/sfx.wav" --codec=wav "${R[@]}" --timeout=300000 --concurrency=2 && break
-  echo "retry sfx ($try)"
+# rendered in chunks: one long audio-only pass can stall on the font load in a tab
+rm -f "$TMP"/s_*.wav "$TMP"/slist.txt
+for ((a=0; a<TOTAL; a+=CHUNK)); do
+  b=$(( a+CHUNK-1 < TOTAL-1 ? a+CHUNK-1 : TOTAL-1 )); f="$TMP/s_$(printf %05d $a).wav"
+  for try in 1 2 3; do
+    npx remotion render "$DIR/video.jsx" "$COMP" "$f" --codec=wav --frames="$a-$b" "${R[@]}" && break
+    echo "retry sfx $a-$b ($try)"
+  done
+  [ -f "$f" ] || { echo "sfx chunk $a failed"; exit 1; }
+  echo "file '$(basename "$f")'" >> "$TMP/slist.txt"
 done
-[ -f "$TMP/sfx.wav" ] || { echo "sfx pass failed"; exit 1; }
+ffmpeg -hide_banner -loglevel error -y -f concat -safe 0 -i "$TMP/slist.txt" -c:a pcm_s16le -ar 48000 "$TMP/sfx.wav"
 echo "sfx track done"
 
 DUR=$(python3 -c "print($TOTAL/30)"); FO=$(python3 -c "print(max(0, $TOTAL/30-2.5))")
