@@ -1,5 +1,7 @@
 # Original background music, synthesised from scratch (no samples, no third-party audio -> no copyright issues).
-# usage: python3 scripts/make_music.py out.wav seconds
+# usage: python3 scripts/make_music.py out.wav seconds ["plan"]
+#   plan (optional): space-separated "mode@seconds" sections, e.g. "intro@0 calm@6 groove@130 dark@250 lift@500 outro@630"
+#   modes: intro calm groove dark lift outro; "riser@T" adds a soft riser ending at T. Without a plan: the Turf arrangement.
 # 96 BPM, A minor (Am-F-C-G), sections follow the Turf video's story beats.
 import sys, wave
 import numpy as np
@@ -19,8 +21,29 @@ def hz(m):  # midi -> Hz
 CHORDS = [(57, [57, 60, 64]), (53, [53, 57, 60]), (48, [48, 52, 55]), (55, [55, 59, 62])]
 DARK = [(57, [57, 60, 64]), (53, [53, 56, 60]), (50, [50, 53, 57]), (52, [52, 56, 59])]  # Am-Fm-Dm-E for the "problem" part
 
+PLAN = sys.argv[3].split() if len(sys.argv) > 3 else None
+MODES = {  # layer gains per mode: pad pluck bass kick hat snare
+    'intro':  (0.9, 0.6, 0.0, 0.0, 0.0, 0.0),
+    'calm':   (0.9, 0.7, 0.9, 0.7, 0.5, 0.0),
+    'groove': (1.0, 0.9, 1.0, 0.9, 0.7, 0.6),
+    'dark':   (1.1, 0.0, 0.6, 0.0, 0.0, 0.0),
+    'lift':   (1.0, 1.0, 1.0, 1.0, 0.8, 0.7),
+    'outro':  (0.9, 0.5, 0.0, 0.0, 0.0, 0.0),
+}
+SECTIONS = sorted((float(x.split('@')[1]), x.split('@')[0]) for x in (PLAN or []) if not x.startswith('riser@'))
+RISERS = [float(x.split('@')[1]) for x in (PLAN or []) if x.startswith('riser@')]
+
+def mode_at(t):
+    m = SECTIONS[0][1] if SECTIONS else 'calm'
+    for at, name in SECTIONS:
+        if t >= at: m = name
+    return m
+
+def is_dark(t):
+    return mode_at(t) == 'dark' if PLAN else 135 <= t < 176
+
 def chord_at(t):
-    dark = 135 <= t < 176
+    dark = is_dark(t)
     seq = DARK if dark else CHORDS
     return seq[int(t // (2 * BAR)) % 4]
 
@@ -29,7 +52,16 @@ def env(points):
     xs, ys = zip(*points)
     return lambda t: np.interp(t, xs, ys)
 
-G = {
+def plan_env(layer):
+    pts = [(0, 0.0)]
+    for k, (at, name) in enumerate(SECTIONS):
+        g = MODES[name][layer]
+        prev = MODES[SECTIONS[k - 1][1]][layer] if k else 0.0
+        pts += [(max(at - 1.5, pts[-1][0] + 0.01), prev), (at + 0.5, g)]
+    pts += [(DUR - 3, pts[-1][1]), (DUR, 0.0)]
+    return env(pts)
+
+G = {name: plan_env(k) for k, name in enumerate(['pad', 'pluck', 'bass', 'kick', 'hat', 'snare'])} if PLAN else {
     'pad':   env([(0, 0.0), (1.5, 0.9), (69, 0.9), (72, 1.0), (135, 1.0), (176, 1.1), (252, 1.0), (DUR - 3, 0.9), (DUR, 0.0)]),
     'pluck': env([(0, 0.6), (5, 0.7), (69, 0.7), (72, 0.9), (133, 0.9), (136, 0.0), (174, 0.0), (177, 1.0), (250, 1.0), (253, 0.6), (DUR - 2, 0.5), (DUR, 0)]),
     'bass':  env([(0, 0.0), (5.0, 0.0), (5.5, 0.9), (133, 0.9), (136, 0.6), (174, 0.6), (177, 1.0), (251, 1.0), (253, 0.0), (DUR, 0)]),
@@ -60,7 +92,7 @@ for b in range(int(DUR / (2 * BAR)) + 1):
     t0 = b * 2 * BAR
     root, notes = chord_at(t0 + 0.01)
     d = 2 * BAR + 1.2
-    dark = 135 <= t0 < 176
+    dark = is_dark(t0)
     harm = (1, .35, .12) if dark else (1, .45, .2, .08)
     sigL = 0; sigR = 0
     for m in notes + [notes[0] + 12]:
@@ -132,7 +164,8 @@ for k in range(int(DUR / BEAT)):
 t = np.arange(int(3.0 * SR)) / SR
 n = rng.standard_normal(len(t)); n = np.diff(n, prepend=0)
 rise = n * (t / 3.0) ** 2 * 0.06
-add(L, 173.6, rise, 1); add(R, 173.6, rise, 1)
+for end in (RISERS if PLAN else [176.6]):
+    add(L, end - 3.0, rise, 1); add(R, end - 3.0, rise, 1)
 
 mix = np.stack([L[:N], R[:N]], 1)
 mix /= max(1e-6, np.abs(mix).max()) / 0.89

@@ -55,7 +55,11 @@ def search(q, n=12):
     return names[:n]
 
 
+STD_W = [120, 250, 330, 500, 960, 1280, 1920, 3840]  # Wikimedia only serves (and allows) these thumb widths
+
+
 def file_url(name, w):
+    w = next((x for x in STD_W if x >= w), STD_W[-1])
     return 'https://commons.wikimedia.org/wiki/Special:FilePath/' + urllib.parse.quote(name[5:].replace(' ', '_')) + f'?width={w}'
 
 
@@ -68,13 +72,14 @@ def meta(name):
         return clean('Artist') or 'unknown', clean('LicenseShortName') or 'see page'
     except Exception:  # noqa: BLE001  API throttled -> read the file page itself
         try:
-            page = get('https://commons.wikimedia.org/wiki/' + urllib.parse.quote(name.replace(' ', '_')), tries=2)
+            page = get('https://commons.wikimedia.org/wiki/' + urllib.parse.quote(name.replace(' ', '_')), tries=2).replace('&#95;', '_')
             txt = lambda h: re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', ' ', html.unescape(h))).strip()
             lic = re.search(r'class="licensetpl_short"[^>]*>(.*?)</span>', page, re.S)
             aut = re.search(r'id="fileinfotpl_aut".*?</td>\s*<td[^>]*>(.*?)</td>', page, re.S)
             pd = 'Public domain' if re.search(r'licensetpl_short[^>]*>\s*Public domain', page) else None
-            cc = re.search(r'creativecommons\.org/(licenses|publicdomain)/([a-z-]+)/([0-9.]+)', page)
-            ccname = ('CC0' if cc and cc.group(2) == 'zero' else f'CC {cc.group(2).upper()} {cc.group(3)}') if cc else None
+            # (the page footer/structured data always links CC0, so only count licence links, not publicdomain/zero)
+            cc = re.search(r'creativecommons\.org/licenses/([a-z-]+)/([0-9.]+)', page)
+            ccname = f'CC {cc.group(1).upper()} {cc.group(2)}' if cc else None
             return (txt(aut.group(1))[:80] if aut else 'unknown'), (txt(lic.group(1)) if lic else pd or ccname or 'see page')
         except Exception:  # noqa: BLE001
             return 'see page', 'see page'
@@ -95,7 +100,7 @@ def cmd_search(q, n):
         print(f'{i:2d}  {name}')
         try:
             p = os.path.join(SCRATCH, f's{i:02d}.png')
-            open(p, 'wb').write(get(file_url(name, 400), binary=True))
+            open(p, 'wb').write(get(file_url(name, 330), binary=True)); time.sleep(0.6)
             thumbs.append(p)
         except Exception as e:  # noqa: BLE001
             print('    (thumb failed:', e, ')')
@@ -108,7 +113,7 @@ def cmd_search(q, n):
         layout = '|'.join(f'{(k % cols) * 400}_{(k // cols) * 300}' for k in range(len(thumbs)))
         subprocess.run(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', *ins, '-filter_complex',
                         cells + ''.join(f'[c{k}]' for k in range(len(thumbs))) +
-                        f'xstack=inputs={len(thumbs)}:layout={layout}:fill=black' + ('' if len(thumbs) > 1 else ''), sheet], check=False)
+                        (f'xstack=inputs={len(thumbs)}:layout={layout}:fill=black' if len(thumbs) > 1 else 'null'), sheet], check=False)
         print('sheet:', sheet)
 
 

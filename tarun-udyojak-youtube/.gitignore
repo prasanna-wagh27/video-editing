@@ -1,3 +1,6 @@
 node_modules/
 **/stills/
 .browser
+
+# generated, too big for GitHub (rebuild: python3 scripts/make_music.py <v>/public/music.wav <sec> "$(cat <v>/music_plan.txt)")
+videos/construction-material/public/music.wav

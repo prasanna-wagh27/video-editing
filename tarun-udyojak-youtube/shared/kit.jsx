@@ -149,7 +149,7 @@ export const Hi = ({at, children, color = BRAND, ink = INK}) => {
   const p = at === undefined ? 1 : io(t, at, at + 0.4);
   return (
     <span style={{position: 'relative', display: 'inline-block', padding: '0 14px', margin: '0 2px'}}>
-      <span style={{position: 'absolute', left: 0, top: '-0.02em', bottom: '-0.04em', width: `${p * 100}%`, background: color, borderRadius: 12, transform: 'rotate(-1.5deg)'}} />
+      <span style={{position: 'absolute', left: 0, top: '-0.14em', bottom: '-0.04em', width: `${p * 100}%`, background: color, borderRadius: 12, transform: 'rotate(-1.5deg)'}} />
       <span style={{position: 'relative', color: p > 0.45 ? ink : WHITE, paddingTop: '0.1em', display: 'inline-block'}}>{children}</span>
     </span>
   );
