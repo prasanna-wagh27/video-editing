@@ -222,3 +222,53 @@ export const Ic = ({n, size = 40, color = WHITE, sw = 3.4, fill = 'none'}) => {
   };
   return <svg viewBox="0 0 48 48" width={size} height={size} style={{display: 'block', overflow: 'visible'}}>{I[n]}</svg>;
 };
+
+/* ---------- line-art turf with floodlights (draws on from `at`; pass a large t for a finished still) ---------- */
+export const Turf = ({t, at = 0.2, w = 820, id = 't'}) => {
+  const P = (u, v) => [120 + 80 * v + (560 - 160 * v) * u, 470 - 270 * v];
+  const pts = (arr) => arr.map(([u, v]) => P(u, v).join(',')).join(' ');
+  const ln = (a, b, d) => {
+    const [x1, y1] = P(...a), [x2, y2] = P(...b);
+    return <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={WHITE} strokeWidth="3" strokeLinecap="round" {...draw(io(t, at + d, at + d + 0.7))} />;
+  };
+  const corners = [[0, 0], [1, 0], [1, 1], [0, 1]];
+  const lamp = (i) => io(t, at + 1.1 + i * 0.15, at + 1.3 + i * 0.15);
+  const [cx, cy] = P(0.5, 0.5);
+  return (
+    <svg viewBox="0 0 800 560" width={w} style={{overflow: 'visible'}}>
+      <defs>
+        <radialGradient id={`lg${id}`}><stop offset="0" stopColor={BRAND} stopOpacity="0.9" /><stop offset="1" stopColor={BRAND} stopOpacity="0" /></radialGradient>
+        <linearGradient id={`beam${id}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={BRAND} stopOpacity="0.22" /><stop offset="1" stopColor={BRAND} stopOpacity="0" /></linearGradient>
+      </defs>
+      <polygon points={`${P(0, 0)} ${P(1, 0)} ${P(1, 0)[0]},${P(1, 0)[1] + 34} ${P(0, 0)[0]},${P(0, 0)[1] + 34}`} fill="#1b1b1d" opacity={io(t, at, at + 0.4)} />
+      {Array.from({length: 8}).map((_, i) => (
+        <polygon key={i} points={pts([[0, i / 8], [1, i / 8], [1, (i + 1) / 8], [0, (i + 1) / 8]])} fill={i % 2 ? '#232326' : '#1d1d20'} opacity={io(t, at, at + 0.4)} />
+      ))}
+      {corners.map((c, i) => <React.Fragment key={i}>{ln(c, corners[(i + 1) % 4], 0.1 * i)}</React.Fragment>)}
+      {ln([0, 0.5], [1, 0.5], 0.4)}
+      {ln([0.3, 0], [0.3, 0.14], 0.5)}{ln([0.7, 0], [0.7, 0.14], 0.5)}{ln([0.3, 0.14], [0.7, 0.14], 0.55)}
+      {ln([0.3, 1], [0.3, 0.86], 0.5)}{ln([0.7, 1], [0.7, 0.86], 0.5)}{ln([0.3, 0.86], [0.7, 0.86], 0.55)}
+      <ellipse cx={cx} cy={cy} rx="66" ry="20" fill="none" stroke={WHITE} strokeWidth="3" {...draw(io(t, at + 0.6, at + 1.2))} />
+      {/* fence posts + top rail */}
+      {[0, 0.25, 0.5, 0.75, 1].flatMap((u) => [[u, 0], [u, 1]]).concat([[0, 0.33], [0, 0.66], [1, 0.33], [1, 0.66]]).map(([u, v], i) => {
+        const [x, y] = P(u, v); const hgt = 70 - 20 * v;
+        return <line key={i} x1={x} y1={y} x2={x} y2={y - hgt * io(t, at + 0.8, at + 1.2)} stroke="rgba(255,255,255,0.35)" strokeWidth="2" />;
+      })}
+      <polyline points={corners.concat([corners[0]]).map(([u, v]) => { const [x, y] = P(u, v); return `${x},${y - (70 - 20 * v)}`; }).join(' ')} fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="2" opacity={io(t, at + 1.0, at + 1.3)} />
+      {/* floodlights */}
+      {corners.map(([u, v], i) => {
+        const [x, y] = P(u, v); const top = y - (190 - 50 * v); const on = lamp(i);
+        return (
+          <g key={i}>
+            <polygon points={`${x - 16},${top} ${x + 16},${top} ${P(0.5, 0.5)[0] + (x - cx) * 0.2},${cy + 20} ${P(0.5, 0.5)[0] + (x - cx) * 0.55},${cy + 40}`} fill={`url(#beam${id})`} opacity={on * 0.9} />
+            <line x1={x} y1={y} x2={x} y2={top} stroke="rgba(255,255,255,0.55)" strokeWidth="4" strokeLinecap="round" />
+            <circle cx={x} cy={top} r={46} fill={`url(#lg${id})`} opacity={on * (0.85 + 0.15 * Math.sin(t * 6 + i))} />
+            <rect x={x - 18} y={top - 9} width="36" height="16" rx="4" fill={on > 0.5 ? BRAND : '#444'} />
+          </g>
+        );
+      })}
+      {/* ball */}
+      <circle cx={cx + Math.sin(t * 1.6) * 90} cy={cy - 6 - Math.abs(Math.sin(t * 3.2)) * 30} r="9" fill={WHITE} opacity={io(t, at + 1.4, at + 1.7)} />
+    </svg>
+  );
+};
