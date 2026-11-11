@@ -48,7 +48,8 @@ const KEYS = ['hook', 'growth', 'channels', 'questions', 'halfday', 'loss', 'tur
 const CUTS = [0, 4.71, 8.94, 12.07, 16.80, 20.12, 25.53, 28.60, 32.68, 38.98, 46.0, 49.93, 55.65, 60.86, OUTRO_AT, OUTRO_AT + 2.4];
 const TOTAL = s(CUTS[CUTS.length - 1]);
 const SC = scenesFromCuts(KEYS, CUTS);
-const CHUNKS = buildChunks(SEGS);
+// no subtitles during the hook: the on-screen text hook carries those lines
+const CHUNKS = buildChunks(SEGS).filter((c) => c.a >= s(CUTS[1]));
 
 /* ---------- helpers ---------- */
 const DEV = '०१२३४५६७८९';
@@ -306,19 +307,15 @@ const Hook = ({from}) => {
   );
 };
 
-// 2. Growth: business grows, method stays the same
+// 2. Growth: business grows, method stays the same (no heading: subtitles carry the words)
 const BARS = [0.28, 0.42, 0.55, 0.72, 0.95];
 const GrowthSc = ({from}) => {
   const F = useCurrentFrame() + from;
   return (
     <AbsoluteFill>
-      <Center top={200}>
-        <H size={70} style={rise(F, 4.8)}>बिझनेस <span style={{color: GREEN}}>वाढतोय</span></H>
-        <H size={70} style={{...rise(F, 6.4), marginTop: 6}}>पद्धत अजूनही <Hi t={7.6}>तीच?</Hi></H>
-      </Center>
-      <Card x={70} y={480} w={450} h={700} r={44} style={{padding: 36, ...rise(F, 4.85)}}>
-        <div style={{fontSize: 40, fontWeight: 700}}>ऑर्डर्स / दिवस</div>
-        <svg viewBox="0 0 380 460" width="378" height="460" style={{marginTop: 30, overflow: 'visible'}}>
+      <Card x={70} y={260} w={450} h={880} r={44} style={{padding: 36, ...rise(F, 4.85)}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: 12, fontSize: 44, fontWeight: 700}}>ऑर्डर्स <Growth size={56} /></div>
+        <svg viewBox="0 0 380 460" width="378" height="460" style={{marginTop: 160, overflow: 'visible'}}>
           <path d="M10 440H370" stroke={INK} strokeWidth="5" strokeLinecap="round" />
           {BARS.map((b, i) => {
             const h = 380 * b * io(F, s(5.0 + i * 0.18), s(5.0 + i * 0.18) + 14);
@@ -328,12 +325,12 @@ const GrowthSc = ({from}) => {
           <path d="M310 46 L345 44 L342 80" fill="none" stroke={GREEN} strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" opacity={io(F, s(6.2), s(6.4))} />
         </svg>
       </Card>
-      <Card x={560} y={480} w={450} h={700} r={44} style={{padding: 36, ...rise(F, 6.4)}}>
-        <div style={{fontSize: 40, fontWeight: 700}}>ऑर्डर घेण्याची पद्धत</div>
-        <div style={{...abs(60, 170), transform: 'rotate(-6deg)'}}><Ledger size={210} scribble={io(F, s(6.6), s(8.4))} /></div>
-        <div style={{...abs(250, 380), transform: `rotate(${Math.sin(F / 3) * 6}deg)`}}><Pen size={110} /></div>
-        <div style={{...abs(260, 170)}}><WhatsAppLogo size={120} round /></div>
-        <div style={{...abs(0, 560), width: 450, display: 'flex', justifyContent: 'center'}}><Pill bg="#EDE6D6" color={GREY} size={38}>वर्षानुवर्षं तीच</Pill></div>
+      <Card x={560} y={260} w={450} h={880} r={44} style={{padding: 36, ...rise(F, 6.4)}}>
+        <div style={{fontSize: 44, fontWeight: 700}}>वही + WhatsApp</div>
+        <div style={{...abs(60, 250), transform: 'rotate(-6deg)'}}><Ledger size={210} scribble={io(F, s(6.6), s(8.4))} /></div>
+        <div style={{...abs(250, 460), transform: `rotate(${Math.sin(F / 3) * 6}deg)`}}><Pen size={110} /></div>
+        <div style={{...abs(260, 250)}}><WhatsAppLogo size={120} round /></div>
+        <div style={{...abs(0, 700), width: 450, display: 'flex', justifyContent: 'center'}}><Pill bg="#EDE6D6" color={GREY} size={38}>वर्षानुवर्षं तीच</Pill></div>
       </Card>
     </AbsoluteFill>
   );
@@ -345,11 +342,7 @@ const Channels = ({from}) => {
   const ring = F > s(10.9) ? Math.sin(F * 1.8) * 5 * io(F, s(10.9), s(11.1)) : 0;
   return (
     <AbsoluteFill>
-      <Center top={200}>
-        <H size={72} style={rise(F, 9.0)}>ऑर्डर्स येतात <Hi t={9.3}>कुठूनही</Hi></H>
-      </Center>
-      {/* WhatsApp order */}
-      <Card x={70} y={400} w={760} h={330} r={40} bg={WA_BG} style={{transform: `scale(${pop(F, 9.15)})`, transformOrigin: '0% 50%', padding: 30}}>
+      <Card x={70} y={240} w={760} h={330} r={40} bg={WA_BG} style={{transform: `scale(${pop(F, 9.15)})`, transformOrigin: '0% 50%', padding: 30}}>
         <div style={{display: 'flex', alignItems: 'center', gap: 18}}>
           <WhatsAppLogo size={84} />
           <div><div style={{fontSize: 34, fontWeight: 700}}>गणेश किराणा</div><div style={{fontSize: 24, fontWeight: 600, color: GREEN}}>● online</div></div>
@@ -358,8 +351,7 @@ const Channels = ({from}) => {
           भाऊ, १० बॉक्स तेल पाठवा <span style={{fontSize: 22, color: '#8a8478'}}>9:42</span>
         </div>
       </Card>
-      {/* incoming call */}
-      <Card x={250} y={790} w={760} h={330} r={40} bg="#1d1d1d" style={{transform: `scale(${pop(F, 10.6)}) translateX(${ring}px)`, transformOrigin: '100% 50%', padding: 34, color: '#fff'}}>
+      <Card x={250} y={630} w={760} h={330} r={40} bg="#1d1d1d" style={{transform: `scale(${pop(F, 10.6)}) translateX(${ring}px)`, transformOrigin: '100% 50%', padding: 34, color: '#fff'}}>
         <div style={{fontSize: 26, fontWeight: 600, color: '#9a968c'}}>Incoming call…</div>
         <div style={{display: 'flex', alignItems: 'center', gap: 22, marginTop: 14}}>
           <Avatar name="साई" size={96} bg={Y} />
@@ -370,8 +362,7 @@ const Channels = ({from}) => {
           <div style={{width: 86, height: 86, borderRadius: 43, background: GREEN, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${1 + 0.08 * Math.sin(F / 3)})`}}><CallI size={46} /></div>
         </div>
       </Card>
-      {/* distributor in the middle, overwhelmed */}
-      <div style={{...abs(455, 1150), transform: `scale(${pop(F, 9.4)})`}}>
+      <div style={{...abs(455, 1040), transform: `scale(${pop(F, 9.4)})`}}>
         <div style={{width: 170, height: 170, borderRadius: 85, background: Y, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', overflow: 'hidden', border: `6px solid ${INK}`}}><Person size={140} /></div>
         <div style={{textAlign: 'center', fontSize: 30, fontWeight: 700, marginTop: 8}}>तुम्ही</div>
       </div>
@@ -379,25 +370,24 @@ const Channels = ({from}) => {
   );
 };
 
-// 4. Questions: rate? stock? payment pending?
+// 4. Questions: keyword + the data you have to keep in your head
 const QS = [
-  [12.25, <Tag key="t" size={110} />, 'कोणाला किती', 'रेट?'],
-  [13.7, <Boxes key="b" size={110} />, 'कोणाकडे किती', 'स्टॉक?'],
-  [15.3, <Wallet key="w" size={110} />, 'कोणाचं', 'पेमेंट बाकी?'],
+  [12.25, <Tag key="t" size={110} />, 'रेट', `₹${inr(1820)} · ₹${inr(1840)} · ₹${inr(1860)}`],
+  [13.7, <Boxes key="b" size={110} />, 'स्टॉक', 'तेल ? · साखर ? · बिस्किट ?'],
+  [15.3, <Wallet key="w" size={110} />, 'पेमेंट', `₹${inr(48500)} · ₹${inr(32000)} · ₹${inr(21500)}`],
 ];
 const Questions = ({from}) => {
   const F = useCurrentFrame() + from;
   return (
     <AbsoluteFill>
-      <Center top={200}><H size={66} color={GREY} style={rise(F, 12.1)}>आणि डोक्यात सतत…</H></Center>
       {QS.map(([t, icon, a, b], i) => (
-        <Card key={i} x={90 + (i % 2) * 40} y={360 + i * 330} w={860} h={280} r={40} style={{display: 'flex', alignItems: 'center', gap: 36, padding: '0 50px', ...rise(F, t - 0.1), transform: `${rise(F, t - 0.1).transform} rotate(${i % 2 ? 1.5 : -1.5}deg)`}}>
-          <div style={{width: 160, height: 160, borderRadius: 40, background: SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>{icon}</div>
+        <Card key={i} x={90 + (i % 2) * 40} y={250 + i * 370} w={860} h={310} r={40} style={{display: 'flex', alignItems: 'center', gap: 36, padding: '0 50px', ...rise(F, t - 0.1), transform: `${rise(F, t - 0.1).transform} rotate(${i % 2 ? 1.5 : -1.5}deg)`}}>
+          <div style={{width: 170, height: 170, borderRadius: 40, background: SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>{icon}</div>
           <div style={{flex: 1}}>
-            <div style={{fontSize: 44, fontWeight: 500, color: GREY}}>{a}</div>
-            <div style={{fontSize: 76, fontWeight: 700, lineHeight: 1.1}}>{b}</div>
+            <div style={{fontSize: 92, fontWeight: 700, lineHeight: 1.1}}>{a}</div>
+            <div style={{fontSize: 32, fontWeight: 600, color: GREY, whiteSpace: 'nowrap'}}>{b}</div>
           </div>
-          <div style={{width: 100, height: 100, borderRadius: 50, background: RED, color: '#fff', fontSize: 70, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 8, boxSizing: 'border-box', transform: `scale(${pop(F, t + 0.3, 9)})`}}>?</div>
+          <div style={{width: 100, height: 100, borderRadius: 50, background: RED, color: '#fff', fontSize: 70, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 8, boxSizing: 'border-box', flexShrink: 0, transform: `scale(${pop(F, t + 0.3, 9)})`}}>?</div>
         </Card>
       ))}
     </AbsoluteFill>
@@ -410,17 +400,13 @@ const HalfDay = ({from}) => {
   const frac = io(F, s(17.2), s(19.4), 0, 0.5, Easing.inOut(Easing.cubic));
   return (
     <AbsoluteFill>
-      <Center top={200}>
-        <H size={64} color={GREY} style={rise(F, 16.9)}>हिशोब ठेवण्यातच</H>
-        <H size={100} style={{...rise(F, 17.1), marginTop: 4}}><Hi t={18.6}>अर्धा दिवस</Hi> जातो</H>
+      <div style={{...abs(200, 250), transform: `scale(${pop(F, 16.95)})`}}><Clock size={680} frac={frac} hand={frac * 720 * 12} /></div>
+      <Center top={980} style={{opacity: io(F, s(18.4), s(18.8))}}>
+        <Pill bg={INK} size={60}><span style={{color: Y}}>{dev(Math.round(frac * 2 * 6))} तास</span> हिशोबात</Pill>
       </Center>
-      <div style={{...abs(170, 470), transform: `scale(${pop(F, 16.95)})`}}><Clock size={560} frac={frac} hand={frac * 720 * 12} /></div>
-      <div style={{...abs(250, 1080), width: 400, display: 'flex', justifyContent: 'center', opacity: io(F, s(19.0), s(19.4))}}>
-        <Pill bg={INK} size={44}><span style={{color: Y}}>{dev(Math.round(frac * 2 * 6))} तास</span> हिशोबात</Pill>
-      </div>
-      <div style={{...abs(700, 850), transform: `rotate(8deg) scale(${pop(F, 17.6)})`}}><Ledger size={230} scribble={io(F, s(17.6), s(19.8))} /></div>
-      <div style={{...abs(860, 1080), transform: `rotate(${Math.sin(F / 2.5) * 10}deg) scale(${pop(F, 17.8)})`}}><Pen size={110} /></div>
-      <div style={{...abs(50, 900), transform: `rotate(-10deg) scale(${pop(F, 18.0)})`}}><Calc size={150} /></div>
+      <div style={{...abs(760, 760), transform: `rotate(8deg) scale(${pop(F, 17.6)})`}}><Ledger size={230} scribble={io(F, s(17.6), s(19.8))} /></div>
+      <div style={{...abs(920, 990), transform: `rotate(${Math.sin(F / 2.5) * 10}deg) scale(${pop(F, 17.8)})`}}><Pen size={110} /></div>
+      <div style={{...abs(50, 780), transform: `rotate(-10deg) scale(${pop(F, 18.0)})`}}><Calc size={160} /></div>
     </AbsoluteFill>
   );
 };
@@ -460,28 +446,24 @@ const Loss = ({from}) => {
   );
 };
 
-// 7. Turn: no need to do it manually
+// 7. Turn: manual tools struck out -> automatic
 const MANUAL = [<Ledger key="l" size={120} />, <Calc key="c" size={130} />, <WhatsAppLogo key="w" size={120} />, <div key="p" style={{width: 120, height: 120, borderRadius: 30, background: INK, display: 'flex', alignItems: 'center', justifyContent: 'center'}}><CallI size={70} /></div>];
 const Turn = ({from}) => {
   const F = useCurrentFrame() + from;
   const dim = io(F, s(27.0), s(27.4));
   return (
     <AbsoluteFill>
-      <Center top={230}>
-        <H size={66} color={GREY} style={rise(F, 25.7)}>हे सगळं</H>
-        <H size={110} style={{...rise(F, 25.9), marginTop: 4}}>मॅन्युअली?</H>
-      </Center>
-      <div style={{...abs(90, 600), width: 900, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+      <div style={{...abs(90, 420), width: 900, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
         {MANUAL.map((m, i) => (
           <div key={i} style={{width: 200, height: 200, borderRadius: 40, background: '#fff', boxShadow: CARD_SHADOW, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transform: `scale(${pop(F, 26.0 + i * 0.15)}) translateY(${dim * 30}px)`, filter: `grayscale(${dim})`, opacity: 1 - dim * 0.45}}>{m}</div>
+            transform: `scale(${pop(F, 25.8 + i * 0.25)}) translateY(${dim * 30}px)`, filter: `grayscale(${dim})`, opacity: 1 - dim * 0.45}}>{m}</div>
         ))}
         <Strike F={F} t={27.0} w={920} style={{left: -10, top: 86}} />
       </div>
-      <Center top={960}>
+      <Center top={820}>
         <div style={{transform: `scale(${pop(F, 27.5, 10)})`, display: 'flex', alignItems: 'center', gap: 24, background: GREEN, borderRadius: 999, padding: '20px 56px 12px 26px', boxShadow: '0 20px 50px rgba(31,168,85,0.35)'}}>
           <CheckW size={96} />
-          <div style={{fontSize: 84, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap'}}>गरज नाही!</div>
+          <div style={{fontSize: 80, fontWeight: 700, color: '#fff', whiteSpace: 'nowrap'}}>सगळं ऑटोमॅटिक</div>
         </div>
       </Center>
     </AbsoluteFill>
@@ -489,25 +471,22 @@ const Turn = ({from}) => {
 };
 
 // 8. Own app for every retailer
-const SHOPS = [['गणेश', 80, 520], ['साई', 760, 520], ['माऊली', 80, 1050], ['लक्ष्मी', 760, 1050]];
+const SHOPS = [['गणेश', 80, 330], ['साई', 760, 330], ['माऊली', 80, 1060], ['लक्ष्मी', 760, 1060]];
+const HUB = [540, 790];
 const OwnApp = ({from}) => {
   const F = useCurrentFrame() + from;
   return (
     <AbsoluteFill>
-      <Center top={190}>
-        <H size={60} color={GREY} style={rise(F, 28.75)}>प्रत्येक रिटेलरला</H>
-        <H size={96} style={{...rise(F, 30.3), marginTop: 4}}><Hi t={31.3}>स्वतःचं ॲप!</Hi></H>
-      </Center>
       <svg width="1080" height="1400" style={{...abs(0, 0)}}>
         {SHOPS.map(([, x, y], i) => {
           const p = io(F, s(30.0 + i * 0.2), s(30.0 + i * 0.2) + 12);
           const x2 = x + 120, y2 = y + 90;
-          return <path key={i} d={`M540 870 L${540 + (x2 - 540) * p} ${870 + (y2 - 870) * p}`} stroke={INK} strokeWidth="6" strokeDasharray="4 18" strokeLinecap="round" strokeDashoffset={-F * 2} />;
+          return <path key={i} d={`M${HUB[0]} ${HUB[1]} L${HUB[0] + (x2 - HUB[0]) * p} ${HUB[1] + (y2 - HUB[1]) * p}`} stroke={INK} strokeWidth="6" strokeDasharray="4 18" strokeLinecap="round" strokeDashoffset={-F * 2} />;
         })}
       </svg>
-      <div style={{...abs(540 - 140, 870 - 150), transform: `scale(${pop(F, 29.0, 10)})`, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <AppIcon size={280} />
-        <div style={{marginTop: 16, fontSize: 38, fontWeight: 700, fontFamily: 'Anek, sans-serif', whiteSpace: 'nowrap'}}>{BRAND_NAME}</div>
+      <div style={{...abs(HUB[0] - 160, HUB[1] - 170), transform: `scale(${pop(F, 29.0, 10)})`, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <AppIcon size={320} />
+        <div style={{marginTop: 16, fontSize: 42, fontWeight: 700, fontFamily: 'Anek, sans-serif', whiteSpace: 'nowrap'}}>{BRAND_NAME}</div>
       </div>
       {SHOPS.map(([n, x, y], i) => {
         const t = 29.8 + i * 0.2;
@@ -631,8 +610,7 @@ const Dashboard = ({from}) => {
   const due = io(F, s(44.9), s(45.8), 0, 342500, Easing.out(Easing.cubic));
   return (
     <AbsoluteFill>
-      <Center top={180}><H size={70} style={rise(F, 39.1)}>एका <Hi t={39.8}>डॅशबोर्डवर</Hi> सगळं</H></Center>
-      <div style={{...abs(50, 330), width: 980, height: 1060, borderRadius: 40, background: '#1d1d1d', padding: 16, boxSizing: 'border-box', boxShadow: '0 40px 90px rgba(0,0,0,0.25)', ...rise(F, 39.15)}}>
+      <div style={{...abs(50, 240), width: 980, height: 1140, borderRadius: 40, background: '#1d1d1d', padding: 16, boxSizing: 'border-box', boxShadow: '0 40px 90px rgba(0,0,0,0.25)', ...rise(F, 39.15)}}>
         <div style={{width: '100%', height: '100%', borderRadius: 28, background: '#F4F1EA', overflow: 'hidden', position: 'relative'}}>
           <div style={{height: 84, background: '#fff', display: 'flex', alignItems: 'center', gap: 14, padding: '0 28px', borderBottom: `2px solid ${LINE}`}}>
             <AppIcon size={52} style={{boxShadow: 'none'}} />
@@ -642,7 +620,7 @@ const Dashboard = ({from}) => {
           </div>
           <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, padding: 20}}>
             {/* orders */}
-            <div style={{background: '#fff', borderRadius: 24, padding: 24, height: 430, boxSizing: 'border-box', ...tile(40.4)}}>
+            <div style={{background: '#fff', borderRadius: 24, padding: 24, height: 470, boxSizing: 'border-box', ...tile(40.4)}}>
               <TileHead label="आजच्या ऑर्डर्स" />
               <div style={{fontSize: 110, fontWeight: 700, lineHeight: 1.1, marginTop: 10, fontVariantNumeric: 'tabular-nums'}}>{dev(orders)}</div>
               {['गणेश किराणा · ₹९,२००', 'साई ट्रेडर्स · ₹४,६५०', 'माऊली · ₹१२,४००'].map((r, i) => (
@@ -652,7 +630,7 @@ const Dashboard = ({from}) => {
               ))}
             </div>
             {/* stock */}
-            <div style={{background: '#fff', borderRadius: 24, padding: 24, height: 430, boxSizing: 'border-box', ...tile(42.4)}}>
+            <div style={{background: '#fff', borderRadius: 24, padding: 24, height: 470, boxSizing: 'border-box', ...tile(42.4)}}>
               <TileHead label="लाईव्ह स्टॉक" dot={RED} />
               {STOCK.map(([n, v], i) => {
                 const w = v * io(F, s(42.5 + i * 0.1), s(43.2 + i * 0.1)) + (i === 0 ? -0.04 * io(F, s(44), s(45)) : 0);
@@ -666,7 +644,7 @@ const Dashboard = ({from}) => {
               })}
             </div>
             {/* pricing */}
-            <div style={{background: '#fff', borderRadius: 24, padding: 24, height: 430, boxSizing: 'border-box', ...tile(43.3)}}>
+            <div style={{background: '#fff', borderRadius: 24, padding: 24, height: 470, boxSizing: 'border-box', ...tile(43.3)}}>
               <TileHead label="रिटेलरनुसार रेट" dot={GOLD} />
               <div style={{fontSize: 22, color: GREY, marginTop: 6}}>सनफ्लॉवर तेल · बॉक्स</div>
               {PRICES.map(([n, p], i) => (
@@ -676,7 +654,7 @@ const Dashboard = ({from}) => {
               ))}
             </div>
             {/* payments */}
-            <div style={{background: '#fff', borderRadius: 24, padding: 24, height: 430, boxSizing: 'border-box', ...tile(44.75)}}>
+            <div style={{background: '#fff', borderRadius: 24, padding: 24, height: 470, boxSizing: 'border-box', ...tile(44.75)}}>
               <TileHead label="पेंडिंग पेमेंट्स" dot={RED} />
               <div style={{fontSize: 64, fontWeight: 700, color: RED, marginTop: 10, fontVariantNumeric: 'tabular-nums'}}>₹{inr(Math.round(due / 100) * 100)}</div>
               {DUES.map(([n, a, d], i) => (
@@ -692,56 +670,52 @@ const Dashboard = ({from}) => {
   );
 };
 
-// 11. No more WhatsApp mess, no more writing orders down
+// 11. No more WhatsApp mess, no more writing orders down (icon + keyword)
 const NoMore = ({from}) => {
   const F = useCurrentFrame() + from;
-  const Row = ({y, t, x, icon, a, b}) => (
-    <Card x={80} y={y} w={920} h={380} r={44} style={{...rise(F, t - 0.15), padding: '40px 48px'}}>
-      <div style={{display: 'flex', alignItems: 'center', gap: 40, filter: `grayscale(${io(F, s(x), s(x) + 8) * 0.9})`}}>
+  const Row = ({y, t, x, icon, b}) => (
+    <Card x={80} y={y} w={920} h={400} r={44} style={{...rise(F, t - 0.15), padding: '50px 48px'}}>
+      <div style={{display: 'flex', alignItems: 'center', gap: 50, filter: `grayscale(${io(F, s(x), s(x) + 8) * 0.9})`}}>
         {icon}
-        <div><div style={{fontSize: 44, fontWeight: 500, color: GREY}}>{a}</div><div style={{fontSize: 92, fontWeight: 700, lineHeight: 1.1}}>{b}</div></div>
+        <div style={{fontSize: 100, fontWeight: 700, lineHeight: 1.1}}>{b}</div>
       </div>
-      <Strike F={F} t={x} w={820} style={{left: 50, top: 170}} />
+      <Strike F={F} t={x} w={820} style={{left: 50, top: 180}} />
       <div style={{...abs(760, -40), transform: `scale(${pop(F, x + 0.1, 9)})`}}><XBadge size={140} /></div>
     </Card>
   );
   return (
     <AbsoluteFill>
-      <Row y={260} t={46.2} x={47.2} a="WhatsApp मेसेजेसचा" b="गोंधळ" icon={
-        <div style={{position: 'relative', width: 230, height: 230}}>
-          <WhatsAppLogo size={160} style={{...abs(0, 30)}} />
-          {[0, 1, 2].map((i) => <div key={i} style={{...abs(110 + i * 10, 10 + i * 64), width: 100 - i * 14, height: 44, borderRadius: '18px 18px 18px 4px', background: '#fff', border: `4px solid ${INK}`,
+      <Row y={280} t={46.2} x={47.2} b="मेसेजेस" icon={
+        <div style={{position: 'relative', width: 260, height: 260}}>
+          <WhatsAppLogo size={170} style={{...abs(0, 40)}} />
+          {[0, 1, 2].map((i) => <div key={i} style={{...abs(130 + i * 10, 20 + i * 70), width: 110 - i * 14, height: 48, borderRadius: '18px 18px 18px 4px', background: '#fff', border: `4px solid ${INK}`,
             transform: `rotate(${(i - 1) * 10}deg) scale(${pop(F, 46.4 + i * 0.15)})`}} />)}
-          <Badge n="९९+" size={70} style={{...abs(100, 0)}} />
+          <Badge n="९९+" size={74} style={{...abs(110, 6)}} />
         </div>} />
-      <Row y={720} t={47.95} x={49.1} a="ऑर्डर्स लिहून ठेवण्याची" b="कटकट" icon={
-        <div style={{position: 'relative', width: 230, height: 230}}>
-          <div style={{...abs(20, 0)}}><Ledger size={170} scribble={io(F, s(48.0), s(49.0))} /></div>
-          <div style={{...abs(130, 110), transform: `rotate(${Math.sin(F / 2.5) * 10}deg)`}}><Pen size={100} /></div>
+      <Row y={760} t={47.95} x={49.1} b="वही-पेन" icon={
+        <div style={{position: 'relative', width: 260, height: 260}}>
+          <div style={{...abs(30, 10)}}><Ledger size={180} scribble={io(F, s(48.0), s(49.0))} /></div>
+          <div style={{...abs(150, 130), transform: `rotate(${Math.sin(F / 2.5) * 10}deg)`}}><Pen size={110} /></div>
         </div>} />
-      <Center top={1180}><H size={60} color={GREY} style={rise(F, 49.3)}>आता सगळं <span style={{color: INK}}>एका ॲपमध्ये</span></H></Center>
     </AbsoluteFill>
   );
 };
 
-// 12. Benefits
+// 12. Benefits (icon + keyword)
 const BENEFITS = [
-  [50.1, <Clock key="c" size={120} frac={0.25} hand={60} />, 'तुमचा', 'वेळ वाचेल'],
-  [51.4, <ListCheck key="l" size={120} />, 'ऑर्डर मॅनेजमेंट', 'सोपं होईल'],
-  [53.2, <Growth key="g" size={120} />, 'लक्ष फक्त', 'बिझनेस वाढवण्यावर'],
+  [50.1, <Clock key="c" size={130} frac={0.25} hand={60} />, 'वेळ'],
+  [51.4, <ListCheck key="l" size={130} />, 'मॅनेजमेंट'],
+  [53.2, <Growth key="g" size={130} />, 'ग्रोथ'],
 ];
 const Benefits = ({from}) => {
   const F = useCurrentFrame() + from;
   return (
     <AbsoluteFill>
-      {BENEFITS.map(([t, icon, a, b], i) => (
-        <Card key={i} x={80} y={250 + i * 360} w={920} h={310} r={44} style={{display: 'flex', alignItems: 'center', gap: 36, padding: '0 48px', ...rise(F, t - 0.1)}}>
-          <div style={{width: 180, height: 180, borderRadius: 44, background: SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>{icon}</div>
-          <div style={{flex: 1}}>
-            <div style={{fontSize: 40, fontWeight: 500, color: GREY}}>{a}</div>
-            <div style={{fontSize: i === 2 ? 62 : 78, fontWeight: 700, lineHeight: 1.12}}>{b}</div>
-          </div>
-          <div style={{transform: `scale(${pop(F, t + 0.4, 9)})`}}><Check size={90} /></div>
+      {BENEFITS.map(([t, icon, b], i) => (
+        <Card key={i} x={80} y={250 + i * 380} w={920} h={330} r={44} style={{display: 'flex', alignItems: 'center', gap: 44, padding: '0 56px', ...rise(F, t - 0.1)}}>
+          <div style={{width: 200, height: 200, borderRadius: 48, background: SOFT, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>{icon}</div>
+          <div style={{flex: 1, fontSize: 100, fontWeight: 700, lineHeight: 1.1}}>{b}</div>
+          <div style={{transform: `scale(${pop(F, t + 0.4, 9)})`}}><Check size={110} /></div>
         </Card>
       ))}
     </AbsoluteFill>
@@ -754,40 +728,38 @@ const Who = ({from}) => {
   const price = io(F, s(58.3), s(58.6));
   return (
     <AbsoluteFill>
-      <Center top={190}><H size={64} color={GREY} style={rise(F, 55.8)}>तुम्ही आहात…</H></Center>
-      <div style={{...abs(80, 320), width: 920, display: 'flex', justifyContent: 'space-between'}}>
+      <div style={{...abs(80, 250), width: 920, display: 'flex', justifyContent: 'space-between'}}>
         {[[55.95, <Truck key="t" size={230} />, 'डिस्ट्रिब्युटर'], [57.0, <Boxes key="b" size={170} />, 'होलसेलर']].map(([t, ic, l], i) => (
-          <div key={i} style={{width: 440, height: 380, borderRadius: 44, background: '#fff', boxShadow: CARD_SHADOW, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 24,
+          <div key={i} style={{width: 440, height: 400, borderRadius: 44, background: '#fff', boxShadow: CARD_SHADOW, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 24,
             transform: `scale(${pop(F, t)}) rotate(${i ? 2 : -2}deg)`}}>
             <div style={{height: 180, display: 'flex', alignItems: 'center'}}>{ic}</div>
             <div style={{fontSize: 56, fontWeight: 700}}>{l}</div>
           </div>
         ))}
       </div>
-      {/* app + price (shown once) */}
-      <div style={{...abs(80, 780), width: 920, height: 520, borderRadius: 48, background: INK, boxShadow: '0 40px 90px rgba(0,0,0,0.3)', overflow: 'hidden', transform: `scale(${pop(F, 58.15, 12)})`}}>
+      <div style={{...abs(80, 730), width: 920, height: 560, borderRadius: 48, background: INK, boxShadow: '0 40px 90px rgba(0,0,0,0.3)', overflow: 'hidden', transform: `scale(${pop(F, 58.15, 12)})`}}>
         <div style={{...abs(50, 60), display: 'flex', alignItems: 'center', gap: 30}}>
-          <AppIcon size={150} style={{boxShadow: 'none', border: `4px solid ${Y}`}} />
+          <AppIcon size={160} style={{boxShadow: 'none', border: `4px solid ${Y}`}} />
           <div style={{color: '#fff'}}>
-            <div style={{fontSize: 36, color: '#bdb6a6'}}>तुमच्या बिझनेससाठी</div>
-            <div style={{fontSize: 66, fontWeight: 700, lineHeight: 1.1}}>असंच <span style={{color: Y}}>ॲप</span></div>
+            <div style={{fontSize: 54, fontWeight: 700, lineHeight: 1.1, fontFamily: 'Anek, sans-serif'}}>{BRAND_NAME}</div>
+            <div style={{fontSize: 34, color: '#bdb6a6', marginTop: 6}}>रिटेलर ॲप + <span style={{color: Y}}>डॅशबोर्ड</span></div>
           </div>
         </div>
-        <div style={{...abs(50, 280), width: 820, height: 2, background: '#333'}} />
-        <div style={{...abs(50, 310), opacity: price, transform: `translateY(${(1 - price) * 30}px)`}}>
+        <div style={{...abs(50, 300), width: 820, height: 2, background: '#333'}} />
+        <div style={{...abs(50, 330), opacity: price, transform: `translateY(${(1 - price) * 30}px)`}}>
           <div style={{fontSize: 32, fontWeight: 600, color: '#bdb6a6'}}>प्रोजेक्ट खर्च</div>
           <div style={{display: 'flex', alignItems: 'baseline', gap: 18}}>
             <div style={{fontSize: 110, fontWeight: 700, color: Y, lineHeight: 1.1}}>₹{dev(2)} लाख</div>
             <div style={{fontSize: 44, fontWeight: 600, color: '#fff'}}>पासून सुरू</div>
           </div>
         </div>
-        <Twinkle x={830} y={330} size={60} o={price} color={Y} />
+        <Twinkle x={830} y={350} size={60} o={price} color={Y} />
       </div>
     </AbsoluteFill>
   );
 };
 
-// 14. Comment ORDER -> live demo
+// 14. Comment ORDER -> live demo (no heading: the comment box and demo screen tell it)
 const WORD = 'ORDER';
 const Comment = ({from}) => {
   const F = useCurrentFrame() + from;
@@ -796,41 +768,43 @@ const Comment = ({from}) => {
   const caret = Math.floor(F / 8) % 2 && sent < 0.5;
   return (
     <AbsoluteFill>
-      <Center top={180}>
-        <H size={64} color={GREY} style={rise(F, 60.9)}>कमेंटमध्ये लिहा</H>
-        <div style={{marginTop: 10, transform: `scale(${pop(F, 61.95, 9)}) rotate(-3deg)`, background: Y, borderRadius: 30, padding: '18px 60px 4px', boxShadow: '0 10px 0 rgba(217,154,0,0.3)'}}>
-          <div style={{fontSize: 150, fontWeight: 800, letterSpacing: 8, lineHeight: 1, fontFamily: 'Anek, sans-serif'}}>“ORDER”</div>
+      <Card x={70} y={240} w={940} h={560} r={48} style={{...rise(F, 61.0), padding: 40, overflow: 'hidden'}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: 20}}>
+          <InstagramLogo size={80} />
+          <div style={{fontSize: 40, fontWeight: 700}}>Comments</div>
         </div>
-      </Center>
-      {/* Instagram comment sheet */}
-      <Card x={90} y={560} w={900} h={430} r={44} style={{...rise(F, 61.0), padding: 34, overflow: 'hidden'}}>
-        <div style={{display: 'flex', alignItems: 'center', gap: 18}}>
-          <InstagramLogo size={64} />
-          <div style={{fontSize: 32, fontWeight: 700}}>Comments</div>
-        </div>
-        <div style={{display: 'flex', alignItems: 'flex-start', gap: 18, marginTop: 28, opacity: sent, transform: `translateY(${(1 - sent) * 30}px)`}}>
-          <Avatar name="R" size={70} bg={SOFT} />
+        <div style={{display: 'flex', alignItems: 'center', gap: 22, marginTop: 34, opacity: sent, transform: `translateY(${(1 - sent) * 30}px)`}}>
+          <Avatar name="R" size={90} bg={SOFT} />
           <div style={{flex: 1}}>
-            <div style={{fontSize: 24, fontWeight: 700, color: GREY}}>you · आत्ता</div>
-            <div style={{fontSize: 46, fontWeight: 700, letterSpacing: 2, fontFamily: 'Anek, sans-serif'}}>ORDER</div>
+            <div style={{fontSize: 26, fontWeight: 700, color: GREY}}>you · now</div>
+            <div style={{fontSize: 76, fontWeight: 800, letterSpacing: 4, lineHeight: 1.1, fontFamily: 'Anek, sans-serif'}}><span style={{background: Y, borderRadius: 14, padding: '6px 16px 0'}}>ORDER</span></div>
           </div>
-          <div style={{transform: `scale(${pop(F, 63.0, 8)})`}}><Heart size={44} on={F > s(63.0)} /></div>
+          <div style={{transform: `scale(${pop(F, 63.0, 8)})`}}><Heart size={56} on={F > s(63.0)} /></div>
         </div>
-        <div style={{position: 'absolute', left: 34, right: 34, bottom: 30, height: 92, borderRadius: 46, border: `3px solid ${LINE}`, display: 'flex', alignItems: 'center', padding: '6px 16px 0 30px', boxSizing: 'border-box', gap: 10}}>
-          <div style={{flex: 1, fontSize: 40, fontWeight: 700, letterSpacing: 2, fontFamily: 'Anek, sans-serif', color: sent > 0.5 ? '#bbb' : INK}}>
-            {sent > 0.5 ? <span style={{fontSize: 28, fontWeight: 500, letterSpacing: 0, color: '#aaa'}}>Add a comment…</span> : <>{WORD.slice(0, typed)}<span style={{opacity: caret ? 1 : 0, color: '#0095F6'}}>|</span></>}
+        <div style={{position: 'absolute', left: 40, right: 40, bottom: 36, height: 120, borderRadius: 60, border: `4px solid ${typed ? '#0095F6' : LINE}`, display: 'flex', alignItems: 'center', padding: '8px 22px 0 40px', boxSizing: 'border-box', gap: 10}}>
+          <div style={{flex: 1, fontSize: 66, fontWeight: 800, letterSpacing: 4, fontFamily: 'Anek, sans-serif', color: INK}}>
+            {sent > 0.5 ? <span style={{fontSize: 34, fontWeight: 500, letterSpacing: 0, color: '#aaa'}}>Add a comment…</span> : <>{WORD.slice(0, typed)}<span style={{opacity: caret ? 1 : 0, color: '#0095F6'}}>|</span></>}
           </div>
-          <div style={{fontSize: 30, fontWeight: 700, color: '#0095F6', opacity: typed === WORD.length ? 1 : 0.35}}>Post</div>
+          <div style={{fontSize: 38, fontWeight: 700, color: '#0095F6', opacity: typed === WORD.length ? 1 : 0.35}}>Post</div>
         </div>
       </Card>
-      {/* live demo */}
-      <div style={{...abs(90, 1050), width: 900, height: 290, borderRadius: 44, background: INK, display: 'flex', alignItems: 'center', gap: 34, padding: '0 50px', boxSizing: 'border-box',
-        boxShadow: '0 30px 70px rgba(0,0,0,0.28)', transform: `scale(${pop(F, 63.0, 11)})`}}>
-        <div style={{width: 170, height: 170, borderRadius: 40, background: Y, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}><Play size={120} /></div>
-        <div style={{flex: 1}}>
-          <div style={{display: 'flex', alignItems: 'center', gap: 10, fontSize: 28, fontWeight: 700, color: RED}}><div style={{width: 16, height: 16, borderRadius: 8, background: RED, opacity: 0.5 + 0.5 * Math.sin(F / 4)}} />LIVE</div>
-          <div style={{fontSize: 74, fontWeight: 700, color: '#fff', lineHeight: 1.1}}>लाईव्ह <span style={{color: Y}}>डेमो</span></div>
-          <div style={{fontSize: 32, color: '#bdb6a6'}}>आम्ही दाखवू!</div>
+      {/* live demo: a screen-share of the dashboard */}
+      <div style={{...abs(70, 860), width: 940, height: 470, borderRadius: 48, background: INK, padding: 22, boxSizing: 'border-box', boxShadow: '0 30px 70px rgba(0,0,0,0.28)', transform: `scale(${pop(F, 63.0, 11)})`}}>
+        <div style={{position: 'relative', width: '100%', height: '100%', borderRadius: 30, background: '#F4F1EA', overflow: 'hidden', padding: 22, boxSizing: 'border-box', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16}}>
+          {[[GREEN, 0.7], [RED, 0.4], [GOLD, 0.85], [GREEN, 0.55], [GOLD, 0.3], [RED, 0.65]].map(([c, v], i) => (
+            <div key={i} style={{background: '#fff', borderRadius: 18, padding: 16}}>
+              <div style={{width: 70, height: 12, borderRadius: 6, background: '#DDD4C2'}} />
+              <div style={{width: `${v * 100}%`, height: 34, borderRadius: 8, background: c, marginTop: 22, opacity: 0.85}} />
+              <div style={{width: '60%', height: 10, borderRadius: 5, background: '#EEE8DA', marginTop: 16}} />
+            </div>
+          ))}
+          <div style={{position: 'absolute', inset: 0, background: 'rgba(18,18,18,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            <div style={{transform: `scale(${1 + 0.05 * Math.sin(F / 4)})`}}><Play size={170} /></div>
+          </div>
+          <div style={{position: 'absolute', left: 24, top: 22, display: 'flex', alignItems: 'center', gap: 10, background: RED, color: '#fff', borderRadius: 12, padding: '8px 18px 2px', fontSize: 30, fontWeight: 800, letterSpacing: 2}}>
+            <div style={{width: 14, height: 14, borderRadius: 7, background: '#fff', opacity: 0.5 + 0.5 * Math.sin(F / 4), marginTop: -6}} />LIVE
+          </div>
+          <div style={{position: 'absolute', right: 24, bottom: 22}}><AppIcon size={86} style={{boxShadow: 'none', border: `3px solid ${Y}`}} /></div>
         </div>
       </div>
     </AbsoluteFill>
