@@ -18,7 +18,7 @@ API:
          POST /api/uploads/complete {"key","uploadId","parts"}
          POST /api/posts multipart (topic, caption, kind=video, video_key=<key>)
 """
-import argparse, json, mimetypes, os, sys, time, uuid, urllib.parse, urllib.request, urllib.error
+import argparse, hashlib, json, mimetypes, os, re, sys, time, uuid, urllib.parse, urllib.request, urllib.error
 
 BASE = os.environ.get('CONTENT_BASE_URL', 'https://ci.prasannawagh.dev')
 UA = 'TarunUdyojakUploader/1.0'
@@ -72,15 +72,27 @@ def upload_video(path):
     init = call('POST', '/api/uploads', json.dumps({'contentType': ct, 'size': size}).encode(), 'application/json')
     key, uid, psize, pcount = init['key'], init['uploadId'], int(init['partSize']), int(init['partCount'])
     print(f'  upload {os.path.basename(path)}: {size / 1e6:.1f} MB in {pcount} parts')
-    parts = []
+    parts, sent = [], 0
     with open(path, 'rb') as f:
         for n in range(1, pcount + 1):
             chunk = f.read(psize)
             q = urllib.parse.urlencode({'key': key, 'uploadId': uid, 'part': n})
-            r = call('PUT', f'/api/uploads?{q}', chunk, 'application/octet-stream')
+            md5 = hashlib.md5(chunk).hexdigest()
+            for attempt in range(3):  # the server's etag is the MD5 of what it received: check it matches
+                r = call('PUT', f'/api/uploads?{q}', chunk, 'application/octet-stream')
+                et = str(r['etag']).strip('"')
+                if not re.fullmatch(r'[0-9a-f]{32}', et) or et == md5:
+                    break
+                print(f'    part {n}: server checksum {et} != local {md5}, re-sending', file=sys.stderr)
+            else:
+                sys.exit(f'part {n} kept arriving corrupted')
             parts.append({'partNumber': int(r.get('partNumber', n)), 'etag': r['etag']})
-            print(f'    part {n}/{pcount} ok')
-    call('POST', '/api/uploads/complete', json.dumps({'key': key, 'uploadId': uid, 'parts': parts}).encode(), 'application/json')
+            print(f'    part {n}/{pcount} ok ({len(chunk) / 1e6:.1f} MB, md5 verified)')
+            sent += len(chunk)
+    if sent != size:
+        sys.exit(f'sent {sent} bytes but the file has {size}')
+    done = call('POST', '/api/uploads/complete', json.dumps({'key': key, 'uploadId': uid, 'parts': parts}).encode(), 'application/json')
+    print(f'  upload complete: key={key} bytes={sent} reply={json.dumps(done, ensure_ascii=False)}')
     return key
 
 
@@ -106,7 +118,9 @@ def publish(p, root, dry):
     else:
         body, ct = multipart({'topic': p['topic'], 'caption': cap, 'kind': kind}, [('image', mpath)])
     res = call('POST', '/api/posts', body, ct)
-    print('  posted:', json.dumps(res, ensure_ascii=False)[:300])
+    print('  posted:', json.dumps(res, ensure_ascii=False))
+    with open(os.path.join(root, 'post-receipts.jsonl'), 'a', encoding='utf-8') as f:  # keep a record of every publish
+        f.write(json.dumps({'media': media, 'bytes': os.path.getsize(mpath), 'response': res}, ensure_ascii=False) + '\n')
     return res
 
 
