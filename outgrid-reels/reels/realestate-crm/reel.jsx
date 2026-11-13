@@ -161,35 +161,6 @@ const Sheet = () => (
     </div>
   </div>
 );
-const Hook = ({F}) => {
-  const ex = pop(F, 0.25, 13);
-  return (
-    <AbsoluteFill>
-      <div style={{...abs(72, 215), ...up(F, -0.4)}}>
-        <div style={{fontSize: 40, fontWeight: 600, color: MUTED, ...LAT}}>Real Estate Business</div>
-      </div>
-      <div style={{...abs(66, 290)}}>
-        <div style={{fontSize: 136, fontWeight: 700, color: TXT, lineHeight: 1.08, ...LAT, ...up(F, -0.3)}}>अजूनही <span style={{color: '#E9C9A6'}}>डायरी</span></div>
-        <div style={{display: 'flex', alignItems: 'center', gap: 26, fontSize: 136, fontWeight: 700, color: TXT, lineHeight: 1.08, ...LAT, ...up(F, 1.4)}}>
-          <span>आणि</span>
-          <Excel size={128} style={{transform: `scale(${pop(F, 1.6, 10)}) rotate(-6deg)`}} />
-          <span style={{color: '#33C481'}}>Excel</span>
-        </div>
-        <div style={{fontSize: 136, fontWeight: 700, color: TXT, lineHeight: 1.08, ...LAT, ...up(F, 2.4)}}>वर?</div>
-      </div>
-      {/* visual */}
-      <div style={{...abs(90, 900), transform: `rotate(-9deg) translateY(${io(F, 0, s(1), 80, 0)}px)`, opacity: io(F, 0, 10)}}><Diary /></div>
-      <div style={{...abs(410, 960), transform: `rotate(5deg) translateY(${(1 - ex) * 120}px)`, opacity: Math.min(1, ex * 2)}}><Sheet /></div>
-      <div style={{...abs(560, 870), transform: `scale(${pop(F, 2.9, 10)}) rotate(-3deg)`, transformOrigin: '0% 100%'}}>
-        <div style={{display: 'flex', alignItems: 'center', gap: 14, background: '#1A0F10', border: `1.5px solid ${C_RED}66`, borderRadius: 999, padding: '16px 28px 10px 18px', boxShadow: `0 20px 50px rgba(239,68,68,0.25)`}}>
-          <div style={{width: 18, height: 18, borderRadius: 9, background: C_RED, boxShadow: `0 0 14px ${C_RED}`, marginTop: -6}} />
-          <div style={{fontSize: 32, fontWeight: 600, color: '#FCA5A5', ...LAT}}>Follow-up missed</div>
-        </div>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
 /* ---------- 2. Leads from every source -> one dashboard ---------- */
 const SOURCES = [['99acres', (p) => <Acres99 {...p} />, 200], ['Facebook', (p) => <Facebook {...p} />, 540], ['Walk-in', (p) => <WalkIn {...p} />, 880]];
 const LEADS = [
@@ -344,6 +315,131 @@ const I_PIN = <><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21z"
 const I_CHART = <><path d="M4 20V4M4 20h16" /><path d="M8 16v-4M12 16V8M16 16v-6" /></>;
 const I_KEY = <><circle cx="8" cy="15" r="4" /><path d="M11 12l9-9M17 6l3 3M14 9l2 2" /></>;
 const I_BLDG = <><path d="M4 21V5l8-2v18M12 8l8 2v11M3 21h18" /><path d="M7 8h2M7 12h2M7 16h2M15 13h2M15 17h2" /></>;
+
+/* ---------- 1. Hook: hard cuts on the VO beats ---------- */
+// beats (from VO gaps): A 0-1.27 "Real Estate चा Business" · B 1.27-2.50 "अजूनही डायरी आणि" · C 2.50-3.22 "Excel Sheet वर" · D 3.22-4.0 "Manage करताय?"
+const HB = {B: 1.27, C: 2.50, D: 3.22};
+// decaying shake after a slam at t
+const shake = (F, t, amp = 18) => {
+  const k = F - s(t);
+  if (k < 0 || k > 12) return {x: 0, y: 0};
+  const d = amp * Math.exp(-k / 3.5);
+  return {x: Math.sin(k * 2.9) * d, y: Math.cos(k * 3.7) * d * 0.7};
+};
+const slam = (F, t, from = 2.6) => {
+  const p = io(F, s(t), s(t) + 5, 0, 1, Easing.in(Easing.cubic));
+  return {transform: `scale(${from - (from - 1) * p})`, opacity: Math.min(1, p * 3)};
+};
+const Flash = ({F, t}) => <AbsoluteFill style={{background: '#fff', opacity: F >= s(t) ? io(F, s(t), s(t) + 4, 0.85, 0, Easing.linear) : 0, pointerEvents: 'none'}} />;
+const BigWord = ({children, color = TXT, size = 230, style = {}}) => (
+  <div style={{fontSize: size, fontWeight: 800, color, lineHeight: 1, letterSpacing: '-0.03em', whiteSpace: 'nowrap', textShadow: '0 20px 60px rgba(0,0,0,0.6)', ...style}}>{children}</div>
+);
+const NOTIF_A = [
+  [-0.4, (p) => <Acres99 {...p} />, '99acres', 'New enquiry · 2BHK Baner'],
+  [-0.2, (p) => <WhatsApp {...p} />, 'WhatsApp', 'Neha: Site visit कधी?'],
+  [0.05, (p) => <Facebook {...p} />, 'Facebook', 'New lead · Sneha Kulkarni'],
+  [0.3, (p) => <WhatsApp {...p} />, 'WhatsApp', 'Rahul: 3BHK available आहे का?'],
+  [0.52, (p) => <div style={{width: p.size, height: p.size, borderRadius: p.size * 0.24, background: C_RED, display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Ico d={I_PHONE} size={p.size * 0.55} color="#fff" sw={2.4} /></div>, 'Missed call', 'Amit Shinde (3)'],
+  [0.72, (p) => <Acres99 {...p} />, '99acres', 'New enquiry · Plot Wagholi'],
+  [0.92, (p) => <Facebook {...p} />, 'Facebook', 'New lead · Vikas Joshi'],
+  [1.08, (p) => <Facebook {...p} />, 'Facebook', 'New lead · Pooja D.'],
+];
+const StickyN = ({x, y, rot, a, b, c = '#FDE68A'}) => (
+  <div style={{...abs(x, y), width: 300, padding: '26px 24px 18px', background: c, transform: `rotate(${rot}deg)`, boxShadow: '0 18px 30px rgba(0,0,0,0.4)', color: '#3b2f12', fontSize: 36, fontWeight: 600, lineHeight: 1.25}}>
+    {a}<br /><span style={{color: '#B91C1C'}}>{b}</span>
+  </div>
+);
+const ALERTS = [[3.30, 'Follow-up missed', 120, 560, -6], [3.45, 'Duplicate lead', 600, 700, 5], [3.60, 'Lead lost', 300, 1330, 4]];
+const Hook = ({F}) => {
+  const f = F;
+  const inA = f < s(HB.B), inB = f >= s(HB.B) && f < s(HB.C), inC = f >= s(HB.C) && f < s(HB.D), inD = f >= s(HB.D);
+  const n = NOTIF_A.filter(([t]) => f >= s(t)).length;
+  const vib = Math.sin(f * 3.1) * 5;
+  const shB = shake(f, 1.72), shC = shake(f, 2.55, 22), shD = shake(f, 3.22, 14);
+  return (
+    <AbsoluteFill style={{overflow: 'hidden'}}>
+      {inA && (
+        <AbsoluteFill style={{transform: `scale(${1 + 0.1 * io(f, 0, s(HB.B), 0, 1, Easing.linear)})`}}>
+          <div style={{...abs(0, 200), width: 1080, textAlign: 'center'}}>
+            <div style={{fontSize: 96, fontWeight: 800, color: TXT, letterSpacing: '-0.03em', lineHeight: 1}}>Real Estate</div>
+            <div style={{fontSize: 96, fontWeight: 800, color: Y, letterSpacing: '-0.03em', lineHeight: 1.05, opacity: f >= s(0.55) ? 1 : 0}}>Business</div>
+          </div>
+          {/* phone flooding with leads */}
+          <div style={{...abs(170, 470), width: 740, height: 1150, borderRadius: 90, background: '#1d1d1f', border: '3px solid #3a3a3d', padding: 16, boxSizing: 'border-box', transform: `translateX(${vib}px) rotate(${vib * 0.15}deg)`,
+            boxShadow: `0 60px 120px rgba(0,0,0,0.7), 0 0 0 ${n % 2 ? 6 : 0}px ${Y}22`}}>
+            <div style={{width: '100%', height: '100%', borderRadius: 76, overflow: 'hidden', background: 'linear-gradient(160deg, #1f2937, #0b0b0c)', position: 'relative'}}>
+              <div style={{...abs('50%', 20), marginLeft: -70, width: 140, height: 38, borderRadius: 19, background: '#000'}} />
+              <div style={{position: 'absolute', left: 22, right: 22, top: 90, display: 'flex', flexDirection: 'column', gap: 14}}>
+                {NOTIF_A.slice(0, n).reverse().map(([t, L, app, msg], i) => {
+                  const p = io(f, s(t), s(t) + 5);
+                  return (
+                    <div key={t} style={{display: 'flex', alignItems: 'center', gap: 18, padding: '20px 22px', borderRadius: 30, background: 'rgba(60,60,66,0.85)', border: `1.5px solid ${LINE}`,
+                      transform: `translateY(${(1 - p) * -60}px) scale(${0.92 + 0.08 * p})`, opacity: p}}>
+                      {L({size: 70})}
+                      <div style={{flex: 1, minWidth: 0}}>
+                        <div style={{display: 'flex', justifyContent: 'space-between', fontSize: 22, fontWeight: 600, color: MUTED, ...LAT}}><span>{app}</span><span>now</span></div>
+                        <div style={{fontSize: 29, fontWeight: 600, color: TXT, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', ...LAT}}>{msg}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+          <div style={{...abs(800, 420), transform: `scale(${f < 3 ? 1 : pop(f, -0.3, 9)})`}}>
+            <div style={{minWidth: 120, height: 120, borderRadius: 60, background: C_RED, color: '#fff', fontSize: 58, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '8px 22px 0', boxSizing: 'border-box',
+              border: `6px solid ${BG}`, boxShadow: `0 0 40px ${C_RED}88`, ...LAT}}>{Math.round(io(f, 0, s(1.2), 12, 128, Easing.out(Easing.quad)))}</div>
+          </div>
+        </AbsoluteFill>
+      )}
+      {inB && (
+        <AbsoluteFill style={{transform: `translate(${shB.x}px, ${shB.y}px)`}}>
+          <AbsoluteFill style={{background: 'radial-gradient(900px 900px at 50% 60%, rgba(233,201,166,0.16), transparent 70%)'}} />
+          <div style={{...abs(170, 790), transform: `rotate(-7deg) scale(${1.5 + 0.06 * io(f, s(HB.B), s(HB.C), 0, 1, Easing.linear)})`, transformOrigin: '50% 50%'}}>
+            <div style={{transform: `translateY(${io(f, s(HB.B), s(HB.B) + 6, -900, 0, Easing.in(Easing.cubic))}px)`}}><Diary /></div>
+          </div>
+          <StickyN x={560} y={1150} rot={8} a="Sneha · Sat visit" b="confirm??" c="#BFDBFE" />
+          <div style={{...abs(0, 250), width: 1080, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <div style={{fontSize: 80, fontWeight: 700, color: MUTED, letterSpacing: '-0.02em', opacity: io(f, s(HB.B), s(HB.B) + 4)}}>अजूनही</div>
+            <BigWord color="#E9C9A6" style={{marginTop: 40, ...slam(f, 1.72)}}>डायरी?</BigWord>
+          </div>
+        </AbsoluteFill>
+      )}
+      {inC && (
+        <AbsoluteFill style={{transform: `translate(${shC.x}px, ${shC.y}px)`}}>
+          <AbsoluteFill style={{background: 'radial-gradient(900px 900px at 50% 55%, rgba(16,124,65,0.35), transparent 70%)'}} />
+          <div style={{...abs(-80, 640), transform: `rotate(-8deg) scale(${1.75 + 0.08 * io(f, s(HB.C), s(HB.D), 0, 1, Easing.linear)})`, transformOrigin: '50% 0%', opacity: 0.95}}>
+            <div style={{...abs(0, 0), width: 1240}}><Sheet /></div>
+          </div>
+          <div style={{...abs(540 - 150, 420), ...slam(f, 2.55, 3.2)}}><Excel size={300} style={{filter: 'drop-shadow(0 30px 60px rgba(0,0,0,0.6))'}} /></div>
+          <div style={{...abs(0, 170), width: 1080, display: 'flex', justifyContent: 'center'}}>
+            <BigWord color="#33C481" size={190} style={slam(f, 2.62)}>Excel?</BigWord>
+          </div>
+        </AbsoluteFill>
+      )}
+      {inD && (
+        <AbsoluteFill style={{transform: `translate(${shD.x}px, ${shD.y}px)`}}>
+          <AbsoluteFill style={{background: 'radial-gradient(1000px 1000px at 50% 50%, rgba(239,68,68,0.16), transparent 70%)'}} />
+          <div style={{...abs(40, 760), transform: `rotate(-12deg) scale(${pop(f, HB.D, 14)})`}}><div style={{transform: 'scale(0.8)', transformOrigin: '0 0'}}><Diary /></div></div>
+          <div style={{...abs(430, 840), transform: `rotate(7deg) scale(${pop(f, HB.D + 0.05, 14) * 0.85})`, transformOrigin: '0 0'}}><Sheet /></div>
+          {ALERTS.map(([t, txt, x, y, r], i) => (
+            <div key={i} style={{...abs(x, y), transform: `rotate(${r}deg) scale(${pop(f, t, 9)})`}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: 14, background: '#1A0F10', border: `2px solid ${C_RED}88`, borderRadius: 999, padding: '18px 30px 12px 20px', boxShadow: `0 20px 50px rgba(239,68,68,0.35)`}}>
+                <div style={{width: 20, height: 20, borderRadius: 10, background: C_RED, boxShadow: `0 0 14px ${C_RED}`, marginTop: -6}} />
+                <div style={{fontSize: 38, fontWeight: 700, color: '#FCA5A5', ...LAT}}>{txt}</div>
+              </div>
+            </div>
+          ))}
+          <div style={{...abs(0, 230), width: 1080, display: 'flex', flexDirection: 'column', alignItems: 'center', ...slam(f, HB.D, 1.8)}}>
+            <BigWord size={150}>Manage</BigWord>
+            <BigWord size={150} style={{marginTop: 10}}>करताय<span style={{color: Y, display: 'inline-block', transform: `rotate(${Math.sin(f / 3) * 8}deg)`}}>?</span></BigWord>
+          </div>
+        </AbsoluteFill>
+      )}
+      <Flash F={f} t={HB.B} /><Flash F={f} t={HB.C} /><Flash F={f} t={HB.D} />
+    </AbsoluteFill>
+  );
+};
 
 /* ---------- 2. Sources: leads scattered in 3 silos ---------- */
 const SILOS = [
@@ -775,7 +871,7 @@ const Video = () => {
         const Comp = COMPS[k];
         return (
           <Sequence key={k} from={s(a)} durationInFrames={s(b) - s(a)}>
-            <SceneFade dur={s(b) - s(a)}><Comp F={f} /></SceneFade>
+            <SceneFade dur={s(b) - s(a)} first={a === 0}><Comp F={f} /></SceneFade>
           </Sequence>
         );
       })}
@@ -785,9 +881,9 @@ const Video = () => {
     </AbsoluteFill>
   );
 };
-const SceneFade = ({dur, children}) => {
+const SceneFade = ({dur, first, children}) => {
   const f = useCurrentFrame();
-  return <AbsoluteFill style={{opacity: Math.min(io(f, 0, 8), io(f, dur - 6, dur, 1, 0))}}>{children}</AbsoluteFill>;
+  return <AbsoluteFill style={{opacity: Math.min(first ? 1 : io(f, 0, 8), io(f, dur - 6, dur, 1, 0))}}>{children}</AbsoluteFill>;
 };
 const Root = () => <Composition id="Reel" component={Video} durationInFrames={TOTAL} fps={FPS} width={1080} height={1920} />;
 registerRoot(Root);
