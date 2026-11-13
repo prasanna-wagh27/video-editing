@@ -20,7 +20,10 @@ outgrid-reels/
   shared/kit.jsx                         brand, fonts, helpers, captions, HUD, transitions, chat mockups, icons, ReelVideo, BrandOutro
   shared/fonts/                          AnekDevanagari.ttf (default), Baloo2.ttf
   shared/brand/outgrid-brand-sheet.png   logo reference (mark + lockups, @outgridlabs)
-  shared/templates/starter-reel.jsx      start every new reel from this (uses the kit)
+  shared/templates/starter-reel.jsx      start every new reel from this (uses the kit), light cream style
+  shared/lean.jsx                        LEAN style kit (dark, premium): tokens, Glass, Chip, Alert, icons, real logos, TextHook, LeanVideo, LeanOutro
+  shared/templates/lean-reel.jsx         starter for the lean style (STYLE=lean scripts/new_reel.sh …)
+  shared/logos/                          real logo SVGs (99acres, Excel); reels link it as public/logos
   shared/templates/food-app-reel.jsx     original single-file reel (7 scenes) — scene ideas
   scripts/                               new_reel.sh, vo_pauses.sh, qa_stills.sh, render_encode.sh, find_browser.sh
   reels/<name>/                          reel.jsx, script.txt, public/vo.mp3, public/fonts -> ../../../shared/fonts, out/*.mp4
@@ -30,7 +33,7 @@ Run every script **from `outgrid-reels/`**. Finished example: `reels/clinic-what
 
 | Script | What it does |
 |---|---|
-| `scripts/new_reel.sh <name> voice.mp3 [script.txt]` | Creates `reels/<name>/` from the starter, copies the VO, links fonts, prints VO pauses |
+| `[STYLE=lean] scripts/new_reel.sh <name> voice.mp3 [script.txt]` | Creates `reels/<name>/` from the starter (lean: dark template + logos link), copies the VO, links fonts, prints VO pauses |
 | `scripts/vo_pauses.sh voice.mp3 [noise_dB=-30] [min_pause_s=0.18]` | Speech segments between pauses as `[start, end],` lines |
 | `scripts/qa_stills.sh reels/<name> '<props>' f1 f2 …` | Renders frames → `reels/<name>/stills/sheet.jpg` |
 | `scripts/render_encode.sh reels/<name> <out_name> ['<props>'] [secs…]` | Chunked render (with retries) → VO mux → H.264/AAC faststart → ffprobe + volumedetect → check sheet |
@@ -46,11 +49,12 @@ First time on a machine: `cd outgrid-reels && npm i --no-audit --no-fund`.
 |---|---|---|
 | Script text | — (required) | Save as `reels/<name>/script.txt`. Split into spoken phrases → caption segments. |
 | Voiceover audio | none → silent with captions | No VO: time captions at ~2.5 words/s. |
-| Style references | the Outgrid light style (cream + yellow) | Images: palette, type, card shapes. Video: `ffmpeg -i ref.mp4 -vf "select='gt(scene,0.3)',scale=540:-1" -vsync vfr stills/ref_%02d.jpg` |
+| Style | **lean** (dark, `shared/lean.jsx`) for new reels unless the user asks for the light cream style | Lean = §6.7. |
+| Style references | the user's images/video if given | Images: palette, type, card shapes. Video: `ffmpeg -i ref.mp4 -vf "select='gt(scene,0.3)',scale=540:-1" -vsync vfr stills/ref_%02d.jpg` |
 | Aspect | 9:16, 1080×1920, 30 fps | All layout numbers assume 1080×1920. |
 | Font | **Anek Devanagari for everything** (user's choice), including Latin and the brand lockup | Baloo 2 available via `--props='{"font":"baloo"}'` |
 | Branding | **Outgrid Labs** watermark + `@outgridlabs` + brand outro (already in the kit) | Don't invent other brands; client names in mockups are generic ("Your Clinic") unless the user gives one. |
-| Third-party brand logos (WhatsApp, Google, Instagram…) | words + generic drawn icons, no logos | Ask before downloading real logos (§6.4). |
+| Third-party brand logos (WhatsApp, 99acres, Excel, Facebook…) | **real logos** (the user asks for them every time) | Sources in §6.4. Never emoji. |
 
 Script hygiene: keep the user's wording. Only change what they ask for; fix obvious typos only.
 
@@ -166,8 +170,9 @@ Keep a few dark elements for contrast (phone bezel, night panel, dark CTA pill, 
 `<Hi t={sec}>` = yellow pill rotated −2° that **sweeps in like a highlighter** at second `t` (no `t` = static). In captions, consecutive `*highlight*` words share one pill (grouped with `reduce`).
 
 ### 6.4 Third-party brands and logos
-- Default: say the brand as words ("WhatsApp"), draw generic icons (chat bubble, magnifier), no logos.
-- Real logos only with permission: name the file and source (Wikimedia Commons), send a User-Agent, preview on grey, crop the icon, render with `<Img src={staticFile('logos/x.png')}/>` inside a rounded `overflow:hidden` tile. Mention trademark permission once.
+- Use **real logos**. Glyphs: `npm pack simple-icons@13.21.0` (CC0 paths; WhatsApp, Instagram, Facebook are in `kit.jsx` / `lean.jsx`). Brands missing there (Microsoft apps, Indian brands like 99acres, Blinkit): `gh api -X GET search/code -f q='filename:<brand> extension:svg'`, fetch from raw.githubusercontent.com (jsdelivr / wikimedia are blocked by the proxy), preview on grey with Playwright, prefer the **current** logo version (ask if several exist).
+- Save reusable SVGs in `shared/logos/` (lean reels see them as `staticFile('logos/x.svg')`); render white-glyph logos on their brand tile, transparent ones on a white tile.
+- Logos are trademarks of their owners: fine to show the tool, never imply endorsement.
 
 ### 6.5 Motion vocabulary (kit)
 - `io(f, a, b, from, to, easing)` clamped interpolate (expo-out). `rise(F, t)` fade + 40 px slide up. `pop(F, t, damping)` spring 0→1.
@@ -182,6 +187,16 @@ Keep a few dark elements for contrast (phone bezel, night panel, dark CTA pill, 
 - If the user supplies an official SVG/font, replace `MARK_D` / the `BRAND` style in the kit.
 
 ---
+
+### 6.7 Lean style (default for new reels): `shared/lean.jsx` + `shared/templates/lean-reel.jsx`
+Reference: `reels/realestate-crm` (v1 = the approved hook style). The user called the earlier light reels "too bulky"; lean fixes that.
+- **Look**: near-black `#0A0A0B` + yellow/blue corner glows + masked 60 px grid; glass cards (`Glass`), status `Chip`s (green/blue/orange/red only for meaning), Outgrid yellow as the single accent. Latin text gets `LAT` (−0.02em). White watermark, thin yellow progress bar on top, dark `LeanOutro` with a `Comment “X”` chip.
+- **One hero visual per scene**: a product UI (dashboard, chat, notifications, report), drawn crisp. Few elements, big type, generous margins.
+- **Hook (first scene) = text hook**, via `TextHook`: muted eyebrow + 2–3 huge lines (136 px) revealed on the VO beats, a **real logo inline** in one line, ONE hero visual below (tilted, slides up from frame 0) and ONE red `Alert` chip. **Content on screen at frame 0** (first scene has no fade-in) and **no subtitles during the hook** (`chunks.filter(c => c.a >= s(HOOK_END))`). Do NOT use the fast beat-cut/flash/shake hook unless asked (the user preferred the text hook).
+- **No sentence headings after the hook**: subtitles carry the spoken words. On-screen text only for numbers, labels inside UI, keywords, chips, stamps. Never repeat the subtitle line as a heading.
+- **Subtitles**: `LeanCaptions`, 64 px white at y 1420, `*word*` glows yellow (no pills).
+- Every scene component gets `F` = absolute frame; times in seconds from the VO (`up(F, t)`, `pop(F, t)`).
+- Invented UI data (names, localities, counts, prices) must look plausible and be listed for the user to confirm.
 
 ## 7. QA stills before the full render
 
