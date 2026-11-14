@@ -421,7 +421,7 @@ const Users = ({F}) => (
 /* ---------- 9. Products fly into the cart ---------- */
 const PRODS = [[17.16, CementBag, 'Cement', 'OPC 53 · 50 kg', 385], [17.43, Tiles, 'Tiles', '2×2 ft · box', 640], [18.51, PaintBucket, 'Paint', '20 L emulsion', 3150], [19.05, Plywood, 'Plywood', '18 mm · 8×4', 2280]];
 const Products = ({F}) => {
-  const inCart = io(F, s(19.9), s(20.4), 0, 1, Easing.in(Easing.cubic));
+  const inCart = io(F, s(19.55), s(19.95), 0, 1, Easing.in(Easing.cubic));
   return (
     <AbsoluteFill>
       <div style={{...abs(90, 250), width: 900, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24}}>
@@ -437,9 +437,9 @@ const Products = ({F}) => {
         ))}
       </div>
       <div style={{...abs(340, 1180), width: 400, height: 150, borderRadius: 40, background: HR_B, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, color: '#fff', fontSize: 40, fontWeight: 800,
-        transform: `scale(${pop(F, 19.6, 11) * (1 + 0.1 * io(F, s(20.3), s(20.45)) * io(F, s(20.45), s(20.6), 1, 0))})`, boxShadow: `0 20px 50px ${HR_B}55`, ...LAT}}>
+        transform: `scale(${pop(F, 19.3, 11) * (1 + 0.1 * io(F, s(19.9), s(20.0)) * io(F, s(20.0), s(20.15), 1, 0))})`, boxShadow: `0 20px 50px ${HR_B}55`, ...LAT}}>
         <svg viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h2l2.5 11h11L21 7H7" /><circle cx="9" cy="19" r="1.6" /><circle cx="17" cy="19" r="1.6" /></svg>
-        Cart · {F >= s(20.4) ? 4 : 0}
+        Cart · {F >= s(19.95) ? 4 : 0}
       </div>
     </AbsoluteFill>
   );
