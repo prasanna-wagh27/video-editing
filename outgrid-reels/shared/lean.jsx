@@ -9,17 +9,34 @@
  *    numbers, labels inside UI, keywords, chips.
  *  - Glass cards on near-black, Outgrid yellow as the single accent, status colors only for meaning.
  *  - Real logos (simple-icons glyphs or SVGs in shared/logos), never emoji.
+ *  - theme='light' on LeanVideo = cream background of the earlier reels; use GOLD_T (not Y) for yellow text/chips there.
  */
 import React from 'react';
 import {AbsoluteFill, Sequence, Audio, Img, staticFile, useCurrentFrame, Easing} from 'remotion';
 import {s, io, pop, abs, Y, Mark, BRAND, WA_D, IG_D} from './kit.jsx';
 
 /* ---------- tokens ---------- */
-const BG = '#0A0A0B';
-const TXT = '#F5F5F2';
-const MUTED = 'rgba(245,245,242,0.52)';
-const LINE = 'rgba(255,255,255,0.09)';
-const GLASS = 'linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.03))';
+// Two themes share every component: tokens are CSS variables that LeanVideo sets on the root.
+// dark = original lean look; light = the cream background of the earlier reels with white cards.
+const THEMES = {
+  dark: {bg: '#0A0A0B', txt: '#F5F5F2', muted: 'rgba(245,245,242,0.52)', line: 'rgba(255,255,255,0.09)', faint: 'rgba(245,245,242,0.28)',
+    glass: 'linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.03))', shadow: '0 40px 80px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)',
+    avatar: 'linear-gradient(135deg, #2A2A2F, #1A1A1D)', alertbg: '#1A0F10', alerttxt: '#FCA5A5', ink: '#FFFFFF', grid: 'rgba(255,255,255,0.035)',
+    glowA: 'rgba(255,197,46,0.16)', glowB: 'rgba(59,130,246,0.10)'},
+  light: {bg: '#F7F3EA', txt: '#121212', muted: 'rgba(18,18,18,0.56)', line: 'rgba(18,18,18,0.08)', faint: 'rgba(18,18,18,0.26)',
+    glass: 'linear-gradient(180deg, #FFFFFF, #FCFAF5)', shadow: '0 24px 60px rgba(60,45,10,0.10), 0 2px 0 rgba(0,0,0,0.03)',
+    avatar: 'linear-gradient(135deg, #F1ECE1, #E4DCCB)', alertbg: '#FFF1F1', alerttxt: '#C81E1E', ink: '#121212', grid: 'rgba(0,0,0,0.045)',
+    glowA: 'rgba(255,197,46,0.30)', glowB: 'rgba(255,197,46,0.20)'},
+};
+const ThemeCtx = React.createContext(THEMES.dark);
+const useTheme = () => React.useContext(ThemeCtx);
+const themeVars = (t) => Object.fromEntries(Object.entries(t).map(([k, v]) => [`--l-${k}`, v]));
+const BG = '#0A0A0B'; // ink on yellow (glyphs, CTA text): same in both themes
+const TXT = 'var(--l-txt)';
+const MUTED = 'var(--l-muted)';
+const LINE = 'var(--l-line)';
+const GLASS = 'var(--l-glass)';
+const GOLD_T = '#B77F00'; // yellow as text/stroke on the light theme (Y is invisible on cream)
 const C_GREEN = '#22C55E', C_BLUE = '#3B82F6', C_ORANGE = '#F59E0B', C_RED = '#EF4444';
 const LAT = {letterSpacing: '-0.02em'}; // tighter Latin, Anek runs loose at display sizes
 // fade + slide up at second t (d frames, y px)
@@ -28,7 +45,7 @@ const up = (F, t, d = 16, y = 36) => ({opacity: io(F, s(t), s(t) + d), transform
 /* ---------- surfaces ---------- */
 const Glass = ({x, y, w, h, r = 36, style = {}, children}) => (
   <div style={{...abs(x, y), width: w, height: h, borderRadius: r, background: GLASS, border: `1.5px solid ${LINE}`, boxSizing: 'border-box',
-    boxShadow: '0 40px 80px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)', backdropFilter: 'blur(20px)', ...style}}>{children}</div>
+    boxShadow: 'var(--l-shadow)', backdropFilter: 'blur(20px)', ...style}}>{children}</div>
 );
 // status chip: tinted pill with a dot
 const Chip = ({children, color = C_GREEN, size = 24, style = {}}) => (
@@ -39,14 +56,14 @@ const Chip = ({children, color = C_GREEN, size = 24, style = {}}) => (
 );
 // glowing red alert pill (hook / pain points)
 const Alert = ({children, size = 32, style = {}}) => (
-  <div style={{display: 'flex', alignItems: 'center', gap: 14, background: '#1A0F10', border: `1.5px solid ${C_RED}66`, borderRadius: 999, padding: '16px 28px 10px 18px',
+  <div style={{display: 'flex', alignItems: 'center', gap: 14, background: 'var(--l-alertbg)', border: `1.5px solid ${C_RED}66`, borderRadius: 999, padding: '16px 28px 10px 18px',
     boxShadow: '0 20px 50px rgba(239,68,68,0.25)', ...style}}>
     <div style={{width: size * 0.56, height: size * 0.56, borderRadius: '50%', background: C_RED, boxShadow: `0 0 14px ${C_RED}`, marginTop: -6}} />
-    <div style={{fontSize: size, fontWeight: 600, color: '#FCA5A5', whiteSpace: 'nowrap', ...LAT}}>{children}</div>
+    <div style={{fontSize: size, fontWeight: 600, color: 'var(--l-alerttxt)', whiteSpace: 'nowrap', ...LAT}}>{children}</div>
   </div>
 );
 // initials avatar
-const Ini = ({t, size = 48, bg = 'linear-gradient(135deg, #2A2A2F, #1A1A1D)', color = TXT}) => (
+const Ini = ({t, size = 48, bg = 'var(--l-avatar)', color = TXT}) => (
   <div style={{width: size, height: size, borderRadius: size / 2, background: bg, border: `1.5px solid ${LINE}`, color, fontSize: size * 0.36, fontWeight: 600, flexShrink: 0,
     display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: size * 0.06, boxSizing: 'border-box', ...LAT}}>{t}</div>
 );
@@ -124,26 +141,33 @@ const TextHook = ({F, eyebrow, lines, visual, alert, size = 136, top = 290}) => 
 );
 
 /* ---------- chrome ---------- */
-const LeanBg = ({f}) => (
-  <AbsoluteFill style={{background: BG}}>
-    <AbsoluteFill style={{background: `radial-gradient(900px 700px at ${20 + Math.sin(f / 90) * 6}% 8%, rgba(255,197,46,0.16), transparent 60%), radial-gradient(800px 800px at 95% 85%, rgba(59,130,246,0.10), transparent 60%)`}} />
-    <AbsoluteFill style={{backgroundImage: 'linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)',
-      backgroundSize: '60px 60px', maskImage: 'radial-gradient(ellipse 80% 60% at 50% 40%, #000 30%, transparent 80%)', WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 40%, #000 30%, transparent 80%)'}} />
-  </AbsoluteFill>
-);
-const LeanWatermark = () => (
-  <div style={{...abs(60, 92), display: 'flex', alignItems: 'center', gap: 14, opacity: 0.9}}>
-    <Mark size={44} color="#fff" />
-    <div style={{...BRAND, fontSize: 28, fontWeight: 600, color: '#fff', letterSpacing: '-0.01em'}}>Outgrid Labs</div>
-  </div>
-);
+const LeanBg = ({f}) => {
+  const t = useTheme();
+  return (
+    <AbsoluteFill style={{background: t.bg}}>
+      <AbsoluteFill style={{background: `radial-gradient(900px 700px at ${20 + Math.sin(f / 90) * 6}% 8%, ${t.glowA}, transparent 60%), radial-gradient(800px 800px at 95% 85%, ${t.glowB}, transparent 60%)`}} />
+      <AbsoluteFill style={{backgroundImage: `linear-gradient(${t.grid} 1px, transparent 1px), linear-gradient(90deg, ${t.grid} 1px, transparent 1px)`,
+        backgroundSize: '60px 60px', maskImage: 'radial-gradient(ellipse 80% 60% at 50% 40%, #000 30%, transparent 80%)', WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 40%, #000 30%, transparent 80%)'}} />
+    </AbsoluteFill>
+  );
+};
+const LeanWatermark = () => {
+  const t = useTheme();
+  return (
+    <div style={{...abs(60, 92), display: 'flex', alignItems: 'center', gap: 14, opacity: 0.9}}>
+      <Mark size={44} color={t.ink} />
+      <div style={{...BRAND, fontSize: 28, fontWeight: 600, color: t.ink, letterSpacing: '-0.01em'}}>Outgrid Labs</div>
+    </div>
+  );
+};
 const Progress = ({f, total}) => (
-  <div style={{...abs(0, 0), width: 1080, height: 6, background: 'rgba(255,255,255,0.06)'}}>
+  <div style={{...abs(0, 0), width: 1080, height: 6, background: 'var(--l-line)'}}>
     <div style={{height: '100%', width: `${(f / total) * 100}%`, background: Y, boxShadow: `0 0 16px ${Y}`}} />
   </div>
 );
-// karaoke subtitles: white words, *highlight* words glow yellow; no pills
+// karaoke subtitles: *highlight* words glow yellow (dark) or get a yellow marker stroke (light); no pills
 const LeanCaptions = ({f, chunks}) => {
+  const light = useTheme() === THEMES.light;
   const c = chunks.find((k) => f >= k.a && f < k.b);
   if (!c) return null;
   const op = Math.min(io(f, c.a, c.a + 4), io(f, c.b - 4, c.b, 1, 0));
@@ -152,8 +176,9 @@ const LeanCaptions = ({f, chunks}) => {
       {c.words.map((w, i) => {
         const on = f >= w.t, p = io(f, w.t, w.t + 5);
         return (
-          <span key={i} style={{fontSize: 64, fontWeight: 600, lineHeight: 1.3, ...LAT, color: !on ? 'rgba(245,245,242,0.28)' : w.hi ? Y : TXT,
-            textShadow: on && w.hi ? '0 0 24px rgba(255,197,46,0.45)' : 'none', transform: `translateY(${(1 - p) * 8}px)`}}>{w.w}</span>
+          <span key={i} style={{fontSize: 64, fontWeight: 600, lineHeight: 1.3, ...LAT, color: !on ? 'var(--l-faint)' : w.hi && !light ? Y : TXT,
+            textShadow: on && w.hi && !light ? '0 0 24px rgba(255,197,46,0.45)' : 'none', transform: `translateY(${(1 - p) * 8}px)`,
+            ...(light && w.hi ? {background: `linear-gradient(transparent 58%, ${Y} 58%, ${Y} 90%, transparent 90%) no-repeat left / ${io(f, w.t, w.t + 6) * 100}% 100%`, padding: '0 4px'} : {})}}>{w.w}</span>
         );
       })}
     </div>
@@ -167,15 +192,16 @@ const SceneFade = ({dur, first, children}) => {
 
 /* ---------- outro ---------- */
 const LeanOutro = ({F, at, cta}) => {
+  const t = useTheme();
   const m = pop(F, at + 0.05, 11);
   const w = io(F, s(at + 0.3), s(at + 0.7));
   const bar = io(F, s(at + 0.6), s(at + 1.0), 0, 1, Easing.inOut(Easing.quad));
   return (
     <AbsoluteFill>
       <div style={{...abs(240, 300), width: 600, height: 600, borderRadius: '50%', background: `radial-gradient(closest-side, ${Y}40, transparent)`, filter: 'blur(30px)', opacity: m}} />
-      <div style={{...abs(540 - 140, 460), transform: `scale(${m}) rotate(${(1 - m) * -90}deg)`, filter: `drop-shadow(0 0 40px ${Y}66)`}}><Mark size={280} color="#fff" /></div>
+      <div style={{...abs(540 - 140, 460), transform: `scale(${m}) rotate(${(1 - m) * -90}deg)`, filter: `drop-shadow(0 0 40px ${Y}66)`}}><Mark size={280} color={t.ink} /></div>
       <div style={{...abs(0, 820), width: 1080, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <div style={{...BRAND, fontSize: 128, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', opacity: w, transform: `translateY(${(1 - w) * 40}px)`}}>Outgrid Labs</div>
+        <div style={{...BRAND, fontSize: 128, fontWeight: 700, color: t.ink, letterSpacing: '-0.02em', opacity: w, transform: `translateY(${(1 - w) * 40}px)`}}>Outgrid Labs</div>
         <div style={{width: 200 * bar, height: 12, borderRadius: 6, background: Y, marginTop: 30, boxShadow: `0 0 20px ${Y}`}} />
         <div style={{...BRAND, fontSize: 44, fontWeight: 500, color: MUTED, marginTop: 34, ...up(F, at + 0.9, 12, 20)}}>@outgridlabs</div>
         {cta && <div style={{marginTop: 50, ...up(F, at + 1.2, 12, 20), background: Y, borderRadius: 999, padding: '18px 40px 12px', fontSize: 44, fontWeight: 700, color: BG, ...LAT}}>{cta}</div>}
@@ -187,10 +213,13 @@ const LeanOutro = ({F, at, cta}) => {
 /* ---------- the whole reel ---------- */
 // scenes: [[key, fromSec, toSec], ...] (cuts inside VO pauses); comps: {key: Component({F})} where F = absolute frame
 // chunks: buildChunks(SEGS) filtered to skip the hook; outroAt: second the outro starts (watermark hides)
-const LeanVideo = ({scenes, comps, chunks, total, outroAt = Infinity, vo = 'vo.mp3'}) => {
+// theme: 'dark' | 'light'
+const LeanVideo = ({scenes, comps, chunks, total, outroAt = Infinity, vo = 'vo.mp3', theme = 'dark'}) => {
   const f = useCurrentFrame();
+  const t = THEMES[theme];
   return (
-    <AbsoluteFill style={{fontFamily: 'Anek, sans-serif', color: TXT}}>
+    <ThemeCtx.Provider value={t}>
+    <AbsoluteFill style={{fontFamily: 'Anek, sans-serif', color: TXT, ...themeVars(t)}}>
       <LeanBg f={f} />
       {vo && <Audio src={staticFile(vo)} />}
       {scenes.map(([k, a, b]) => {
@@ -205,11 +234,12 @@ const LeanVideo = ({scenes, comps, chunks, total, outroAt = Infinity, vo = 'vo.m
       <Progress f={f} total={total} />
       <LeanCaptions f={f} chunks={chunks} />
     </AbsoluteFill>
+    </ThemeCtx.Provider>
   );
 };
 
 export {
-  BG, TXT, MUTED, LINE, GLASS, C_GREEN, C_BLUE, C_ORANGE, C_RED, LAT, up,
+  THEMES, ThemeCtx, useTheme, BG, TXT, MUTED, LINE, GLASS, GOLD_T, C_GREEN, C_BLUE, C_ORANGE, C_RED, LAT, up,
   Glass, Chip, Alert, Ini, AppIcon, Ico, Tick, Bolt, DoubleTick,
   I_LOCK, I_BELL, I_CAL, I_PHONE, I_DL, I_GRID, I_USERS, I_PIN, I_CHART, I_KEY, I_BLDG,
   LogoImg, FB_D, WhatsApp, Facebook, Instagram, Excel, Acres99,
