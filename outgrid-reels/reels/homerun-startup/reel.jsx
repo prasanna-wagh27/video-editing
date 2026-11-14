@@ -7,25 +7,39 @@
  */
 import React from 'react';
 import {registerRoot, Composition, AbsoluteFill, Img, staticFile, Easing} from 'remotion';
-import {FPS, s, io, pop, abs, Y, Mark} from '../../shared/kit.jsx';
+import {FPS, s as sF, io, pop as popF, abs, Y, Mark} from '../../shared/kit.jsx';
 import {
-  BG, TXT, MUTED, LINE, GOLD_T, C_GREEN, C_BLUE, C_ORANGE, C_RED, LAT, up,
+  BG, TXT, MUTED, LINE, GOLD_T, C_GREEN, C_BLUE, C_ORANGE, C_RED, LAT, up as upF,
   Glass, Chip, Alert, Ini, Ico, Tick, Bolt, I_PIN, I_CHART, I_USERS, I_PHONE, I_CAL,
   Instagram, WhatsApp, LogoImg, LeanOutro, LeanVideo,
 } from '../../shared/lean.jsx';
 import {CAPS} from './captions.js';
+import {REMAP} from './remap.js';
 
-/* ---------- scenes: [key, fromSec, toSec], every cut inside a VO pause ---------- */
-const OUTRO_AT = 66.95;
+/* Scene cues below are written in "cue seconds" (the first draft's word times). REMAP pairs each script word's
+ * cue time with its real spoken time (captions.js, Whisper-aligned), and R() maps any cue linearly between words,
+ * so every animation lands on its word. Scene cuts (SCENES) are in real seconds. */
+const R = (t) => {
+  const P = REMAP;
+  if (t <= P[0][0]) return t - P[0][0] + P[0][1];
+  for (let i = 1; i < P.length; i++) if (t <= P[i][0]) return P[i - 1][1] + (t - P[i - 1][0]) * (P[i][1] - P[i - 1][1]) / Math.max(1e-6, P[i][0] - P[i - 1][0]);
+  const L = P[P.length - 1]; return t - L[0] + L[1];
+};
+const s = (t) => sF(R(t));
+const pop = (F, t, d) => popF(F, R(t), d);
+const up = (F, t, d, y) => upF(F, R(t), d, y);
+
+/* ---------- scenes: [key, fromSec, toSec] in REAL seconds, every cut inside a VO pause ---------- */
+const OUTRO_AT = 69.75;
 const SCENES = [
-  ['hook', 0, 4.14], ['cement', 4.14, 7.0], ['wire', 7.0, 8.1], ['plywood', 8.1, 9.55], ['what', 9.55, 10.42],
-  ['reveal', 10.42, 13.0], ['app', 13.0, 15.27], ['users', 15.27, 17.08], ['products', 17.08, 20.64], ['delivery', 20.64, 23.94],
-  ['pings', 23.94, 26.72], ['orders', 26.72, 30.34], ['growth', 30.34, 32.07], ['funding', 32.07, 35.4],
-  ['lesson', 35.4, 37.37], ['market', 37.37, 40.38], ['calls', 40.38, 41.55], ['quotes', 41.55, 42.7], ['late', 42.7, 45.5], ['system', 45.5, 48.82],
-  ['idea', 48.82, 51.62], ['formula', 51.62, 56.78], ['yours', 56.78, 59.88], ['build', 59.88, 64.66], ['dm', 64.66, OUTRO_AT], ['outro', OUTRO_AT, OUTRO_AT + 2.4],
+  ['hook', 0, 4.25], ['cement', 4.25, 7.27], ['wire', 7.27, 8.2], ['plywood', 8.2, 9.9], ['what', 9.9, 10.8],
+  ['reveal', 10.8, 13.5], ['gap', 13.5, 15.85], ['app', 15.85, 19.1], ['users', 19.1, 21.25], ['products', 21.25, 25.0], ['delivery', 25.0, 27.84],
+  ['orders', 27.84, 31.58], ['growth', 31.58, 34.3], ['funding', 34.3, 36.8],
+  ['lesson', 36.8, 38.85], ['market', 38.85, 42.0], ['calls', 42.0, 43.1], ['quotes', 43.1, 44.25], ['late', 44.25, 47.3], ['system', 47.3, 50.75],
+  ['idea', 50.75, 53.68], ['formula', 53.68, 59.05], ['yours', 59.05, 62.1], ['build', 62.1, 67.2], ['dm', 67.2, OUTRO_AT], ['outro', OUTRO_AT, OUTRO_AT + 2.4],
 ];
-const TOTAL = s(OUTRO_AT + 2.4);
-const CHUNKS = CAPS.filter((c) => c.a >= s(SCENES[0][2]) - 2); // no subtitles over the text hook
+const TOTAL = sF(OUTRO_AT + 2.4);
+const CHUNKS = CAPS.filter((c) => c.a >= sF(SCENES[0][2]) - 2); // no subtitles over the text hook
 
 /* ---------- brand + real assets ---------- */
 const HR_Y = '#FFDA01', HR_B = '#3B3BEB';
@@ -327,6 +341,26 @@ const Reveal = ({F}) => (
       <div style={{transform: `scale(${pop(F, 11.5, 12)})`}}><Chip color={C_GREEN} size={38}>Startup</Chip></div>
     </div>
     <div style={{...abs(90, 1190), fontSize: 26, fontWeight: 500, color: MUTED, ...LAT, opacity: io(F, s(11.0), s(11.4))}}>Team HomeRun</div>
+  </AbsoluteFill>
+);
+
+/* ---------- 6b. Problem -> opportunity (real seconds) ---------- */
+const Gap = ({F}) => (
+  <AbsoluteFill>
+    <Glass x={90} y={250} w={900} h={360} r={44} style={{display: 'flex', alignItems: 'center', gap: 34, padding: '0 46px', transform: `scale(${popF(F, 13.75, 13)})`}}>
+      <div style={{width: 200, height: 200, borderRadius: 48, background: 'var(--l-alertbg)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><CementBag size={150} /></div>
+      <div><Label>समस्या</Label><div style={{fontSize: 52, fontWeight: 700, color: TXT, marginTop: 8, ...LAT}}>माल वेळेवर मिळत नाही</div></div>
+    </Glass>
+    <svg width="120" height="200" style={{...abs(480, 630)}}>
+      <path d="M60 0V150" stroke={GOLD_T} strokeWidth="10" strokeLinecap="round" pathLength="1" strokeDasharray="1" strokeDashoffset={1 - io(F, sF(14.3), sF(14.7))} />
+      <path d="M25 120l35 40 35-40" fill="none" stroke={GOLD_T} strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" opacity={io(F, sF(14.6), sF(14.75))} />
+    </svg>
+    <div style={{...abs(90, 850), transform: `scale(${popF(F, 14.95, 11)})`}}>
+      <div style={{width: 900, height: 380, borderRadius: 44, background: Y, boxShadow: `0 30px 80px ${Y}77`, display: 'flex', alignItems: 'center', gap: 40, padding: '0 50px', boxSizing: 'border-box'}}>
+        <HomeRunLogo size={240} />
+        <div><div style={{fontSize: 30, fontWeight: 800, color: BG, letterSpacing: '0.12em', opacity: 0.6}}>OPPORTUNITY</div><div style={{fontSize: 110, fontWeight: 800, color: BG, lineHeight: 1.05, ...LAT}}>मोठी संधी</div></div>
+      </div>
+    </div>
   </AbsoluteFill>
 );
 
@@ -790,7 +824,7 @@ const Dm = ({F}) => {
 const Outro = ({F}) => <LeanOutro F={F} at={OUTRO_AT} cta="DM करा" />;
 
 /* ---------- main ---------- */
-const COMPS = {hook: Hook, cement: Cement, wire: Wire, plywood: PlywoodSc, what: What, reveal: Reveal, app: App, users: Users, products: Products, delivery: Delivery,
+const COMPS = {hook: Hook, cement: Cement, wire: Wire, plywood: PlywoodSc, what: What, reveal: Reveal, gap: Gap, app: App, users: Users, products: Products, delivery: Delivery,
   pings: Pings, orders: Orders, growth: Growth, funding: Funding, lesson: Lesson, market: Market, calls: Calls, quotes: Quotes, late: Late, system: System,
   idea: Idea, formula: Formula, yours: Yours, build: Build, dm: Dm, outro: Outro};
 const Video = () => <LeanVideo theme="light" scenes={SCENES} comps={COMPS} chunks={CHUNKS} total={TOTAL} outroAt={OUTRO_AT} />;
