@@ -1,54 +1,31 @@
 /*
  * HomeRun startup story (Marathi), LEAN style, light theme. VO sped up 1.04x (public/vo.mp3).
  * Real assets: public/img/homerun_logo.png, public/img/homerun_team.png (user-supplied), logos/blinkit.svg.
- * App UI, route map and order rows are illustrative.
+ * App UI, map, quotes and order rows are illustrative.
+ * Captions: captions.js from `python3 scripts/word_times.py reels/homerun-startup/script_hi.txt reels/homerun-startup/public/vo.mp3`
+ * (word-level timing from syllable peaks). Times below are seconds from those word times.
  */
 import React from 'react';
 import {registerRoot, Composition, AbsoluteFill, Img, staticFile, Easing} from 'remotion';
-import {FPS, s, io, pop, abs, Y, buildChunks} from '../../shared/kit.jsx';
+import {FPS, s, io, pop, abs, Y, Mark} from '../../shared/kit.jsx';
 import {
   BG, TXT, MUTED, LINE, GOLD_T, C_GREEN, C_BLUE, C_ORANGE, C_RED, LAT, up,
-  Glass, Chip, Alert, Ini, Ico, Tick, Bolt, I_PIN, I_CHART, I_USERS,
-  Instagram, LogoImg, TextHook, LeanOutro, LeanVideo,
+  Glass, Chip, Alert, Ini, Ico, Tick, Bolt, I_PIN, I_CHART, I_USERS, I_PHONE, I_CAL,
+  Instagram, WhatsApp, LogoImg, LeanOutro, LeanVideo,
 } from '../../shared/lean.jsx';
+import {CAPS} from './captions.js';
 
-/* ---------- timing (seconds, VO at 1.04x) ---------- */
-const SEGS = [
-  [0.00, 4.01, 'Blinkit वरून दूध, भाजी आणि किराणा मागवणं आता सामान्य झालंय.'],
-  [4.27, 6.88, 'पण बांधकामाच्या साइटवर अचानक *सिमेंट संपलं,*'],
-  [7.10, 8.03, '*वायर* कमी पडली'],
-  [8.17, 9.41, 'किंवा *प्लायवुड* हवं असेल,'],
-  [9.66, 10.25, 'तर काय करणार?'],
-  [10.54, 12.90, 'बेंगळुरूमधल्या *HomeRun* या Startup ने याच समस्येत मोठी *संधी* शोधली.'],
-  [13.09, 15.12, 'हे बांधकाम साहित्यासाठीचं *Quick Commerce App* आहे.'],
-  [15.39, 17.01, 'यावरून *Contractors* आणि *घरमालक*'],
-  [17.16, 18.24, 'सिमेंट, टाइल्स,'],
-  [18.51, 20.56, 'पेंट आणि प्लायवुडसारख्या वस्तू थेट'],
-  [20.72, 21.84, 'साइटवर फक्त'],
-  [22.05, 23.86, '*६० मिनिटांत* मागवू शकतात.'],
-  [24.01, 26.57, 'या कल्पनेला किती मोठा *प्रतिसाद* मिळालाय?'],
-  [26.88, 30.19, 'त्यांनी आतापर्यंत *१ लाखांहून अधिक Orders* पूर्ण केल्या आहेत,'],
-  [30.49, 32.00, 'गेल्या १२ महिन्यांत बिझनेस *८ पट* वाढवलाय'],
-  [32.13, 35.20, 'आणि *१२ मिलियन डॉलर्सचं Funding* मिळवलंय.'],
-  [35.59, 37.20, 'यातला मोठा *बिझनेस धडा* काय आहे?'],
-  [37.54, 40.25, 'मार्केटमध्ये *दुकानं* आणि *ग्राहक* आधीपासूनच होते,'],
-  [40.51, 41.47, 'पण *माल शोधणं,*'],
-  [41.63, 42.62, '*किमती* समजून घेणं'],
-  [42.77, 45.35, 'आणि *वेळेवर माल मिळणं* ही मोठी अडचण होती.'],
-  [45.64, 48.69, 'HomeRun ने हीच प्रक्रिया एका *सोप्या System* मध्ये आणली.'],
-  [48.94, 51.48, 'प्रत्येक वेळी *नवीन कल्पना* शोधण्याची गरज नसते.'],
-  [51.75, 54.19, 'जुन्याच बिझनेस मधला एखादा *प्रॉब्लेम* सोडवला'],
-  [54.42, 56.63, 'तरी *कोट्यवधींची कंपनी* उभी राहू शकते.'],
-  [56.93, 59.80, 'तुमच्याकडेही अशीच एखादी भारी *Business Idea* असेल'],
-  [59.95, 62.06, 'आणि तुम्हाला तुमचं स्वतःचं *Mobile App* किंवा'],
-  [62.22, 64.57, '*Website* बनवून बिझनेस सुरू करायचा असेल,'],
-  [64.74, 66.85, 'तर *Outgrid Labs* ला आताच *DM* करा.'],
-];
+/* ---------- scenes: [key, fromSec, toSec], every cut inside a VO pause ---------- */
 const OUTRO_AT = 66.95;
-const SCENES = [['hook', 0, 4.14], ['site', 4.14, 10.40], ['reveal', 10.40, 13.0], ['app', 13.0, 20.64], ['delivery', 20.64, 23.94], ['traction', 23.94, 35.40],
-  ['market', 35.40, 48.82], ['insight', 48.82, 56.78], ['cta', 56.78, OUTRO_AT], ['outro', OUTRO_AT, OUTRO_AT + 2.4]];
+const SCENES = [
+  ['hook', 0, 4.14], ['cement', 4.14, 7.0], ['wire', 7.0, 8.1], ['plywood', 8.1, 9.55], ['what', 9.55, 10.42],
+  ['reveal', 10.42, 13.0], ['app', 13.0, 15.27], ['users', 15.27, 17.08], ['products', 17.08, 20.64], ['delivery', 20.64, 23.94],
+  ['pings', 23.94, 26.72], ['orders', 26.72, 30.34], ['growth', 30.34, 32.07], ['funding', 32.07, 35.4],
+  ['lesson', 35.4, 37.37], ['market', 37.37, 40.38], ['calls', 40.38, 41.55], ['quotes', 41.55, 42.7], ['late', 42.7, 45.5], ['system', 45.5, 48.82],
+  ['idea', 48.82, 51.62], ['formula', 51.62, 56.78], ['yours', 56.78, 59.88], ['build', 59.88, 64.66], ['dm', 64.66, OUTRO_AT], ['outro', OUTRO_AT, OUTRO_AT + 2.4],
+];
 const TOTAL = s(OUTRO_AT + 2.4);
-const CHUNKS = buildChunks(SEGS).filter((c) => c.a >= s(SCENES[0][2])); // no subtitles over the text hook
+const CHUNKS = CAPS.filter((c) => c.a >= s(SCENES[0][2]) - 2); // no subtitles over the text hook
 
 /* ---------- brand + real assets ---------- */
 const HR_Y = '#FFDA01', HR_B = '#3B3BEB';
@@ -158,133 +135,283 @@ const Row = ({icon, title, sub, right, style = {}}) => (
   </div>
 );
 
-/* ---------- 1. Hook: Blinkit groceries yes, cement? ---------- */
-const GROC = [['दूध', '1 L', '#FFFFFF'], ['भाजी', '1 kg', '#DFF3D8'], ['किराणा', '5 items', '#FFF1C9']];
-const Hook = ({F}) => (
-  <TextHook F={F}
-    eyebrow="Quick Commerce"
-    lines={[
-      {t: -0.3, node: <><Blinkit size={124} /><span>दूध, भाजी</span><Tick size={90} /></>},
-      {t: 2.2, node: <span>पण <span style={{color: C_RED}}>सिमेंट?</span></span>},
-    ]}
-    visual={
-      <Glass x={90} y={660} w={900} h={640} r={44} style={{padding: '34px 40px', transform: `rotate(-2deg) translateY(${io(F, 0, s(0.9), 50, 0)}px)`}}>
-        <div style={{display: 'flex', alignItems: 'center', gap: 16}}>
-          <Blinkit size={64} />
-          <div style={{fontSize: 36, fontWeight: 700, color: TXT, ...LAT}}>Your order</div>
-          <div style={{flex: 1}} /><Chip color={C_GREEN} size={24}>Delivered</Chip>
-        </div>
-        <div style={{height: 1.5, background: LINE, margin: '24px -40px 4px'}} />
-        {GROC.map(([n, q, c], i) => (
-          <div key={i} style={{display: 'flex', alignItems: 'center', gap: 22, padding: '18px 0', borderBottom: `1.5px solid ${LINE}`, ...up(F, -0.6 + i * 0.3, 10, 16)}}>
-            <div style={{width: 70, height: 70, borderRadius: 18, background: c, border: `1.5px solid ${LINE}`}} />
-            <div style={{flex: 1, fontSize: 36, fontWeight: 600, color: TXT, ...LAT}}>{n}</div>
-            <div style={{fontSize: 26, color: MUTED, ...LAT}}>{q}</div><Tick size={44} />
-          </div>
-        ))}
-        <div style={{display: 'flex', alignItems: 'center', gap: 22, padding: '18px 0', ...up(F, 2.5, 10, 16)}}>
-          <div style={{width: 70, height: 70, borderRadius: 18, background: '#EEE9DF', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><CementBag size={60} /></div>
-          <div style={{flex: 1, fontSize: 36, fontWeight: 600, color: TXT, ...LAT}}>सिमेंट · 50 kg</div>
-          <div style={{transform: `scale(${pop(F, 2.8, 9)})`}}><Chip color={C_RED} size={26}>Not available</Chip></div>
-        </div>
-      </Glass>
-    }
-  />
+/* ---------- shared screen bits ---------- */
+// light phone: dark bezel, cream screen
+const PhoneL = ({x, y, w, h, children, style = {}}) => (
+  <div style={{...abs(x, y), width: w, height: h, borderRadius: w * 0.13, background: '#1d1d1f', padding: 12, boxSizing: 'border-box', boxShadow: '0 50px 100px rgba(60,45,10,0.28)', ...style}}>
+    <div style={{width: '100%', height: '100%', borderRadius: w * 0.11, overflow: 'hidden', background: '#FAF8F3', position: 'relative'}}>
+      {children}
+      <div style={{...abs('50%', 14), marginLeft: -56, width: 112, height: 30, borderRadius: 15, background: '#1d1d1f'}} />
+    </div>
+  </div>
 );
+const Label = ({children, style = {}}) => <div style={{fontSize: 26, fontWeight: 700, color: MUTED, letterSpacing: '0.12em', ...style}}>{children}</div>;
+// spring "drop": falls from -h with a small squash on landing
+const drop = (F, t, h = 500) => {
+  const p = pop(F, t, 9);
+  const land = io(F, s(t) + 6, s(t) + 9) * io(F, s(t) + 9, s(t) + 14, 1, 0);
+  return {transform: `translateY(${(1 - Math.min(p, 1)) * -h}px) scale(${1 + land * 0.08}, ${1 - land * 0.08})`, opacity: io(F, s(t), s(t) + 3)};
+};
+const XCircle = ({size = 60}) => <svg viewBox="0 0 24 24" width={size} height={size}><circle cx="12" cy="12" r="11" fill={C_RED} /><path d="M8 8l8 8M16 8l-8 8" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" /></svg>;
 
-/* ---------- 2. Site: cement over, wire short, plywood needed ---------- */
-const MATS = [[5.9, <CementBag key="c" size={104} />, 'सिमेंट', 'संपलं', C_RED], [7.15, <WireCoil key="w" size={100} />, 'वायर', 'कमी', C_ORANGE], [8.3, <Plywood key="p" size={104} />, 'प्लायवुड', 'हवं', C_BLUE]];
-const SiteSkyline = ({F}) => (
-  <svg viewBox="0 0 820 300" width="820" height="300">
-    <path d="M0 290H820" stroke={INKC} strokeWidth="4" />
-    {/* building frame */}
-    {[0, 1, 2, 3].map((r) => [0, 1, 2].map((c) => <rect key={`${r}${c}`} x={300 + c * 90} y={210 - r * 70} width="90" height="70" fill={r < 2 ? '#EFE7D6' : 'none'} stroke="#9A8F7B" strokeWidth="3" />))}
-    {[0, 1, 2, 3].map((c) => <rect key={c} x={296 + c * 90} y="0" width="8" height="290" fill="#E2683C" opacity={0.85} />)}
-    {/* crane */}
-    <path d="M120 290V30M120 30h300M120 30l60 0M120 60l300-30" stroke={INKC} strokeWidth="5" fill="none" />
-    <path d="M120 30l-40 0" stroke={INKC} strokeWidth="5" /><rect x="70" y="30" width="30" height="24" fill={INKC} />
-    <path d={`M${330 + Math.sin(F / 20) * 10} 30v${60 + Math.sin(F / 15) * 6}`} stroke={INKC} strokeWidth="2.5" />
-    <rect x={318 + Math.sin(F / 20) * 10} y={88 + Math.sin(F / 15) * 6} width="26" height="16" fill={Y} stroke={INKC} strokeWidth="2.5" />
-    {/* sand heap + mixer */}
-    <path d="M560 290c20-50 60-60 90-60s60 20 80 60z" fill="#E8D3A8" stroke={INKC} strokeWidth="3" />
-  </svg>
-);
-const Site = ({F}) => {
-  const hold = pop(F, 9.7, 10);
+/* ---------- 1. Hook: Blinkit cart fills fast, then a cement bag lands: not available ---------- */
+const CART = [[-0.4, 'दूध', 'Milk · 1 L', '#FFFFFF'], [0.84, 'भाजी', 'Vegetables · 1 kg', '#DFF3D8'], [1.6, 'किराणा', 'Atta, dal, oil', '#FFF1C9']];
+const Hook = ({F}) => {
+  const n = CART.filter(([t]) => F >= s(t)).length;
+  const jolt = F >= s(2.95) && F < s(3.25) ? Math.sin((F - s(2.95)) * 1.6) * 6 * io(F, s(2.95), s(3.25), 1, 0) : 0;
+  const twist = pop(F, 2.4, 9);
   return (
     <AbsoluteFill>
-      <Glass x={90} y={230} w={900} h={930} r={44} style={{padding: '30px 40px', ...up(F, 4.25, 16, 50)}}>
-        <div style={{display: 'flex', alignItems: 'center', gap: 14}}>
-          <Ico d={I_PIN} size={34} color={GOLD_T} sw={2.4} /><div style={{fontSize: 32, fontWeight: 700, color: TXT, ...LAT}}>Construction site</div>
-          <div style={{flex: 1}} /><div style={{fontSize: 26, fontWeight: 600, color: MUTED, ...LAT}}>Day 42</div>
-        </div>
-        <div style={{marginTop: 20, borderRadius: 28, background: '#F6F1E6', padding: '20px 0 0', display: 'flex', justifyContent: 'center', overflow: 'hidden'}}><SiteSkyline F={F} /></div>
-        <div style={{display: 'flex', flexDirection: 'column', gap: 22, marginTop: 30}}>
-          {MATS.map(([t, ic, n, st, c], i) => (
-            <Row key={i} icon={ic} title={n} style={up(F, t - 0.2, 12, 24)} right={<div style={{transform: `scale(${pop(F, t + 0.25, 9)})`}}><Chip color={c} size={32}>{st}</Chip></div>} />
+      <div style={{...abs(72, 200), fontSize: 40, fontWeight: 600, color: MUTED, ...LAT}}>Quick Commerce</div>
+      <div style={{...abs(66, 262), display: 'flex', alignItems: 'center', gap: 24, fontSize: 132, fontWeight: 700, color: TXT, lineHeight: 1.1, ...LAT}}>
+        <Blinkit size={122} /><span>दूध, भाजी</span>
+        <div style={{transform: `scale(${F < s(1.9) ? 0 : pop(F, 1.9, 8)})`}}><Tick size={92} /></div>
+      </div>
+      <div style={{...abs(66, 420), fontSize: 150, fontWeight: 800, color: TXT, lineHeight: 1.05, ...LAT, transform: `scale(${0.6 + 0.4 * twist})`, transformOrigin: '0% 70%', opacity: Math.min(1, twist * 2)}}>
+        पण <span style={{color: C_RED}}>सिमेंट?</span>
+      </div>
+      <PhoneL x={170} y={640} w={740} h={1000} style={{transform: `translateX(${jolt}px) rotate(${-2 + jolt * 0.1}deg)`}}>
+        <div style={{padding: '70px 30px 0'}}>
+          <div style={{display: 'flex', alignItems: 'center', gap: 16}}>
+            <Blinkit size={70} />
+            <div><div style={{fontSize: 34, fontWeight: 800, color: '#1F1F1F', ...LAT}}>Delivery in 8 minutes</div><div style={{fontSize: 22, color: '#8a8478', ...LAT}}>Home · Kothrud</div></div>
+            <div style={{flex: 1}} />
+            <div style={{position: 'relative'}}>
+              <div style={{width: 70, height: 70, borderRadius: 20, background: '#0C831F', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h2l2.5 11h11L21 7H7" /><circle cx="9" cy="19" r="1.6" /><circle cx="17" cy="19" r="1.6" /></svg>
+              </div>
+              <div key={n} style={{...abs(48, -12), minWidth: 36, height: 36, borderRadius: 18, background: C_RED, color: '#fff', fontSize: 22, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 3, boxSizing: 'border-box',
+                transform: `scale(${n ? 1 + 0.3 * io(F, s(CART[n - 1][0]), s(CART[n - 1][0]) + 4) * io(F, s(CART[n - 1][0]) + 4, s(CART[n - 1][0]) + 9, 1, 0) : 0})`}}>{n}</div>
+            </div>
+          </div>
+          <div style={{height: 2, background: 'rgba(0,0,0,0.06)', margin: '24px -30px 10px'}} />
+          {CART.map(([t, n1, sub, c], i) => (
+            <div key={i} style={{display: 'flex', alignItems: 'center', gap: 22, padding: '18px 0', borderBottom: '2px solid rgba(0,0,0,0.05)', ...(F < s(t) - 3 ? {opacity: 0} : drop(F, t - 0.1, 120))}}>
+              <div style={{width: 92, height: 92, borderRadius: 22, background: c, border: '2px solid rgba(0,0,0,0.06)'}} />
+              <div style={{flex: 1}}><div style={{fontSize: 38, fontWeight: 700, color: '#1F1F1F'}}>{n1}</div><div style={{fontSize: 22, color: '#8a8478', ...LAT}}>{sub}</div></div>
+              <Tick size={52} />
+            </div>
           ))}
+          <div style={{display: 'flex', alignItems: 'center', gap: 22, padding: '18px 0', ...(F < s(2.75) ? {opacity: 0} : drop(F, 2.75, 700))}}>
+            <div style={{width: 92, height: 92, borderRadius: 22, background: '#EEE9DF', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><CementBag size={80} /></div>
+            <div style={{flex: 1}}><div style={{fontSize: 38, fontWeight: 700, color: '#1F1F1F'}}>सिमेंट</div><div style={{fontSize: 22, color: '#8a8478', ...LAT}}>OPC 53 · 50 kg</div></div>
+            <div style={{transform: `scale(${pop(F, 3.1, 9)})`}}><Chip color={C_RED} size={28}>Not available</Chip></div>
+          </div>
         </div>
-      </Glass>
-      <div style={{...abs(0, 1210), width: 1080, display: 'flex', justifyContent: 'center', transform: `scale(${hold}) rotate(-2deg)`}}><Alert size={40}>काम थांबलं</Alert></div>
+        <div style={{position: 'absolute', left: 24, right: 24, bottom: 34, height: 110, borderRadius: 28, background: '#0C831F', display: 'flex', alignItems: 'center', padding: '6px 34px 0', color: '#fff', fontSize: 34, fontWeight: 700, ...LAT}}>
+          <span>{n} items · ₹{[0, 68, 148, 412][n]}</span><div style={{flex: 1}} /><span>Place order ›</span>
+        </div>
+      </PhoneL>
     </AbsoluteFill>
   );
 };
 
-/* ---------- 3. Reveal: HomeRun, Bengaluru (real photo) ---------- */
+/* ---------- 2. Cement runs out on site ---------- */
+const Cement = ({F}) => {
+  const gone = (i) => io(F, s(5.6 + i * 0.12), s(5.6 + i * 0.12) + 6); // bags vanish one by one, last at ~6.5 "संपलं"
+  const BAGS = [[0, 0], [1, 0], [2, 0], [0.5, 1], [1.5, 1], [1, 2]];
+  return (
+    <AbsoluteFill>
+      <Glass x={90} y={250} w={900} h={830} r={44} style={{overflow: 'hidden', padding: 0}}>
+        <div style={{height: 470, background: 'linear-gradient(#EAF2F8, #F6F1E6)', position: 'relative'}}>
+          <svg viewBox="0 0 900 470" width="900" height="470" style={{...abs(0, 0)}}>
+            {[0, 1, 2, 3].map((r) => [0, 1, 2, 3].map((c) => <rect key={`${r}${c}`} x={380 + c * 110} y={330 - r * 90} width="110" height="90" fill={r < 2 ? '#EFE7D6' : 'none'} stroke="#9A8F7B" strokeWidth="3" />))}
+            {[0, 1, 2, 3, 4].map((c) => <rect key={c} x={376 + c * 110} y="40" width="9" height="380" fill="#E2683C" />)}
+            <path d="M170 420V40M170 40h360M170 75l360-35" stroke={INKC} strokeWidth="6" fill="none" /><rect x="110" y="40" width="40" height="28" fill={INKC} />
+            <path d={`M${470 + Math.sin(F / 18) * 14} 40v90`} stroke={INKC} strokeWidth="3" />
+            <path d="M0 420H900" stroke={INKC} strokeWidth="5" />
+          </svg>
+          {/* cement pallet */}
+          <div style={{...abs(70, 250), width: 280, height: 170}}>
+            {BAGS.map(([c, r], i) => (
+              <div key={i} style={{...abs(c * 90, 100 - r * 52), opacity: 1 - gone(BAGS.length - 1 - i), transform: `translateY(${-gone(BAGS.length - 1 - i) * 40}px)`}}><CementBag size={92} /></div>
+            ))}
+            <div style={{...abs(-10, 160), width: 300, height: 14, borderRadius: 4, background: '#B58A55'}} />
+          </div>
+        </div>
+        <div style={{padding: '40px 50px'}}>
+          <Label>CEMENT STOCK</Label>
+          <div style={{display: 'flex', alignItems: 'baseline', gap: 18, marginTop: 14}}>
+            <Big size={170} color={F >= s(6.45) ? C_RED : TXT} style={{fontVariantNumeric: 'tabular-nums'}}>{Math.max(0, 6 - Math.floor(io(F, s(5.6), s(6.45), 0, 6, Easing.linear)))}</Big>
+            <div style={{fontSize: 48, fontWeight: 600, color: MUTED}}>bags</div>
+          </div>
+          <div style={{height: 22, borderRadius: 11, background: '#EEE8DA', marginTop: 20, overflow: 'hidden'}}>
+            <div style={{height: '100%', width: `${100 - io(F, s(5.6), s(6.45), 0, 100, Easing.linear)}%`, background: F >= s(6.2) ? C_RED : C_ORANGE, borderRadius: 11}} />
+          </div>
+        </div>
+      </Glass>
+      <div style={{...abs(560, 1040), transform: `scale(${pop(F, 6.5, 9)}) rotate(-4deg)`}}><Alert size={42}>संपलं!</Alert></div>
+    </AbsoluteFill>
+  );
+};
+
+/* ---------- 3. Wire falls short of the socket ---------- */
+const Wire = ({F}) => {
+  const reach = io(F, s(7.0), s(7.6), 0, 1, Easing.out(Easing.cubic));
+  const end = 140 + 470 * reach;
+  return (
+    <AbsoluteFill>
+      <Glass x={90} y={330} w={900} h={760} r={44} style={{overflow: 'hidden', padding: 0, background: '#F3EEE3'}}>
+        <svg width="900" height="760" style={{...abs(0, 0)}}>
+          {Array.from({length: 9}, (_, r) => Array.from({length: 7}, (_, c) => <rect key={`${r}${c}`} x={(r % 2 ? -60 : 0) + c * 140} y={r * 86} width="134" height="80" rx="4" fill="#E9DFCC" />))}
+          <path d={`M60 380 C 100 380, 120 ${380 + Math.sin(F / 6) * 4}, ${end} 380`} fill="none" stroke={INKC} strokeWidth="18" strokeLinecap="round" />
+          <path d={`M60 380 C 100 380, 120 ${380 + Math.sin(F / 6) * 4}, ${end} 380`} fill="none" stroke="#E2683C" strokeWidth="10" strokeLinecap="round" />
+          <rect x={end - 6} y="368" width="34" height="24" rx="4" fill="#C9A227" stroke={INKC} strokeWidth="3" />
+          {/* socket */}
+          <rect x="740" y="300" width="120" height="160" rx="16" fill="#fff" stroke={INKC} strokeWidth="4" />
+          <circle cx="785" cy="380" r="9" fill={INKC} /><circle cx="815" cy="380" r="9" fill={INKC} />
+          {/* gap */}
+          <g opacity={io(F, s(7.55), s(7.75))}>
+            <path d={`M${end + 40} 470H730`} stroke={C_RED} strokeWidth="5" strokeDasharray="10 10" />
+            <path d={`M${end + 40} 455v30M730 455v30`} stroke={C_RED} strokeWidth="5" />
+          </g>
+        </svg>
+        <div style={{...abs(330, 500), opacity: io(F, s(7.6), s(7.8)), transform: `scale(${pop(F, 7.6, 10)})`}}><Chip color={C_RED} size={40}>2 m कमी</Chip></div>
+        <div style={{...abs(50, 50), display: 'flex', alignItems: 'center', gap: 20}}><WireCoil size={110} /><div style={{fontSize: 56, fontWeight: 700, color: TXT}}>वायर</div></div>
+      </Glass>
+    </AbsoluteFill>
+  );
+};
+
+/* ---------- 4. Carpenter needs plywood (WhatsApp) ---------- */
+const PlywoodSc = ({F}) => (
+  <AbsoluteFill>
+    <Glass x={90} y={260} w={900} h={900} r={44} style={{overflow: 'hidden', padding: 0, background: '#EFE7DC'}}>
+      <div style={{height: 120, background: '#fff', display: 'flex', alignItems: 'center', gap: 18, padding: '0 34px', borderBottom: `1.5px solid ${LINE}`}}>
+        <Ini t="R" size={70} bg="linear-gradient(135deg, #FDE68A, #F59E0B)" />
+        <div style={{flex: 1}}><div style={{fontSize: 34, fontWeight: 700, color: TXT, ...LAT}}>Ramesh (Carpenter)</div><div style={{fontSize: 22, color: C_GREEN, fontWeight: 600}}>online</div></div>
+        <WhatsApp size={64} round />
+      </div>
+      <div style={{padding: '34px 30px', display: 'flex', flexDirection: 'column', gap: 18}}>
+        <div style={{alignSelf: 'flex-start', background: '#fff', borderRadius: '26px 26px 26px 8px', padding: '20px 26px 12px', fontSize: 38, fontWeight: 500, color: '#1F1F1F', boxShadow: '0 2px 4px rgba(0,0,0,0.08)', transform: `scale(${pop(F, 8.2, 12)})`, transformOrigin: '0 100%'}}>
+          साहेब, <b>प्लायवुड ३ शीट</b> लागतील
+        </div>
+        <div style={{alignSelf: 'flex-start', background: '#fff', borderRadius: '26px 26px 26px 8px', padding: '20px 26px 12px', fontSize: 38, fontWeight: 500, color: '#1F1F1F', boxShadow: '0 2px 4px rgba(0,0,0,0.08)', transform: `scale(${pop(F, 8.85, 12)})`, transformOrigin: '0 100%'}}>
+          आज नाही आलं तर काम उद्यावर
+        </div>
+        <div style={{alignSelf: 'center', marginTop: 10, transform: `scale(${pop(F, 8.35, 12)}) rotate(-6deg)`}}><Plywood size={420} /></div>
+      </div>
+    </Glass>
+  </AbsoluteFill>
+);
+
+/* ---------- 5. "तर काय करणार?" : searching gives nothing useful ---------- */
+const RESULTS = [['Sai Hardware', 'Closed', C_RED], ['City Cement Depot', 'Out of stock', C_RED], ['BuildMart', 'Delivery 2-3 days', C_ORANGE]];
+const What = ({F}) => (
+  <AbsoluteFill>
+    <Glass x={90} y={330} w={900} h={160} r={80} style={{display: 'flex', alignItems: 'center', gap: 22, padding: '0 40px', ...up(F, 9.6, 8, 20)}}>
+      <Ico d={<><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></>} size={56} color={TXT} sw={2.2} />
+      <div style={{fontSize: 44, fontWeight: 600, color: TXT, ...LAT}}>{'cement delivery near me'.slice(0, Math.floor(io(F, s(9.6), s(9.95), 0, 23, Easing.linear)))}<span style={{color: C_BLUE}}>|</span></div>
+    </Glass>
+    <div style={{...abs(90, 540), width: 900, display: 'flex', flexDirection: 'column', gap: 18}}>
+      {RESULTS.map(([n, st, c], i) => (
+        <Glass key={i} x={0} y={0} w={900} h={170} r={34} style={{position: 'relative', display: 'flex', alignItems: 'center', gap: 24, padding: '0 34px', ...up(F, 9.85 + i * 0.12, 8, 30)}}>
+          <Shop size={100} />
+          <div style={{flex: 1, fontSize: 40, fontWeight: 700, color: TXT, ...LAT}}>{n}</div>
+          <Chip color={c} size={30}>{st}</Chip>
+        </Glass>
+      ))}
+    </div>
+  </AbsoluteFill>
+);
+
+/* ---------- 6. Reveal: HomeRun, Bengaluru (real photo) ---------- */
 const Reveal = ({F}) => (
   <AbsoluteFill>
-    <div style={{...abs(70, 330), transform: `rotate(-2deg) scale(${0.94 + 0.06 * pop(F, 10.45, 16)})`, opacity: io(F, s(10.4), s(10.4) + 8)}}>
-      <TeamPhoto w={940} h={705} zoom={1.12 - 0.08 * io(F, s(10.4), s(13.0), 0, 1, Easing.linear)} />
+    <div style={{...abs(70, 330), transform: `rotate(-2deg) scale(${0.94 + 0.06 * pop(F, 10.45, 16)})`}}>
+      <TeamPhoto w={940} h={705} zoom={1.14 - 0.1 * io(F, s(10.4), s(13.0), 0, 1, Easing.linear)} />
     </div>
-    <div style={{...abs(760, 220), transform: `scale(${pop(F, 10.95, 11)}) rotate(6deg)`}}><HomeRunLogo size={250} /></div>
+    <div style={{...abs(760, 210), transform: `scale(${pop(F, 11.0, 10)}) rotate(6deg)`}}><HomeRunLogo size={250} /></div>
     <div style={{...abs(90, 1090), display: 'flex', gap: 18}}>
-      <div style={{transform: `scale(${pop(F, 10.6, 12)})`}}><Chip color={C_BLUE} size={36}>Bengaluru</Chip></div>
-      <div style={{transform: `scale(${pop(F, 11.6, 12)})`}}><Chip color={C_GREEN} size={36}>Startup</Chip></div>
+      <div style={{transform: `scale(${pop(F, 10.6, 12)})`}}><Chip color={C_BLUE} size={38}>Bengaluru</Chip></div>
+      <div style={{transform: `scale(${pop(F, 11.5, 12)})`}}><Chip color={C_GREEN} size={38}>Startup</Chip></div>
     </div>
-    <div style={{...abs(90, 1180), fontSize: 26, fontWeight: 500, color: MUTED, ...LAT, opacity: io(F, s(11.0), s(11.4))}}>Team HomeRun</div>
+    <div style={{...abs(90, 1190), fontSize: 26, fontWeight: 500, color: MUTED, ...LAT, opacity: io(F, s(11.0), s(11.4))}}>Team HomeRun</div>
   </AbsoluteFill>
 );
 
-/* ---------- 4. App: quick commerce for construction material ---------- */
-const CATS = [['Cement', CementBag, 17.15], ['Tiles', Tiles, 17.55], ['Paint', PaintBucket, 18.55], ['Plywood', Plywood, 19.2], ['Wires', WireCoil, null], ['Plumbing', Pipe, null]];
+/* ---------- 7. App home (quick commerce for construction) ---------- */
+const CATS = [['Cement', CementBag], ['Tiles', Tiles], ['Paint', PaintBucket], ['Plywood', Plywood], ['Wires', WireCoil], ['Plumbing', Pipe]];
+const HRHeader = () => (
+  <div style={{background: HR_Y, padding: '74px 28px 26px'}}>
+    <div style={{display: 'flex', alignItems: 'center', gap: 14}}>
+      <HomeRunLogo size={62} style={{boxShadow: 'none'}} />
+      <div style={{fontSize: 34, fontWeight: 800, color: HR_B, fontStyle: 'italic', ...LAT}}>HomeRun</div>
+      <div style={{flex: 1}} />
+      <div style={{display: 'flex', alignItems: 'center', gap: 6, background: HR_B, color: '#fff', borderRadius: 999, padding: '8px 16px 4px 10px', fontSize: 22, fontWeight: 700}}><Bolt size={22} color={HR_Y} />60 min</div>
+    </div>
+    <div style={{marginTop: 20, height: 64, borderRadius: 18, background: '#fff', display: 'flex', alignItems: 'center', padding: '4px 20px 0', fontSize: 24, color: '#9a958a', ...LAT}}>Search cement, tiles, paint…</div>
+  </div>
+);
 const App = ({F}) => (
   <AbsoluteFill>
-    <div style={{...abs(410, 230), width: 620, height: 1150, borderRadius: 84, background: '#1d1d1f', padding: 14, boxSizing: 'border-box', boxShadow: '0 50px 100px rgba(60,45,10,0.28)',
-      transform: `translateY(${(1 - pop(F, 13.05, 15)) * 400}px)`}}>
-      <div style={{width: '100%', height: '100%', borderRadius: 72, overflow: 'hidden', background: '#FAF8F3', position: 'relative'}}>
-        <div style={{background: HR_Y, padding: '74px 28px 26px'}}>
-          <div style={{display: 'flex', alignItems: 'center', gap: 14}}>
-            <HomeRunLogo size={62} style={{boxShadow: 'none', border: `2px solid ${HR_B}22`}} />
-            <div style={{fontSize: 34, fontWeight: 800, color: HR_B, fontStyle: 'italic', ...LAT}}>HomeRun</div>
-            <div style={{flex: 1}} />
-            <div style={{display: 'flex', alignItems: 'center', gap: 6, background: HR_B, color: '#fff', borderRadius: 999, padding: '8px 16px 4px 10px', fontSize: 22, fontWeight: 700}}><Bolt size={22} color={HR_Y} />60 min</div>
-          </div>
-          <div style={{marginTop: 20, height: 64, borderRadius: 18, background: '#fff', display: 'flex', alignItems: 'center', padding: '4px 20px 0', fontSize: 24, color: '#9a958a', ...LAT}}>Search cement, tiles, paint…</div>
-        </div>
-        <div style={{padding: '22px 22px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16}}>
-          {CATS.map(([n, Icon, t], i) => {
-            const on = t && F >= s(t);
-            return (
-              <div key={i} style={{height: 210, borderRadius: 26, background: '#fff', border: `3px solid ${on ? HR_B : 'rgba(0,0,0,0.06)'}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
-                transform: `scale(${t ? 1 + 0.06 * io(F, s(t), s(t) + 5) * io(F, s(t) + 8, s(t) + 16, 1, 0) : 1})`, boxShadow: on ? `0 12px 30px ${HR_B}30` : 'none', ...up(F, 13.5 + i * 0.1, 10, 16)}}>
-                <Icon size={110} />
-                <div style={{fontSize: 28, fontWeight: 700, color: '#1F1F1F', ...LAT}}>{n}</div>
-              </div>
-            );
-          })}
-        </div>
+    <PhoneL x={210} y={240} w={660} h={1150} style={{transform: `translateY(${(1 - pop(F, 13.05, 15)) * 500}px) rotate(${-3 + 3 * io(F, s(13), s(15.2))}deg)`}}>
+      <HRHeader />
+      <div style={{margin: '20px 22px 0', height: 150, borderRadius: 24, background: HR_B, padding: '24px 28px', boxSizing: 'border-box', color: '#fff', position: 'relative', overflow: 'hidden', ...up(F, 13.4, 10, 20)}}>
+        <div style={{fontSize: 22, fontWeight: 700, color: HR_Y, letterSpacing: '0.1em'}}>CONSTRUCTION MATERIALS</div>
+        <div style={{fontSize: 40, fontWeight: 800, marginTop: 8, ...LAT}}>Delivered to site in 60 min</div>
+        <div style={{...abs(520, 40), transform: 'rotate(-10deg)'}}><Tempo size={110} spin={F * 20} /></div>
       </div>
-    </div>
-    <div style={{...abs(40, 560), transform: `scale(${pop(F, 15.5, 11)}) rotate(-5deg)`}}>
-      <Glass x={0} y={0} w={330} h={120} r={60} style={{position: 'relative', display: 'flex', alignItems: 'center', gap: 16, padding: '0 26px'}}><Ico d={I_USERS} size={50} color={HR_B} /><div style={{fontSize: 34, fontWeight: 700, color: TXT, ...LAT}}>Contractors</div></Glass>
-    </div>
-    <div style={{...abs(60, 760), transform: `scale(${pop(F, 16.4, 11)}) rotate(4deg)`}}>
-      <Glass x={0} y={0} w={300} h={120} r={60} style={{position: 'relative', display: 'flex', alignItems: 'center', gap: 16, padding: '0 26px'}}><Person size={50} c={HR_B} /><div style={{fontSize: 34, fontWeight: 700, color: TXT, ...LAT}}>घरमालक</div></Glass>
+      <div style={{padding: '20px 22px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14}}>
+        {CATS.map(([n, Icon], i) => (
+          <div key={i} style={{height: 190, borderRadius: 24, background: '#fff', border: '2px solid rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, ...up(F, 13.6 + i * 0.08, 10, 16)}}>
+            <Icon size={96} /><div style={{fontSize: 24, fontWeight: 700, color: '#1F1F1F', ...LAT}}>{n}</div>
+          </div>
+        ))}
+      </div>
+    </PhoneL>
+    <div style={{...abs(40, 1120), transform: `scale(${pop(F, 14.45, 10)}) rotate(-4deg)`}}>
+      <div style={{background: Y, borderRadius: 999, padding: '18px 34px 12px', fontSize: 40, fontWeight: 800, color: BG, ...LAT, boxShadow: `0 20px 50px ${Y}77`}}>Quick Commerce App</div>
     </div>
   </AbsoluteFill>
 );
 
-/* ---------- 5. 60-minute delivery to site ---------- */
+/* ---------- 8. Who orders: contractors and home owners ---------- */
+const Hardhat = ({size = 120}) => (
+  <svg viewBox="0 0 64 64" width={size} height={size}><path d="M10 42a22 22 0 0 1 44 0z" fill={HR_Y} stroke={INKC} strokeWidth="3" /><path d="M28 20h8v14h-8z" fill="#fff" stroke={INKC} strokeWidth="2.5" /><rect x="6" y="42" width="52" height="8" rx="3" fill={HR_Y} stroke={INKC} strokeWidth="3" /></svg>
+);
+const HouseI = ({size = 120}) => (
+  <svg viewBox="0 0 64 64" width={size} height={size}><path d="M8 30 32 10l24 20" fill="none" stroke={INKC} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" /><path d="M14 26v30h36V26" fill="#fff" stroke={INKC} strokeWidth="3.5" /><rect x="27" y="38" width="10" height="18" fill={HR_B} /></svg>
+);
+const Users = ({F}) => (
+  <AbsoluteFill>
+    {[[15.95, <Hardhat key="h" size={170} />, 'Contractors', 'Bulk · 200 bags cement', 260, -3], [16.45, <HouseI key="o" size={170} />, 'घरमालक', 'Repair · 2 buckets paint', 800, 3]].map(([t, ic, n, sub, y, r], i) => (
+      <Glass key={i} x={90} y={y} w={900} h={460} r={44} style={{display: 'flex', alignItems: 'center', gap: 40, padding: '0 50px', transform: `translateX(${(1 - pop(F, t, 13)) * (i ? 900 : -900)}px) rotate(${r}deg)`}}>
+        <div style={{width: 260, height: 260, borderRadius: 60, background: i ? '#E8E8FD' : '#FFF6C7', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{ic}</div>
+        <div><div style={{fontSize: 66, fontWeight: 700, color: TXT, ...LAT}}>{n}</div><div style={{fontSize: 32, fontWeight: 500, color: MUTED, marginTop: 8, ...LAT}}>{sub}</div></div>
+      </Glass>
+    ))}
+  </AbsoluteFill>
+);
+
+/* ---------- 9. Products fly into the cart ---------- */
+const PRODS = [[17.16, CementBag, 'Cement', 'OPC 53 · 50 kg', 385], [17.43, Tiles, 'Tiles', '2×2 ft · box', 640], [18.51, PaintBucket, 'Paint', '20 L emulsion', 3150], [19.05, Plywood, 'Plywood', '18 mm · 8×4', 2280]];
+const Products = ({F}) => {
+  const inCart = io(F, s(19.9), s(20.4), 0, 1, Easing.in(Easing.cubic));
+  return (
+    <AbsoluteFill>
+      <div style={{...abs(90, 250), width: 900, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24}}>
+        {PRODS.map(([t, Icon, n, sub, p], i) => (
+          <div key={i} style={{transform: `scale(${pop(F, t, 11) * (1 - inCart * 0.75)}) translate(${inCart * (i % 2 ? -120 : 200)}px, ${inCart * (760 - Math.floor(i / 2) * 470)}px)`, opacity: 1 - inCart * 0.9}}>
+            <Glass x={0} y={0} w={438} h={440} r={40} style={{position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6}}>
+              <Icon size={200} />
+              <div style={{fontSize: 44, fontWeight: 700, color: TXT, ...LAT}}>{n}</div>
+              <div style={{fontSize: 24, color: MUTED, ...LAT}}>{sub}</div>
+              <div style={{fontSize: 34, fontWeight: 700, color: HR_B, ...LAT}}>₹{p.toLocaleString('en-IN')}</div>
+            </Glass>
+          </div>
+        ))}
+      </div>
+      <div style={{...abs(340, 1180), width: 400, height: 150, borderRadius: 40, background: HR_B, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, color: '#fff', fontSize: 40, fontWeight: 800,
+        transform: `scale(${pop(F, 19.6, 11) * (1 + 0.1 * io(F, s(20.3), s(20.45)) * io(F, s(20.45), s(20.6), 1, 0))})`, boxShadow: `0 20px 50px ${HR_B}55`, ...LAT}}>
+        <svg viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h2l2.5 11h11L21 7H7" /><circle cx="9" cy="19" r="1.6" /><circle cx="17" cy="19" r="1.6" /></svg>
+        Cart · {F >= s(20.4) ? 4 : 0}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/* ---------- 10. Straight to site in 60 minutes ---------- */
 const Delivery = ({F}) => {
   const p = io(F, s(20.9), s(23.6), 0, 1, Easing.inOut(Easing.cubic));
   const R = 230, C = 2 * Math.PI * R;
@@ -298,7 +425,7 @@ const Delivery = ({F}) => {
           {Array.from({length: 12}, (_, i) => <line key={i} x1="280" y1="70" x2="280" y2={i % 3 ? 84 : 92} stroke="rgba(0,0,0,0.25)" strokeWidth="4" strokeLinecap="round" transform={`rotate(${i * 30} 280 280)`} />)}
         </svg>
         <div style={{...abs(0, 160), width: 560, textAlign: 'center'}}>
-          <Big size={220} color={HR_B}>{Math.round(60 * io(F, s(21.9), s(22.6), 0, 1))}</Big>
+          <Big size={220} color={HR_B}>{Math.round(60 * io(F, s(21.6), s(22.2), 0, 1))}</Big>
           <div style={{fontSize: 50, fontWeight: 700, color: TXT, marginTop: 4}}>मिनिट</div>
         </div>
       </div>
@@ -322,111 +449,265 @@ const Delivery = ({F}) => {
   );
 };
 
-/* ---------- 6. Traction: 1 lakh+ orders, 8x growth, $12M funding ---------- */
-const GROW = [1, 1.3, 1.6, 2.1, 2.6, 3.3, 4.1, 5, 5.8, 6.7, 7.4, 8];
-const Traction = ({F}) => {
-  const q = io(F, s(26.6), s(26.95), 1, 0);
-  const orders = Math.round(io(F, s(27.1), s(28.8), 0, 100000, Easing.out(Easing.cubic)));
+/* ---------- 11. Response: orders pinging in ---------- */
+const PINGS = [['Whitefield', '40 bags cement'], ['HSR Layout', 'Tiles · 12 boxes'], ['Sarjapur', 'Paint · 20 L ×3'], ['Hebbal', 'Plywood · 6 sheets'], ['Electronic City', 'Wires · 4 coils'], ['Yelahanka', 'Cement · 25 bags'], ['Koramangala', 'Pipes · 18 pcs']];
+const Pings = ({F}) => {
+  const n = PINGS.filter((_, i) => F >= s(24.05 + i * 0.36)).length;
   return (
     <AbsoluteFill>
-      <div style={{...abs(0, 520), width: 1080, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 30, opacity: q, transform: `scale(${pop(F, 24.05, 13)})`}}>
-        <HomeRunLogo size={260} />
-        <Big size={200} color={GOLD_T}>?</Big>
-      </div>
-      <Glass x={90} y={230} w={900} h={300} r={40} style={{padding: '36px 44px', ...up(F, 26.95, 16, 50)}}>
-        <div style={{fontSize: 28, fontWeight: 700, color: MUTED, letterSpacing: '0.1em'}}>ORDERS DELIVERED</div>
-        <Big size={140} style={{marginTop: 18, fontVariantNumeric: 'tabular-nums'}}>{orders.toLocaleString('en-IN')}<span style={{color: GOLD_T}}>+</span></Big>
-      </Glass>
-      <Glass x={90} y={570} w={900} h={340} r={40} style={{padding: '30px 44px', display: 'flex', alignItems: 'center', gap: 40, ...up(F, 30.4, 16, 50)}}>
-        <div>
-          <div style={{fontSize: 28, fontWeight: 700, color: MUTED, letterSpacing: '0.1em'}}>GROWTH · 12 MONTHS</div>
-          <Big size={150} color={C_GREEN} style={{marginTop: 14}}>{Math.max(1, Math.round(8 * io(F, s(30.7), s(31.8))))}×</Big>
-        </div>
-        <div style={{flex: 1, height: 230, display: 'flex', alignItems: 'flex-end', gap: 8}}>
-          {GROW.map((g, i) => <div key={i} style={{flex: 1, borderRadius: 6, height: `${(g / 8) * 100 * io(F, s(30.6 + i * 0.07), s(31.0 + i * 0.07))}%`, background: i === 11 ? C_GREEN : `${C_GREEN}44`}} />)}
-        </div>
-      </Glass>
-      <div style={{...abs(90, 950), transform: `translateY(${(1 - pop(F, 32.2, 15)) * 120}px)`, opacity: io(F, s(32.1), s(32.4))}}>
-        <TeamPhoto w={900} h={400} zoom={1.15 - 0.06 * io(F, s(32.1), s(35.4), 0, 1, Easing.linear)} style={{objectPosition: 'center 30%'}} />
-        <div style={{...abs(0, 0), width: 900, height: 400, borderRadius: 40, background: 'linear-gradient(90deg, rgba(10,10,11,0.82) 0%, rgba(10,10,11,0.55) 45%, rgba(10,10,11,0) 75%)'}} />
-        <div style={{...abs(44, 70)}}>
-          <div style={{fontSize: 28, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.1em'}}>FUNDING RAISED</div>
-          <Big size={150} color={Y} style={{marginTop: 18}}>$12M</Big>
-          <div style={{fontSize: 30, fontWeight: 600, color: '#fff', marginTop: 10, ...LAT}}>≈ ₹100 कोटी</div>
+      <div style={{...abs(90, 240), width: 900, height: 1100, overflow: 'hidden'}}>
+        <div style={{display: 'flex', flexDirection: 'column', gap: 16}}>
+          {PINGS.slice(0, n).reverse().map(([loc, item], k) => {
+            const i = n - 1 - k, t = 24.05 + i * 0.36;
+            const g = io(F, s(t), s(t) + 6);
+            return (
+              <div key={i} style={{height: 150 * g, opacity: g, flexShrink: 0}}>
+                <Glass x={0} y={0} w={900} h={140} r={34} style={{position: 'relative', display: 'flex', alignItems: 'center', gap: 22, padding: '0 30px', transform: `scale(${0.9 + 0.1 * g})`}}>
+                  <HomeRunLogo size={78} style={{boxShadow: 'none'}} />
+                  <div style={{flex: 1}}>
+                    <div style={{display: 'flex', justifyContent: 'space-between', fontSize: 22, fontWeight: 600, color: MUTED, ...LAT}}><span>NEW ORDER</span><span>now</span></div>
+                    <div style={{fontSize: 34, fontWeight: 700, color: TXT, ...LAT}}>{item} · {loc}</div>
+                  </div>
+                </Glass>
+              </div>
+            );
+          })}
         </div>
       </div>
     </AbsoluteFill>
   );
 };
 
-/* ---------- 7. Market: shops + customers existed; friction -> one simple system ---------- */
-const PAINS = [[40.55, <Ico key="s" d={<><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></>} size={70} color={INKC} sw={2.2} />, 'माल शोधणं', 'Search'],
-  [41.7, <div key="r" style={{fontSize: 72, fontWeight: 800, color: INKC}}>₹</div>, 'किमती', 'Clear prices'],
-  [42.85, <Ico key="c" d={<><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>} size={70} color={INKC} sw={2.2} />, 'वेळेवर माल', '60-min delivery']];
-const Market = ({F}) => {
-  const fix = io(F, s(45.75), s(46.2));
-  const flow = io(F, s(46.2), s(47.2));
+/* ---------- 12. 1,00,000+ orders ---------- */
+const Orders = ({F}) => {
+  const v = Math.round(io(F, s(27.4), s(29.2), 0, 100000, Easing.out(Easing.cubic)));
   return (
     <AbsoluteFill>
-      <div style={{...abs(0, 230), width: 1080, display: 'flex', justifyContent: 'center', transform: `scale(${pop(F, 35.6, 12)})`}}>
-        <div style={{display: 'flex', alignItems: 'center', gap: 14, background: Y, borderRadius: 999, padding: '14px 32px 8px 18px'}}><Bulb size={50} /><div style={{fontSize: 32, fontWeight: 800, color: BG, letterSpacing: '0.08em'}}>BUSINESS LESSON</div></div>
+      <div style={{...abs(0, 330), width: 1080, textAlign: 'center'}}>
+        <Label>ORDERS DELIVERED</Label>
+        <Big size={190} style={{marginTop: 20, fontVariantNumeric: 'tabular-nums'}}>{v.toLocaleString('en-IN')}<span style={{color: GOLD_T}}>+</span></Big>
       </div>
-      {/* shops  <->  customers */}
-      <Glass x={90} y={350} w={300} h={300} r={40} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, transform: `scale(${pop(F, 37.9, 13)})`}}>
-        <div style={{display: 'flex', gap: 4}}><Shop size={84} /><Shop size={84} /></div>
-        <div style={{fontSize: 40, fontWeight: 700, color: TXT}}>दुकानं</div>
-      </Glass>
-      <Glass x={690} y={350} w={300} h={300} r={40} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6, transform: `scale(${pop(F, 38.9, 13)})`}}>
-        <div style={{display: 'flex', gap: 0}}><Person size={78} /><Person size={78} c={HR_B} /><Person size={78} /></div>
-        <div style={{fontSize: 40, fontWeight: 700, color: TXT}}>ग्राहक</div>
-      </Glass>
-      <svg width="300" height="60" style={{...abs(390, 470)}}>
-        <path d="M10 30H290" stroke={fix > 0.5 ? C_GREEN : 'rgba(0,0,0,0.25)'} strokeWidth="6" strokeDasharray={fix > 0.5 ? '1 0' : '10 12'} strokeLinecap="round" opacity={io(F, s(39.3), s(39.7))} />
-        {fix > 0.5 && <circle cx={10 + 280 * ((flow * 3) % 1)} cy="30" r="9" fill={C_GREEN} />}
-      </svg>
-      <div style={{...abs(540 - 70, 430), transform: `scale(${pop(F, 45.7, 10)})`}}><HomeRunLogo size={140} /></div>
-      {!(fix > 0) && <div style={{...abs(540 - 34, 466), width: 68, height: 68, borderRadius: 34, background: 'var(--l-alertbg)', border: `2px solid ${C_RED}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${pop(F, 40.4, 10)})`}}>
-        <svg viewBox="0 0 24 24" width="30" height="30"><path d="M6 6l12 12M18 6L6 18" stroke={C_RED} strokeWidth="3" strokeLinecap="round" /></svg></div>}
-      {/* the three frictions -> fixed */}
-      <div style={{...abs(90, 720), width: 900, display: 'flex', flexDirection: 'column', gap: 22}}>
-        {PAINS.map(([t, icon, pain, sol], i) => (
-          <Glass key={i} x={0} y={0} w={900} h={180} r={36} style={{position: 'relative', display: 'flex', alignItems: 'center', gap: 28, padding: '0 34px', ...up(F, t - 0.15, 12, 30),
-            borderColor: fix > 0.5 ? `${C_GREEN}55` : LINE}}>
-            <div style={{width: 120, height: 120, borderRadius: 30, background: '#F6F1E6', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{icon}</div>
-            <div style={{flex: 1, position: 'relative', height: 60}}>
-              <div style={{...abs(0, 0), fontSize: 48, fontWeight: 700, color: TXT, ...LAT, opacity: 1 - fix}}>{pain}</div>
-              <div style={{...abs(0, 0), fontSize: 48, fontWeight: 700, color: TXT, ...LAT, opacity: fix}}>{sol}</div>
-            </div>
-            <div style={{position: 'relative', width: 70, height: 70}}>
-              <div style={{...abs(0, 0), opacity: 1 - fix, transform: `scale(${pop(F, t + 0.3, 9)})`}}><svg viewBox="0 0 24 24" width="70" height="70"><circle cx="12" cy="12" r="11" fill={C_RED} /><path d="M8 8l8 8M16 8l-8 8" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" /></svg></div>
-              <div style={{...abs(0, 0), opacity: fix, transform: `scale(${pop(F, 45.9 + i * 0.15, 9)})`}}><Tick size={70} /></div>
-            </div>
+      {/* receipt stack */}
+      {[0, 1, 2, 3, 4].map((i) => (
+        <div key={i} style={{...abs(250 + (i % 2 ? 30 : -30) + i * 4, 980 - i * 60), transform: `rotate(${(i - 2) * 4}deg) translateY(${(1 - pop(F, 27.2 + i * 0.25, 12)) * 600}px)`}}>
+          <Glass x={0} y={0} w={580} h={200} r={28} style={{position: 'relative', display: 'flex', alignItems: 'center', gap: 20, padding: '0 28px'}}>
+            <Tick size={60} />
+            <div style={{flex: 1}}><div style={{fontSize: 30, fontWeight: 700, color: TXT, ...LAT}}>Order #{(98420 + i * 377).toLocaleString('en-IN')}</div><div style={{fontSize: 22, color: MUTED, ...LAT}}>Delivered · 52 min</div></div>
+            <HomeRunLogo size={70} style={{boxShadow: 'none'}} />
           </Glass>
-        ))}
-      </div>
+        </div>
+      ))}
     </AbsoluteFill>
   );
 };
 
-/* ---------- 8. Insight: no new idea needed; old business + 1 problem solved = big company ---------- */
-const Insight = ({F}) => {
-  const x = io(F, s(50.6), s(51.0));
-  const eq = [[51.9, <Shop key="s" size={110} />, 'जुना बिझनेस', null], [53.0, <Wrench key="w" size={100} />, '1 प्रॉब्लेम सोडवला', '+'], [54.6, <Rocket key="r" size={110} />, 'कोट्यवधींची कंपनी', '=']];
+/* ---------- 13. 8x growth in 12 months ---------- */
+const GROW = [1, 1.25, 1.5, 1.9, 2.3, 2.9, 3.6, 4.4, 5.3, 6.2, 7.1, 8];
+const Growth = ({F}) => {
+  const p = io(F, s(30.45), s(31.6), 0, 1, Easing.inOut(Easing.cubic));
+  const pts = GROW.map((g, i) => [60 + i * 70, 560 - g * 62]);
+  const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y}`).join(' ');
   return (
     <AbsoluteFill>
-      <Glass x={90} y={230} w={900} h={250} r={40} style={{display: 'flex', alignItems: 'center', gap: 30, padding: '0 40px', transform: `scale(${pop(F, 49.0, 13)})`, opacity: 1 - x * 0.4}}>
-        <div style={{filter: `grayscale(${x})`}}><Bulb size={140} on={1 - x} /></div>
-        <div style={{fontSize: 58, fontWeight: 700, color: TXT, ...LAT}}>नवीन कल्पना?</div>
+      <Glass x={90} y={260} w={900} h={930} r={44} style={{padding: '40px 44px'}}>
+        <Label>BUSINESS · LAST 12 MONTHS</Label>
+        <Big size={200} color={C_GREEN} style={{marginTop: 18}}>{Math.max(1, Math.round(8 * io(F, s(30.8), s(31.4))))}×</Big>
+        <svg viewBox="0 0 900 600" width="812" height="560" style={{marginTop: 20, overflow: 'visible'}}>
+          {[0, 1, 2, 3].map((k) => <path key={k} d={`M40 ${560 - k * 160}H860`} stroke="rgba(0,0,0,0.06)" strokeWidth="2" />)}
+          <path d={`${d} L${pts[11][0]} 560 L60 560Z`} fill={`${C_GREEN}22`} style={{clipPath: `inset(0 ${100 - p * 100}% 0 0)`}} />
+          <path d={d} fill="none" stroke={C_GREEN} strokeWidth="8" strokeLinejoin="round" strokeLinecap="round" pathLength="1" strokeDasharray="1" strokeDashoffset={1 - p} />
+          <circle cx={pts[11][0]} cy={pts[11][1]} r="16" fill={C_GREEN} opacity={io(F, s(31.5), s(31.7))} />
+        </svg>
       </Glass>
-      <svg width="900" height="250" style={{...abs(90, 230), overflow: 'visible'}}><path d="M60 160 L840 90" stroke={C_RED} strokeWidth="10" strokeLinecap="round" pathLength="1" strokeDasharray="1" strokeDashoffset={1 - x} /></svg>
-      <div style={{...abs(90, 540), width: 900, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12}}>
+    </AbsoluteFill>
+  );
+};
+
+/* ---------- 14. $12M funding (real photo) ---------- */
+const Funding = ({F}) => (
+  <AbsoluteFill>
+    <div style={{...abs(70, 250), transform: `scale(${0.95 + 0.05 * pop(F, 32.1, 16)})`}}>
+      <TeamPhoto w={940} h={1060} zoom={1.25 - 0.1 * io(F, s(32), s(35.4), 0, 1, Easing.linear)} />
+      <div style={{...abs(0, 0), width: 940, height: 1060, borderRadius: 40, background: 'linear-gradient(180deg, rgba(10,10,11,0) 35%, rgba(10,10,11,0.88) 100%)'}} />
+      <div style={{...abs(50, 650)}}>
+        <div style={{...up(F, 32.4, 12, 20), fontSize: 30, fontWeight: 700, color: 'rgba(255,255,255,0.75)', letterSpacing: '0.12em'}}>FUNDING RAISED</div>
+        <Big size={220} color={Y} style={{marginTop: 10, transform: `scale(${pop(F, 32.45, 10)})`, transformOrigin: '0 100%'}}>$12M</Big>
+        <div style={{...up(F, 34.0, 12, 20), fontSize: 34, fontWeight: 600, color: '#fff', marginTop: 12, ...LAT}}>≈ ₹100 कोटी</div>
+      </div>
+      <div style={{...abs(700, 40), transform: `scale(${pop(F, 32.8, 10)}) rotate(6deg)`}}><HomeRunLogo size={190} /></div>
+    </div>
+  </AbsoluteFill>
+);
+
+/* ---------- 15. Business lesson ---------- */
+const Lesson = ({F}) => (
+  <AbsoluteFill>
+    <div style={{...abs(140, 380), width: 800, height: 760, borderRadius: 30, background: '#FFFDF6', boxShadow: '0 40px 80px rgba(60,45,10,0.18)', transform: `rotate(-3deg) scale(${pop(F, 35.45, 13)})`,
+      backgroundImage: 'linear-gradient(rgba(59,130,246,0.18) 2px, transparent 2px)', backgroundSize: '100% 70px', backgroundPosition: '0 150px', overflow: 'hidden'}}>
+      <div style={{...abs(90, 0), width: 3, height: '100%', background: 'rgba(239,68,68,0.4)'}} />
+      <div style={{...abs(130, 90), display: 'flex', alignItems: 'center', gap: 20}}><Bulb size={120} /><div style={{fontSize: 34, fontWeight: 800, color: GOLD_T, letterSpacing: '0.12em'}}>BUSINESS LESSON</div></div>
+      <div style={{...abs(130, 290), fontSize: 120, fontWeight: 800, color: TXT, lineHeight: 1.05, ...LAT}}>
+        <div style={up(F, 35.9, 10, 20)}>धडा</div>
+        <div style={{...up(F, 36.6, 10, 20), color: GOLD_T}}>काय आहे?</div>
+      </div>
+    </div>
+  </AbsoluteFill>
+);
+
+/* ---------- 16. Market already had shops and customers ---------- */
+const SHOP_PINS = [[180, 360], [420, 520], [700, 330], [300, 780], [820, 640], [560, 900]];
+const CUST_PINS = [[120, 600], [350, 300], [620, 610], [860, 420], [200, 980], [760, 960], [480, 1040], [920, 820]];
+const Market = ({F}) => (
+  <AbsoluteFill>
+    <Glass x={60} y={230} w={960} h={1120} r={44} style={{overflow: 'hidden', padding: 0, background: '#F2EEE4'}}>
+      <svg width="960" height="1120" style={{...abs(0, 0)}}>
+        {[180, 420, 660, 900].map((y) => <path key={y} d={`M0 ${y}H960`} stroke="#fff" strokeWidth="26" />)}
+        {[150, 400, 650, 880].map((x) => <path key={x} d={`M${x} 0V1120`} stroke="#fff" strokeWidth="26" />)}
+        <path d="M0 760 C 300 700, 600 840, 960 720" stroke="#BFD8EA" strokeWidth="40" fill="none" />
+      </svg>
+      {SHOP_PINS.map(([x, y], i) => (
+        <div key={`s${i}`} style={{...abs(x - 50, y - 50), transform: `scale(${pop(F, 37.9 + i * 0.09, 11)})`}}>
+          <div style={{width: 100, height: 100, borderRadius: 30, background: '#fff', boxShadow: '0 12px 24px rgba(60,45,10,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Shop size={76} /></div>
+        </div>
+      ))}
+      {CUST_PINS.map(([x, y], i) => (
+        <div key={`c${i}`} style={{...abs(x - 34, y - 34), transform: `scale(${pop(F, 38.8 + i * 0.07, 11)})`}}>
+          <div style={{width: 68, height: 68, borderRadius: 34, background: HR_B, border: '5px solid #fff', boxShadow: '0 8px 18px rgba(60,45,10,0.2)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', overflow: 'hidden'}}><Person size={52} c="#fff" /></div>
+        </div>
+      ))}
+      <div style={{...abs(30, 1020), display: 'flex', gap: 14}}>
+        <div style={{transform: `scale(${pop(F, 38.2, 12)})`}}><Chip color={C_ORANGE} size={30}>दुकानं</Chip></div>
+        <div style={{transform: `scale(${pop(F, 38.97, 12)})`}}><Chip color={C_BLUE} size={30}>ग्राहक</Chip></div>
+      </div>
+    </Glass>
+  </AbsoluteFill>
+);
+
+/* ---------- 17-19. The three frictions ---------- */
+const CALLS = [['Sai Hardware', 'नाही', C_RED], ['Om Cement Depot', 'उद्या बघू', C_ORANGE], ['Patil Traders', 'No answer', C_RED]];
+const Calls = ({F}) => (
+  <AbsoluteFill>
+    <div style={{...abs(90, 260), display: 'flex', alignItems: 'center', gap: 20, ...up(F, 40.45, 8, 20)}}>
+      <Ico d={<><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></>} size={70} color={TXT} sw={2.4} /><Big size={84}>माल शोधणं</Big>
+    </div>
+    <div style={{...abs(90, 420), width: 900, display: 'flex', flexDirection: 'column', gap: 20}}>
+      {CALLS.map(([n, r, c], i) => (
+        <Glass key={i} x={0} y={0} w={900} h={190} r={36} style={{position: 'relative', display: 'flex', alignItems: 'center', gap: 24, padding: '0 34px', ...up(F, 40.55 + i * 0.22, 8, 30)}}>
+          <div style={{width: 100, height: 100, borderRadius: 50, background: `${C_GREEN}1F`, display: 'flex', alignItems: 'center', justifyContent: 'center'}}><Ico d={I_PHONE} size={52} color={C_GREEN} sw={2.2} /></div>
+          <div style={{flex: 1}}><div style={{fontSize: 40, fontWeight: 700, color: TXT, ...LAT}}>{n}</div><div style={{fontSize: 24, color: MUTED, ...LAT}}>सिमेंट आहे का?</div></div>
+          <div style={{transform: `scale(${pop(F, 40.75 + i * 0.22, 10)})`}}><Chip color={c} size={32}>{r}</Chip></div>
+        </Glass>
+      ))}
+    </div>
+  </AbsoluteFill>
+);
+const QUOTES = [['Shop A', 380], ['Shop B', 415], ['Shop C', 395]];
+const Quotes = ({F}) => (
+  <AbsoluteFill>
+    <div style={{...abs(90, 260), display: 'flex', alignItems: 'center', gap: 20, ...up(F, 41.6, 8, 20)}}>
+      <div style={{fontSize: 80, fontWeight: 800, color: TXT}}>₹</div><Big size={84}>किमती?</Big>
+    </div>
+    <div style={{...abs(90, 450), width: 900, display: 'flex', gap: 20}}>
+      {QUOTES.map(([n, p], i) => (
+        <Glass key={i} x={0} y={0} w={286} h={520} r={36} style={{position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, transform: `scale(${pop(F, 41.7 + i * 0.15, 11)}) rotate(${(i - 1) * 3}deg)`}}>
+          <Shop size={110} />
+          <div style={{fontSize: 30, fontWeight: 600, color: MUTED, ...LAT}}>{n}</div>
+          <div style={{fontSize: 70, fontWeight: 800, color: TXT, ...LAT}}>₹{p}</div>
+          <div style={{fontSize: 22, color: MUTED, ...LAT}}>per bag</div>
+        </Glass>
+      ))}
+    </div>
+    <div style={{...abs(380, 1030), transform: `scale(${pop(F, 42.2, 9)})`}}><div style={{width: 320, height: 160, borderRadius: 80, background: 'var(--l-alertbg)', border: `2px solid ${C_RED}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 90, fontWeight: 800, color: C_RED}}>???</div></div>
+  </AbsoluteFill>
+);
+const Late = ({F}) => {
+  const days = Math.min(3, Math.floor(io(F, s(43.4), s(44.4), 0, 3.99, Easing.linear)));
+  return (
+    <AbsoluteFill>
+      <div style={{...abs(90, 260), display: 'flex', alignItems: 'center', gap: 20, ...up(F, 42.75, 8, 20)}}>
+        <Ico d={<><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>} size={70} color={TXT} sw={2.4} /><Big size={84}>वेळेवर माल?</Big>
+      </div>
+      <Glass x={90} y={430} w={900} h={640} r={44} style={{padding: '36px 40px', ...up(F, 42.8, 10, 40)}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: 16}}><Ico d={I_CAL} size={46} color={TXT} /><div style={{fontSize: 36, fontWeight: 700, color: TXT, ...LAT}}>Delivery</div><div style={{flex: 1}} /><Chip color={C_RED} size={28}>{days || 1} दिवस</Chip></div>
+        <div style={{display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 12, marginTop: 30}}>
+          {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => <div key={i} style={{textAlign: 'center', fontSize: 24, fontWeight: 700, color: MUTED}}>{d}</div>)}
+          {Array.from({length: 14}, (_, i) => {
+            const waiting = i >= 2 && i < 2 + days;
+            return (
+              <div key={i} style={{height: 96, borderRadius: 18, background: i === 1 ? `${HR_B}22` : waiting ? `${C_RED}1C` : 'rgba(0,0,0,0.035)', border: i === 1 ? `3px solid ${HR_B}` : waiting ? `2px solid ${C_RED}55` : 'none',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, fontWeight: 700, color: waiting ? C_RED : TXT}}>{waiting ? '✕' : i + 10}</div>
+            );
+          })}
+        </div>
+        <div style={{display: 'flex', gap: 30, marginTop: 30, fontSize: 24, color: MUTED, ...LAT}}><span><b style={{color: HR_B}}>■</b> ordered</span><span><b style={{color: C_RED}}>■</b> site waiting</span></div>
+      </Glass>
+      <div style={{...abs(0, 1140), width: 1080, display: 'flex', justifyContent: 'center', transform: `scale(${pop(F, 44.4, 9)}) rotate(-2deg)`}}><Alert size={42}>मोठी अडचण</Alert></div>
+    </AbsoluteFill>
+  );
+};
+
+/* ---------- 20. One simple system: search -> price -> 60 min ---------- */
+const MiniScreen = ({t, title, children, F}) => (
+  <div style={{width: 290, transform: `translateY(${(1 - pop(F, t, 13)) * 500}px)`}}>
+    <div style={{width: 290, height: 560, borderRadius: 44, background: '#1d1d1f', padding: 8, boxSizing: 'border-box', boxShadow: '0 30px 60px rgba(60,45,10,0.25)'}}>
+      <div style={{width: '100%', height: '100%', borderRadius: 38, background: '#FAF8F3', overflow: 'hidden'}}>
+        <div style={{height: 70, background: HR_Y, display: 'flex', alignItems: 'flex-end', padding: '0 16px 10px', fontSize: 22, fontWeight: 800, color: HR_B, fontStyle: 'italic'}}>HomeRun</div>
+        <div style={{padding: 16}}>{children}</div>
+      </div>
+    </div>
+    <div style={{textAlign: 'center', fontSize: 34, fontWeight: 700, color: TXT, marginTop: 18, ...LAT}}>{title}</div>
+  </div>
+);
+const System = ({F}) => (
+  <AbsoluteFill>
+    <div style={{...abs(0, 230), width: 1080, display: 'flex', justifyContent: 'center', transform: `scale(${pop(F, 45.6, 11)})`}}><HomeRunLogo size={200} /></div>
+    <div style={{...abs(60, 500), width: 960, display: 'flex', justifyContent: 'space-between'}}>
+      <MiniScreen F={F} t={45.9} title="Search">
+        <div style={{height: 46, borderRadius: 12, background: '#fff', border: '2px solid rgba(0,0,0,0.08)', fontSize: 20, padding: '12px 12px 0', color: '#1F1F1F'}}>cement</div>
+        {[0, 1, 2].map((i) => <div key={i} style={{display: 'flex', gap: 10, alignItems: 'center', marginTop: 14}}><CementBag size={60} /><div style={{flex: 1}}><div style={{height: 12, borderRadius: 6, background: '#DDD4C2', width: '90%'}} /><div style={{height: 10, borderRadius: 5, background: '#ECE6D8', width: '60%', marginTop: 8}} /></div></div>)}
+      </MiniScreen>
+      <MiniScreen F={F} t={46.6} title="Clear price">
+        <div style={{display: 'flex', justifyContent: 'center'}}><CementBag size={150} /></div>
+        <div style={{fontSize: 22, color: '#8a8478', textAlign: 'center'}}>OPC 53 · 50 kg</div>
+        <div style={{fontSize: 56, fontWeight: 800, color: HR_B, textAlign: 'center', ...LAT}}>₹385</div>
+        <div style={{height: 54, borderRadius: 14, background: HR_B, marginTop: 14, color: '#fff', fontSize: 22, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 4}}>Add to cart</div>
+      </MiniScreen>
+      <MiniScreen F={F} t={47.3} title="60 min">
+        <div style={{display: 'flex', justifyContent: 'center', marginTop: 20}}><Tempo size={200} spin={F * 30} /></div>
+        <div style={{fontSize: 24, fontWeight: 700, color: '#1F1F1F', textAlign: 'center', marginTop: 20}}>Arriving in</div>
+        <div style={{fontSize: 60, fontWeight: 800, color: C_GREEN, textAlign: 'center', ...LAT}}>{Math.max(12, 60 - Math.floor(io(F, s(47.5), s(48.8), 0, 48)))} min</div>
+      </MiniScreen>
+    </div>
+    <div style={{...abs(0, 1190), width: 1080, display: 'flex', justifyContent: 'center', transform: `scale(${pop(F, 47.6, 10)})`}}><Chip color={C_GREEN} size={40}>Simple System</Chip></div>
+  </AbsoluteFill>
+);
+
+/* ---------- 21. No new idea needed ---------- */
+const Idea = ({F}) => {
+  const x = io(F, s(50.85), s(51.2));
+  return (
+    <AbsoluteFill>
+      <div style={{...abs(540 - 220, 300), transform: `scale(${pop(F, 48.95, 12)})`, filter: `grayscale(${x})`, opacity: 1 - x * 0.5}}><Bulb size={440} on={1 - x} /></div>
+      <div style={{...abs(0, 820), width: 1080, textAlign: 'center', ...up(F, 49.75, 10, 20)}}><Big size={120} style={{display: 'inline-block'}}>नवीन कल्पना?</Big></div>
+      <svg width="900" height="200" style={{...abs(90, 780), overflow: 'visible'}}><path d="M60 140 L840 40" stroke={C_RED} strokeWidth="14" strokeLinecap="round" pathLength="1" strokeDasharray="1" strokeDashoffset={1 - x} /></svg>
+      <div style={{...abs(0, 1060), width: 1080, display: 'flex', justifyContent: 'center', transform: `scale(${pop(F, 51.0, 10)})`}}><Chip color={C_GREEN} size={40}>गरज नाही</Chip></div>
+    </AbsoluteFill>
+  );
+};
+
+/* ---------- 22. Old business + 1 problem solved = crore company ---------- */
+const Formula = ({F}) => {
+  const eq = [[51.8, <Shop key="s" size={110} />, 'जुना बिझनेस', null], [53.1, <Wrench key="w" size={100} />, '1 प्रॉब्लेम सोडवला', '+'], [54.6, <Rocket key="r" size={110} />, 'कोट्यवधींची कंपनी', '=']];
+  return (
+    <AbsoluteFill>
+      <div style={{...abs(90, 280), width: 900, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16}}>
         {eq.map(([t, ic, label, op], i) => (
           <React.Fragment key={i}>
-            {op && <div style={{fontSize: 80, fontWeight: 800, color: GOLD_T, lineHeight: 1, opacity: io(F, s(t - 0.1), s(t + 0.1))}}>{op}</div>}
-            <Glass x={0} y={0} w={900} h={190} r={36} style={{position: 'relative', display: 'flex', alignItems: 'center', gap: 30, padding: '0 36px', transform: `scale(${pop(F, t, 13)})`,
+            {op && <div style={{fontSize: 90, fontWeight: 800, color: GOLD_T, lineHeight: 1, transform: `scale(${pop(F, t - 0.15, 10)})`}}>{op}</div>}
+            <Glass x={0} y={0} w={900} h={230} r={40} style={{position: 'relative', display: 'flex', alignItems: 'center', gap: 34, padding: '0 40px', transform: `scale(${pop(F, t, 13)})`,
               ...(i === 2 ? {background: Y, borderColor: 'transparent', boxShadow: `0 30px 70px ${Y}66`} : {})}}>
-              <div style={{width: 130, height: 130, borderRadius: 32, background: i === 2 ? '#fff' : '#F6F1E6', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{ic}</div>
-              <div style={{fontSize: 52, fontWeight: 700, color: i === 2 ? BG : TXT, ...LAT}}>{label}</div>
+              <div style={{width: 150, height: 150, borderRadius: 36, background: i === 2 ? '#fff' : '#F6F1E6', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{ic}</div>
+              <div style={{fontSize: 56, fontWeight: 700, color: i === 2 ? BG : TXT, ...LAT}}>{label}</div>
             </Glass>
           </React.Fragment>
         ))}
@@ -435,46 +716,73 @@ const Insight = ({F}) => {
   );
 };
 
-/* ---------- 9. CTA: your idea -> app / website -> DM Outgrid Labs ---------- */
-const Cta = ({F}) => {
-  const dm = pop(F, 64.8, 13);
-  const typed = 'Hi, माझी एक Business Idea आहे'.slice(0, Math.floor(io(F, s(65.3), s(66.6), 0, 29, Easing.linear)));
+/* ---------- 23. Your idea ---------- */
+const Yours = ({F}) => (
+  <AbsoluteFill>
+    <div style={{...abs(540 - 300, 280), width: 600, height: 600, borderRadius: '50%', background: `radial-gradient(closest-side, ${Y}88, transparent)`, opacity: io(F, s(57.2), s(58.4)), transform: `scale(${0.8 + 0.2 * Math.sin(F / 10)})`}} />
+    <div style={{...abs(540 - 200, 340), transform: `scale(${pop(F, 56.95, 11)}) rotate(${Math.sin(F / 12) * 4}deg)`}}><Bulb size={400} /></div>
+    <div style={{...abs(0, 820), width: 1080, display: 'flex', justifyContent: 'center', transform: `scale(${pop(F, 58.85, 10)})`}}>
+      <div style={{background: TXT, color: 'var(--l-bg)', borderRadius: 30, padding: '24px 44px 16px', fontSize: 80, fontWeight: 800, ...LAT}}>तुमची <span style={{color: Y}}>Business Idea</span></div>
+    </div>
+  </AbsoluteFill>
+);
+
+/* ---------- 24. Build it: mobile app + website (wireframe -> designed) ---------- */
+const Build = ({F}) => {
+  const a = io(F, s(61.3), s(61.9)), w = io(F, s(62.25), s(62.85));
   return (
     <AbsoluteFill>
-      <Glass x={90} y={230} w={900} h={220} r={40} style={{display: 'flex', alignItems: 'center', gap: 30, padding: '0 40px', transform: `scale(${pop(F, 57.0, 13)})`, borderColor: `${Y}`, boxShadow: `0 24px 70px ${Y}55`}}>
-        <Bulb size={130} /><div style={{fontSize: 58, fontWeight: 700, color: TXT, ...LAT}}>तुमची Business Idea</div>
-      </Glass>
-      {/* mobile app */}
-      <div style={{...abs(110, 520), width: 300, height: 520, borderRadius: 48, background: '#1d1d1f', padding: 10, boxSizing: 'border-box', transform: `scale(${pop(F, 60.4, 13)}) rotate(-4deg)`, boxShadow: '0 30px 60px rgba(60,45,10,0.25)'}}>
-        <div style={{width: '100%', height: '100%', borderRadius: 40, background: '#FAF8F3', overflow: 'hidden', padding: '50px 18px 18px', boxSizing: 'border-box'}}>
-          <div style={{height: 90, borderRadius: 20, background: Y}} />
-          {[0, 1, 2].map((i) => <div key={i} style={{display: 'flex', gap: 10, marginTop: 16, alignItems: 'center'}}><div style={{width: 60, height: 60, borderRadius: 14, background: '#EEE8DA'}} /><div style={{flex: 1}}><div style={{height: 14, width: '80%', borderRadius: 7, background: '#DDD4C2'}} /><div style={{height: 10, width: '50%', borderRadius: 5, background: '#ECE6D8', marginTop: 8}} /></div></div>)}
-          <div style={{height: 64, borderRadius: 18, background: BG, marginTop: 22}} />
+      <PhoneL x={90} y={300} w={380} h={780} style={{transform: `scale(${pop(F, 60.0, 13)}) rotate(-4deg)`}}>
+        <div style={{padding: '60px 20px 20px'}}>
+          <div style={{height: 120, borderRadius: 22, background: a ? Y : 'transparent', border: `3px dashed rgba(0,0,0,${0.25 * (1 - a)})`, opacity: 0.4 + 0.6 * a}} />
+          {[0, 1, 2, 3].map((i) => <div key={i} style={{display: 'flex', gap: 12, marginTop: 18, alignItems: 'center'}}><div style={{width: 70, height: 70, borderRadius: 16, background: a ? ['#FFE7A3', '#DCE7F2', '#DFF3D8', '#F3DCE7'][i] : 'transparent', border: `2px dashed rgba(0,0,0,${0.2 * (1 - a)})`}} /><div style={{flex: 1}}><div style={{height: 14, borderRadius: 7, background: a ? '#2A2A2A' : 'rgba(0,0,0,0.1)', width: '80%'}} /><div style={{height: 10, borderRadius: 5, background: 'rgba(0,0,0,0.1)', width: '50%', marginTop: 8}} /></div></div>)}
+          <div style={{height: 70, borderRadius: 20, background: a ? BG : 'rgba(0,0,0,0.08)', marginTop: 26}} />
         </div>
-      </div>
-      <div style={{...abs(110, 1060), width: 300, textAlign: 'center', fontSize: 36, fontWeight: 700, color: TXT, ...LAT, opacity: io(F, s(60.6), s(61))}}>Mobile App</div>
-      {/* website */}
-      <div style={{...abs(450, 600), width: 540, height: 400, borderRadius: 28, background: '#fff', border: `1.5px solid ${LINE}`, overflow: 'hidden', transform: `scale(${pop(F, 62.25, 13)}) rotate(3deg)`, boxShadow: '0 30px 60px rgba(60,45,10,0.18)'}}>
+      </PhoneL>
+      <div style={{...abs(500, 470), width: 500, height: 420, borderRadius: 28, background: '#fff', boxShadow: '0 30px 60px rgba(60,45,10,0.18)', overflow: 'hidden', transform: `scale(${pop(F, 60.5, 13)}) rotate(3deg)`}}>
         <div style={{height: 46, background: '#F1ECE1', display: 'flex', alignItems: 'center', gap: 8, padding: '0 16px'}}>{[C_RED, Y, C_GREEN].map((c) => <div key={c} style={{width: 14, height: 14, borderRadius: 7, background: c}} />)}<div style={{flex: 1, height: 24, borderRadius: 12, background: '#fff', marginLeft: 12}} /></div>
         <div style={{padding: 26}}>
-          <div style={{height: 30, width: '70%', borderRadius: 8, background: '#2A2A2A'}} /><div style={{height: 16, width: '90%', borderRadius: 8, background: '#E2DCCF', marginTop: 16}} /><div style={{height: 16, width: '60%', borderRadius: 8, background: '#E2DCCF', marginTop: 10}} />
-          <div style={{display: 'flex', gap: 14, marginTop: 26}}>{[0, 1, 2].map((i) => <div key={i} style={{flex: 1, height: 120, borderRadius: 16, background: i === 1 ? Y : '#F1ECE1'}} />)}</div>
+          <div style={{height: 34, width: '70%', borderRadius: 8, background: w ? '#2A2A2A' : 'rgba(0,0,0,0.1)'}} /><div style={{height: 16, width: '90%', borderRadius: 8, background: 'rgba(0,0,0,0.1)', marginTop: 16}} />
+          <div style={{display: 'flex', gap: 14, marginTop: 26}}>{[0, 1, 2].map((i) => <div key={i} style={{flex: 1, height: 150, borderRadius: 16, background: w ? [Y, '#DCE7F2', '#DFF3D8'][i] : 'transparent', border: `2px dashed rgba(0,0,0,${0.2 * (1 - w)})`}} />)}</div>
         </div>
       </div>
-      <div style={{...abs(450, 1060), width: 540, textAlign: 'center', fontSize: 36, fontWeight: 700, color: TXT, ...LAT, opacity: io(F, s(62.4), s(62.8))}}>Website</div>
-      {/* DM */}
-      <div style={{...abs(90, 1130), width: 900, transform: `translateY(${(1 - dm) * 200}px)`, opacity: Math.min(1, dm * 2)}}>
-        <Glass x={0} y={0} w={900} h={230} r={40} style={{position: 'relative', padding: '28px 34px'}}>
-          <div style={{display: 'flex', alignItems: 'center', gap: 16}}>
-            <Instagram size={60} />
-            <div style={{flex: 1}}><div style={{fontSize: 32, fontWeight: 700, color: TXT, ...LAT}}>outgridlabs</div><div style={{fontSize: 22, color: MUTED, ...LAT}}>Message</div></div>
-            <div style={{background: '#0095F6', color: '#fff', borderRadius: 14, padding: '12px 26px 8px', fontSize: 28, fontWeight: 700, ...LAT}}>DM</div>
+      <div style={{...abs(110, 1110), transform: `scale(${pop(F, 61.3, 11)})`}}><Chip color={C_BLUE} size={40}>Mobile App</Chip></div>
+      <div style={{...abs(640, 930), transform: `scale(${pop(F, 62.25, 11)})`}}><Chip color={C_GREEN} size={40}>Website</Chip></div>
+      <div style={{...abs(560, 1060), transform: `scale(${pop(F, 63.1, 11)})`, display: 'flex', alignItems: 'center', gap: 14, background: Y, borderRadius: 999, padding: '16px 30px 10px', fontSize: 36, fontWeight: 800, color: BG, ...LAT}}>बिझनेस सुरू</div>
+    </AbsoluteFill>
+  );
+};
+
+/* ---------- 25. DM Outgrid Labs ---------- */
+const Dm = ({F}) => {
+  const typed = 'Hi, माझी एक Business Idea आहे'.slice(0, Math.floor(io(F, s(64.95), s(65.85), 0, 29, Easing.linear)));
+  return (
+    <AbsoluteFill>
+      <Glass x={90} y={260} w={900} h={1020} r={44} style={{padding: 0, overflow: 'hidden', ...up(F, 64.7, 12, 60)}}>
+        <div style={{padding: '40px 40px 30px', display: 'flex', alignItems: 'center', gap: 26, borderBottom: `1.5px solid ${LINE}`}}>
+          <div style={{width: 150, height: 150, borderRadius: 75, padding: 6, background: 'linear-gradient(45deg, #fdf497, #fd5949, #d6249f, #285AEB)'}}>
+            <div style={{width: '100%', height: '100%', borderRadius: '50%', background: '#121212', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '5px solid #fff', boxSizing: 'border-box'}}>
+              <Mark size={74} color="#fff" />
+            </div>
           </div>
-          <div style={{marginTop: 18, height: 70, borderRadius: 35, border: `2px solid ${LINE}`, display: 'flex', alignItems: 'center', padding: '6px 26px 0', fontSize: 30, fontWeight: 600, color: TXT, ...LAT}}>
-            {typed}<span style={{color: '#0095F6', opacity: Math.floor(F / 8) % 2}}>|</span>
+          <div style={{flex: 1}}>
+            <div style={{fontSize: 44, fontWeight: 700, color: TXT, ...LAT}}>outgridlabs</div>
+            <div style={{fontSize: 26, color: MUTED, ...LAT}}>Apps · Websites · Automation</div>
           </div>
-        </Glass>
-      </div>
+          <Instagram size={70} />
+        </div>
+        <div style={{padding: '30px 40px', display: 'flex', gap: 18}}>
+          <div style={{flex: 1, height: 80, borderRadius: 18, background: 'rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, fontWeight: 700, color: TXT}}>Following</div>
+          <div style={{flex: 1, height: 80, borderRadius: 18, background: '#0095F6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, fontWeight: 700, color: '#fff',
+            transform: `scale(${1 - 0.06 * io(F, s(65.0), s(65.1)) * io(F, s(65.1), s(65.25), 1, 0)})`}}>Message</div>
+        </div>
+        <div style={{...abs(40, 640), right: 40, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 16}}>
+          {F >= s(66.0) && <div style={{background: '#3797F0', color: '#fff', borderRadius: '28px 28px 8px 28px', padding: '18px 26px 12px', fontSize: 34, fontWeight: 500, transform: `scale(${pop(F, 66.0, 12)})`, transformOrigin: '100% 100%'}}>Hi, माझी एक Business Idea आहे</div>}
+        </div>
+        <div style={{position: 'absolute', left: 40, right: 40, bottom: 40, height: 100, borderRadius: 50, border: `2px solid ${LINE}`, display: 'flex', alignItems: 'center', padding: '6px 30px 0', fontSize: 32, fontWeight: 500, color: TXT, ...LAT}}>
+          {F < s(66.0) ? <>{typed}<span style={{color: '#0095F6', opacity: Math.floor(F / 8) % 2}}>|</span></> : <span style={{color: MUTED}}>Message…</span>}
+        </div>
+      </Glass>
     </AbsoluteFill>
   );
 };
@@ -482,7 +790,9 @@ const Cta = ({F}) => {
 const Outro = ({F}) => <LeanOutro F={F} at={OUTRO_AT} cta="DM करा" />;
 
 /* ---------- main ---------- */
-const COMPS = {hook: Hook, site: Site, reveal: Reveal, app: App, delivery: Delivery, traction: Traction, market: Market, insight: Insight, cta: Cta, outro: Outro};
+const COMPS = {hook: Hook, cement: Cement, wire: Wire, plywood: PlywoodSc, what: What, reveal: Reveal, app: App, users: Users, products: Products, delivery: Delivery,
+  pings: Pings, orders: Orders, growth: Growth, funding: Funding, lesson: Lesson, market: Market, calls: Calls, quotes: Quotes, late: Late, system: System,
+  idea: Idea, formula: Formula, yours: Yours, build: Build, dm: Dm, outro: Outro};
 const Video = () => <LeanVideo theme="light" scenes={SCENES} comps={COMPS} chunks={CHUNKS} total={TOTAL} outroAt={OUTRO_AT} />;
 const Root = () => <Composition id="Reel" component={Video} durationInFrames={TOTAL} fps={FPS} width={1080} height={1920} />;
 registerRoot(Root);

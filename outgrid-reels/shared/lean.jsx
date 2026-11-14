@@ -176,7 +176,7 @@ const LeanCaptions = ({f, chunks}) => {
       {c.words.map((w, i) => {
         const on = f >= w.t, p = io(f, w.t, w.t + 5);
         return (
-          <span key={i} style={{fontSize: 64, fontWeight: 600, lineHeight: 1.3, ...LAT, color: !on ? 'var(--l-faint)' : w.hi && !light ? Y : TXT,
+          <span key={i} style={{fontSize: 64, fontWeight: 500, lineHeight: 1.3, ...LAT, color: !on ? 'var(--l-faint)' : w.hi && !light ? Y : TXT,
             textShadow: on && w.hi && !light ? '0 0 24px rgba(255,197,46,0.45)' : 'none', transform: `translateY(${(1 - p) * 8}px)`,
             ...(light && w.hi ? {background: `linear-gradient(transparent 58%, ${Y} 58%, ${Y} 90%, transparent 90%) no-repeat left / ${io(f, w.t, w.t + 6) * 100}% 100%`, padding: '0 4px'} : {})}}>{w.w}</span>
         );
@@ -184,10 +184,18 @@ const LeanCaptions = ({f, chunks}) => {
     </div>
   );
 };
-// first scene starts fully visible (frame 0 is the thumbnail); others fade in over 8 frames
-const SceneFade = ({dur, first, children}) => {
+// first scene starts fully visible (frame 0 is the thumbnail).
+// 'push' (default): next scene glides in from the right while the old one glides out left, plus a slow camera drift (scale 1 -> 1.035)
+// so no screen ever sits still. 'fade': plain 8-frame fade.
+const SceneFade = ({dur, first, last, transition = 'push', children}) => {
   const f = useCurrentFrame();
-  return <AbsoluteFill style={{opacity: Math.min(first ? 1 : io(f, 0, 8), io(f, dur - 6, dur, 1, 0))}}>{children}</AbsoluteFill>;
+  const inP = first ? 1 : io(f, 0, 10, 0, 1, Easing.out(Easing.cubic));
+  const outP = last ? 0 : io(f, dur - 8, dur, 0, 1, Easing.in(Easing.cubic));
+  if (transition === 'fade') return <AbsoluteFill style={{opacity: Math.min(first ? 1 : io(f, 0, 8), io(f, dur - 6, dur, 1, 0))}}>{children}</AbsoluteFill>;
+  const drift = 1 + 0.035 * io(f, 0, dur, 0, 1, Easing.linear);
+  return (
+    <AbsoluteFill style={{opacity: Math.min(inP, 1 - outP), transform: `translateX(${(1 - inP) * 140 - outP * 140}px) scale(${drift})`}}>{children}</AbsoluteFill>
+  );
 };
 
 /* ---------- outro ---------- */
@@ -214,7 +222,7 @@ const LeanOutro = ({F, at, cta}) => {
 // scenes: [[key, fromSec, toSec], ...] (cuts inside VO pauses); comps: {key: Component({F})} where F = absolute frame
 // chunks: buildChunks(SEGS) filtered to skip the hook; outroAt: second the outro starts (watermark hides)
 // theme: 'dark' | 'light'
-const LeanVideo = ({scenes, comps, chunks, total, outroAt = Infinity, vo = 'vo.mp3', theme = 'dark'}) => {
+const LeanVideo = ({scenes, comps, chunks, total, outroAt = Infinity, vo = 'vo.mp3', theme = 'dark', transition = 'push'}) => {
   const f = useCurrentFrame();
   const t = THEMES[theme];
   return (
@@ -226,7 +234,7 @@ const LeanVideo = ({scenes, comps, chunks, total, outroAt = Infinity, vo = 'vo.m
         const Comp = comps[k];
         return (
           <Sequence key={k} from={s(a)} durationInFrames={s(b) - s(a)}>
-            <SceneFade dur={s(b) - s(a)} first={a === 0}><Comp F={f} /></SceneFade>
+            <SceneFade dur={s(b) - s(a)} first={a === 0} last={k === scenes[scenes.length - 1][0]} transition={transition}><Comp F={f} /></SceneFade>
           </Sequence>
         );
       })}
