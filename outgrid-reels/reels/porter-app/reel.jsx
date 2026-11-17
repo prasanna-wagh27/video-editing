@@ -1,7 +1,7 @@
 /*
  * "Porter-like tempo booking app in your city" (Marathi), LEAN style, light theme. VO at original speed.
  * Real logos: shared/logos (Google Maps, Google Pay, PhonePe, Paytm, Google Play, App Store) via public/logos.
- * Porter logo: drop the official file at public/img/porter_logo.png and set PORTER_IMG = true (until then a neutral text pill).
+ * Porter logo + photos (user-supplied): public/img/porter_logo.png (cropped wordmark tile), porter_trucks.jpg.
  * App screens, fares, plan price and the admin dashboard are illustrative. Revenue math is the script's own example.
  * Captions: captions.js from `python3 scripts/align_whisper.py reels/porter-app/script_hi.txt reels/porter-app/public/vo.mp3`.
  * T = real spoken word times (s) from that alignment; scene cuts sit in VO pauses.
@@ -16,7 +16,7 @@ import {
 } from '../../shared/lean.jsx';
 import {CAPS} from './captions.js';
 
-const PORTER_IMG = false;
+const PORTER_IMG = true;
 
 /* ---------- word times (s) ---------- */
 const T = {
@@ -66,7 +66,7 @@ const StepTag = ({n, children}) => (
 
 /* ---------- real logos ---------- */
 const PorterLogo = ({h = 110}) => PORTER_IMG
-  ? <Img src={staticFile('img/porter_logo.png')} style={{height: h, width: 'auto', display: 'block'}} />
+  ? <Img src={staticFile('img/porter_logo.png')} style={{height: h, width: h * 430 / 140, display: 'block', borderRadius: h * 0.22, boxShadow: '0 14px 30px rgba(0,58,220,0.25)'}} />
   : <div style={{height: h, display: 'flex', alignItems: 'center', background: '#fff', border: `3px solid ${LINE}`, borderRadius: h * 0.28, padding: `${h * 0.12}px ${h * 0.3}px 0`, fontSize: h * 0.6, fontWeight: 700, color: TXT, ...LAT, boxSizing: 'border-box'}}>Porter</div>;
 const MapsPin = ({size = 80}) => <LogoImg src="google-maps.svg" size={size} />;
 const PayRow = ({F, t}) => (
@@ -170,37 +170,42 @@ const Tap = ({F, t, x, y}) => {
   return <div style={{...abs(x - 70 * k, y - 70 * k), width: 140 * k, height: 140 * k, borderRadius: '50%', border: `5px solid ${APP_C}`, opacity: 1 - k}} />;
 };
 
-/* ---------- 1. Hook ---------- */
+/* ---------- 1. Hook: real Porter photo, then "your" app slides in ---------- */
 const Hook = ({F}) => {
   const q = pop(F, T.kay - 0.05, 9);
   const left = Math.max(0, 40 - Math.floor(io(F, s(T.sec), s(6.3), 0, 6, Easing.linear)));
-  const p = io(F, 0, s(6.3), 0.08, 1, Easing.inOut(Easing.quad));
-  const [tx, ty, seg] = routeAt(p);
+  const ph = pop(F, T.kay - 0.25, 13);
+  const p = io(F, s(T.kay), s(6.3), 0.05, 1, Easing.inOut(Easing.quad));
+  const [tx, ty] = routeAt(p);
+  const K = 0.751, OX = -110; // CityMap (900 units) inside the 456x676 phone screen
   return (
     <AbsoluteFill>
       <div style={{...abs(72, 200), fontSize: 42, fontWeight: 600, color: MUTED, ...LAT}}>तुमच्या शहरात</div>
       <div style={{...abs(66, 262), display: 'flex', alignItems: 'center', gap: 26, fontSize: 128, fontWeight: 700, color: TXT, lineHeight: 1.1, ...LAT}}>
-        <PorterLogo h={124} /><span>सारखं App</span>
+        <PorterLogo h={118} /><span>सारखं App</span>
       </div>
       <div style={{...abs(66, 420), fontSize: 140, fontWeight: 800, color: TXT, lineHeight: 1.05, ...LAT, transform: `scale(${0.6 + 0.4 * q})`, transformOrigin: '0% 70%', opacity: Math.min(1, q * 2)}}>
         <Marker F={F} t={T.kay + 0.3}>काय लागेल?</Marker>
       </div>
-      <PhoneL x={150} y={640} w={640} h={900} style={{transform: `rotate(-3deg) translateY(${io(F, 0, 14, 50, 0)}px)`}}>
-        <div style={{...abs(0, 0), width: 616, height: 876, transform: `scale(${1.05 + 0.05 * p})`}}>
-          <CityMap w={616} h={876} p={p} />
-          <div style={{...abs(680 * 0.973 - 130 - 45, 180 * 0.973 - 92)}}><MapsPin size={90} /></div>
-          <div style={{...abs(220 * 0.973 - 130 - 22, 760 * 0.973 - 22), width: 44, height: 44, borderRadius: 22, background: '#fff', border: `9px solid ${C_GREEN}`, boxSizing: 'border-box'}} />
-          <div style={{...abs(tx * 0.973 - 130 - 80, ty * 0.973 - 92)}}><Tempo size={160} spin={F * 14} /></div>
+      <div style={{...abs(70, 640), width: 900, height: 600, borderRadius: 40, overflow: 'hidden', border: '8px solid #fff', boxSizing: 'border-box', boxShadow: '0 30px 70px rgba(60,45,10,0.22)',
+        transform: `rotate(-2.5deg) translateY(${io(F, 0, 14, 50, 0)}px)`}}>
+        <Img src={staticFile('img/porter_trucks.jpg')} style={{width: '100%', height: '100%', objectFit: 'cover', objectPosition: '40% 50%', transform: `scale(${io(F, 0, s(6.3), 1.04, 1.16, Easing.linear)})`}} />
+      </div>
+      <PhoneL x={540} y={860} w={480} h={700} style={{opacity: F < s(T.kay - 0.25) ? 0 : 1, transform: `translateY(${(1 - ph) * 1100}px) rotate(5deg)`}}>
+        <div style={{...abs(0, 0), width: 456, height: 676}}>
+          <CityMap w={456} h={676} p={p} />
+          <div style={{...abs(680 * K + OX - 34, 180 * K - 70)}}><MapsPin size={68} /></div>
+          <div style={{...abs(tx * K + OX - 60, ty * K - 70)}}><Tempo size={120} spin={F * 14} /></div>
         </div>
-        <div style={{position: 'absolute', left: 24, right: 24, bottom: 30, background: '#fff', borderRadius: 26, padding: '22px 24px 16px', display: 'flex', alignItems: 'center', gap: 16, boxShadow: '0 12px 30px rgba(0,0,0,0.12)'}}>
-          <AppGlyph size={64} /><div style={{flex: 1}}><div style={{fontSize: 30, fontWeight: 800, color: INKC, ...LAT}}>Tempo on the way</div><div style={{fontSize: 22, color: '#8a8478', ...LAT}}>Pickup → Market Yard</div></div>
-          <div style={{fontSize: 30, fontWeight: 800, color: C_GREEN, ...LAT}}>₹450</div>
+        <div style={{position: 'absolute', left: 16, right: 16, bottom: 22, background: '#fff', borderRadius: 22, padding: '16px 18px 10px', display: 'flex', alignItems: 'center', gap: 12, boxShadow: '0 12px 30px rgba(0,0,0,0.12)'}}>
+          <AppGlyph size={52} /><div style={{flex: 1}}><div style={{fontSize: 24, fontWeight: 800, color: INKC, ...LAT}}>Tempo on the way</div><div style={{fontSize: 18, color: '#8a8478', ...LAT}}>Your App</div></div>
+          <div style={{fontSize: 26, fontWeight: 800, color: C_GREEN, ...LAT}}>₹450</div>
         </div>
       </PhoneL>
-      <div style={{...abs(700, 1040), ...popS(F, T.phakt, 9)}}>
-        <div style={{transform: 'rotate(5deg)', background: '#fff', borderRadius: 40, padding: 18, boxShadow: '0 24px 50px rgba(60,45,10,0.2)'}}>
-          <Ring size={230} p={F < s(T.sec) ? io(F, s(T.phakt), s(T.n40) + 4) : left / 40}>
-            <div style={{textAlign: 'center'}}><div style={{fontSize: 92, fontWeight: 800, color: TXT, lineHeight: 1, ...LAT}}>{dev(F < s(T.sec) ? 40 : left)}</div><div style={{fontSize: 30, fontWeight: 700, color: MUTED}}>सेकंद</div></div>
+      <div style={{...abs(80, 1200), ...popS(F, T.phakt, 9)}}>
+        <div style={{transform: 'rotate(-5deg)', background: '#fff', borderRadius: 40, padding: 16, boxShadow: '0 24px 50px rgba(60,45,10,0.2)'}}>
+          <Ring size={220} p={F < s(T.sec) ? io(F, s(T.phakt), s(T.n40) + 4) : left / 40}>
+            <div style={{textAlign: 'center'}}><div style={{fontSize: 88, fontWeight: 800, color: TXT, lineHeight: 1, ...LAT}}>{dev(F < s(T.sec) ? 40 : left)}</div><div style={{fontSize: 28, fontWeight: 700, color: MUTED}}>सेकंद</div></div>
           </Ring>
         </div>
       </div>
