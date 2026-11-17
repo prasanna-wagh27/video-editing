@@ -38,3 +38,4 @@ With Claude Code, open `outgrid-reels/` and ask for a reel. The skill in `.claud
 | `distributor-order-app`: distributor/wholesaler retailer ordering app + dashboard, "ORDER" comment CTA (Marathi) | 67 s | `out/distributor_order_app_v2.mp4` (earlier: `_v1`) |
 | `realestate-crm`: Real Estate CRM, leads from 99acres / Facebook / walk-ins, WhatsApp automation, reports (Marathi, dark style) | 61.5 s | `out/realestate_crm_v2.mp4` (earlier: `_v1`) |
 | `homerun-startup`: HomeRun startup story (construction-material quick commerce), lean light style, real team photo + logo (Marathi) | 72 s | `out/homerun_startup_v3.mp4` (Whisper-aligned captions; earlier `_v1`, `_v2`) |
+| `country-delight`: Country Delight startup story (dairy subscription app), lean light style, real founders + product photos + logo (Marathi) | 73 s | `out/country_delight_v1.mp4` (Whisper-aligned captions) |
