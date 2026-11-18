@@ -117,7 +117,7 @@ def main():
     bus *= vo_rms / max(ref, 1e-6) * 10 ** (-17 / 20)
     mix = np.zeros_like(bus); mix[:len(vo)] = vo; mix += bus
     peak = np.max(np.abs(mix))
-    if peak > 0.97: mix *= 0.97 / peak
+    if peak > 0.89: mix *= 0.89 / peak  # 1 dB headroom for the AAC encode
     write(f'{d}/public/mix.wav', np.stack([mix, mix], 1))
     print(f'{len(cues)} cues, vo speech rms {20*np.log10(vo_rms):.1f} dBFS, mix peak {20*np.log10(np.max(np.abs(mix))):.1f} dBFS -> {d}/public/mix.wav')
 

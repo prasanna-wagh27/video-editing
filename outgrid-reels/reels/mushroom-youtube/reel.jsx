@@ -11,7 +11,7 @@ import {FPS, s, io, pop, abs, Y} from '../../shared/kit.jsx';
 import {BG, TXT, MUTED, LINE, GOLD_T, C_GREEN, C_BLUE, C_ORANGE, C_RED, LAT, up, Glass, Chip, Tick, LogoImg} from '../../shared/lean.jsx';
 import {WideVideo, WideOutro} from '../../shared/wide.jsx';
 import {ButtonM, OysterM, MilkyM, Straw, SpawnPack, GrowBag, G, I, rnd} from './art.jsx';
-import {CAPS} from './captions.tmp.js';
+import {CAPS} from './captions.js';
 import {K, SCENES, OUTRO_AT, HOOK_END, CHAPTERS, L, w} from './cues.mjs';
 
 const TOTAL = s(OUTRO_AT + 3);
@@ -254,7 +254,7 @@ const Land = ({F}) => (
     <div style={{...abs(410, 170), ...fadeUp(F, L(6) - 0.4)}}>
       <div style={{borderRadius: 34, overflow: 'hidden', boxShadow: 'var(--l-shadow)'}}><Field w={1100} h={620} /></div>
       <div style={{...abs(40, 40), ...popS(F, K.acre)}}><Chip color={C_GREEN} size={46}>{'१ एकर जमीन'}</Chip></div>
-      <div style={{...abs(390, 150)}}>{F >= s(K.no - 0.1) && <Cross F={F} t={K.no - 0.1} size={320} />}</div>
+      <div style={{...abs(390, 150)}}>{F >= s(K.no - 0.45) && <Cross F={F} t={K.no - 0.45} size={320} />}</div>
     </div>
   </AbsoluteFill>
 );
@@ -686,11 +686,11 @@ const Separate = ({F}) => {
 
 /* --- chapter 5: the math --- */
 const Bags3100 = ({F}) => {
-  const n = Math.round(io(F, s(K.n3100 - 0.5), s(K.n3100 + 0.6), 0, 60));
+  const n = Math.round(io(F, s(K.n3100 - 0.5), s(K.n3100 + 0.6), 0, 50));
   return (
     <AbsoluteFill>
-      <div style={{...abs(160, 190), width: 900, display: 'flex', flexWrap: 'wrap', gap: 14}}>
-        {Array.from({length: 60}).map((_, i) => <div key={i} style={{opacity: i < n ? 1 : 0.12, transform: `scale(${i < n ? 1 : 0.8})`}}><GrowBag w={72} grow={0} seed={i} /></div>)}
+      <div style={{...abs(160, 160), width: 900, display: 'flex', flexWrap: 'wrap', gap: 14}}>
+        {Array.from({length: 50}).map((_, i) => <div key={i} style={{opacity: i < n ? 1 : 0.12, transform: `scale(${i < n ? 1 : 0.8})`}}><GrowBag w={72} grow={0} seed={i} /></div>)}
       </div>
       <div style={{...abs(1140, 290)}}>
         <div style={fadeUp(F, K.year - 0.2)}><Chip color={GOLD_T} size={42}>वर्षभरात</Chip></div>

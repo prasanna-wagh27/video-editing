@@ -82,7 +82,7 @@ export const K = {
 // [sec, sound, gain dB]. A whoosh is added at every scene cut (in sfx export below).
 const S = [
   [0.05, 'pop_lo', -2], [K.lakh, 'coin', -1], [K.lakh + 0.35, 'coin', -4], [K.hoy, 'boom', 1], [K.hoy, 'stamp', -2],
-  [K.invest, 'pop'], [K.how, 'pop'], [K.acre, 'thud', -2], [K.no, 'error', -2], [K.smallRoom, 'ding', -3],
+  [K.invest, 'pop'], [K.how, 'pop'], [K.acre, 'thud', -2], [K.no - 0.45, 'error', -2], [K.smallRoom, 'ding', -3],
   [K.title, 'riser', -3], [K.title, 'boom'], [K.title + 0.1, 'sparkle', -4],
   [K.howQ, 'pop_hi', -3], [K.straw1, 'thud', -3], [K.straw2, 'thud', -3], [K.process, 'swish'], [K.spawn, 'pop'], [K.spawn + 0.2, 'type', -6],
   [K.bags, 'pop', -2], [K.bags + 0.25, 'pop', -4], [K.bags + 0.5, 'pop', -6], [K.clean, 'sparkle', -3], [K.temp, 'pop'], [K.moist, 'pop'], [K.ready, 'ding', -2],
