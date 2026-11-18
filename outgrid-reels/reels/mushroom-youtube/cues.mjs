@@ -108,6 +108,6 @@ const S = [
   [K.first, 'pop'], [K.second, 'pop'], [K.third, 'pop'], [K.notSuccess, 'error', -4], [K.rightPrice, 'ding', -3], [K.profit, 'cash', -2],
   [K.startS, 'pop'], [K.oneCycle, 'pop'], [K.thenInv, 'ding', -3],
   [K.twoLakh, 'coin', -2], [K.optA, 'pop'], [K.optB, 'pop'], [K.comment, 'type', -4], [K.subscribe, 'pop'], [K.subscribe + 0.45, 'ding', -3],
-  [OUTRO_AT, 'riser', -5], [OUTRO_AT + 0.05, 'boom', -2], [OUTRO_AT + 0.2, 'sparkle', -4],
+  [OUTRO_AT, 'riser', -5], [OUTRO_AT + 0.05, 'boom', -2], [OUTRO_AT + 0.2, 'sparkle', -4], [OUTRO_AT + 1.45, 'pop'], [OUTRO_AT + 1.55, 'ding', -3],
 ];
 export const SFX = S.concat(SCENES.slice(1).map(([, a]) => [Math.max(0, a - 0.12), 'whoosh', -3])).sort((a, b) => a[0] - b[0]);

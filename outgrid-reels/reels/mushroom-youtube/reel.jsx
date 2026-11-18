@@ -2,6 +2,7 @@
  * "Mushroom farming business breakdown" (Marathi) — YouTube 16:9, LEAN light theme, VO at original speed.
  * Timing: captions.js (scripts/align_whisper.py on script_hi.txt) -> timing.mjs (make_timing.py) -> cues.mjs (scenes, cue times K, SFX).
  * Sound effects: synthesized by scripts/sfx_mix.py from cues.mjs SFX -> public/mix.wav (render with AUDIO=mix.wav).
+ * Channel: Tarun Udyojak (YouTube). Branding = initials avatar + channel name (placeholder until the channel logo is supplied); no Outgrid branding.
  * Art: art.jsx (all vector, drawn here). Real logos: Google Maps pin, YouTube (shared/logos).
  * Illustrative values not in the script: temperature/humidity ranges, the lower "distress" price ₹१२०, setup labels.
  */
@@ -9,7 +10,7 @@ import React from 'react';
 import {registerRoot, Composition, AbsoluteFill, Img, staticFile, Easing, useCurrentFrame} from 'remotion';
 import {FPS, s, io, pop, abs, Y} from '../../shared/kit.jsx';
 import {BG, TXT, MUTED, LINE, GOLD_T, C_GREEN, C_BLUE, C_ORANGE, C_RED, LAT, up, Glass, Chip, Tick, LogoImg} from '../../shared/lean.jsx';
-import {WideVideo, WideOutro} from '../../shared/wide.jsx';
+import {WideVideo} from '../../shared/wide.jsx';
 import {ButtonM, OysterM, MilkyM, Straw, SpawnPack, GrowBag, G, I, rnd} from './art.jsx';
 import {CAPS} from './captions.js';
 import {K, SCENES, OUTRO_AT, HOOK_END, CHAPTERS, L, w} from './cues.mjs';
@@ -206,9 +207,21 @@ const Bar = ({F, t, w = 600, pct, color = C_GREEN, h = 30}) => (
 );
 const Avatar = ({ic = 'users', size = 120, bg = '#E9F2FF', color = C_BLUE}) => <Tile ic={ic} size={size} bg={bg} color={color} />;
 
+/* ---------- channel brand: Tarun Udyojak ---------- */
+const CHANNEL = 'Tarun Udyojak';
+const ChAvatar = ({size = 60}) => (
+  <div style={{width: size, height: size, borderRadius: '50%', background: `linear-gradient(135deg, ${Y}, #F59E0B)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+    fontSize: size * 0.4, fontWeight: 700, color: BG, paddingTop: size * 0.08, boxSizing: 'border-box', letterSpacing: '-0.02em', boxShadow: '0 6px 16px rgba(217,154,0,0.3)'}}>TU</div>
+);
+const ChWatermark = () => (
+  <div style={{...abs(56, 40), display: 'flex', alignItems: 'center', gap: 12, opacity: 0.92}}>
+    <ChAvatar size={46} /><div style={{fontSize: 26, fontWeight: 600, color: TXT, paddingTop: 4, ...LAT}}>{CHANNEL}</div>
+  </div>
+);
+
 /* ================= scenes ================= */
 const Hook = ({F}) => {
-  const g = io(F, 0, s(2.4), 0.25, 1, Easing.out(Easing.cubic));
+  const g = io(F, 0, s(2.4), 0.55, 1, Easing.out(Easing.cubic));
   return (
     <AbsoluteFill>
       <Glow x={1350} y={560} r={480} o={0.4} />
@@ -1194,8 +1207,8 @@ const Subscribe = ({F}) => {
     <AbsoluteFill>
       <div style={{...abs(420, 300), ...popS(F, L(155) - 0.3)}}>
         <Card w={1080} h={360} style={{flexDirection: 'row', gap: 40, padding: '0 50px'}}>
-          <div style={{width: 170, height: 170, borderRadius: 40, background: '#fff', border: `2px solid ${LINE}`, display: 'flex', alignItems: 'center', justifyContent: 'center'}}><LogoImg src="youtube.svg" size={130} /></div>
-          <div style={{flex: 1}}><Lbl size={50}>बिझनेस ब्रेकडाउन</Lbl><Lbl size={34} color={MUTED} style={{marginTop: 8}}>खरी आर्थिक बाजू</Lbl></div>
+          <ChAvatar size={170} />
+          <div style={{flex: 1}}><div style={{display: 'flex', alignItems: 'center', gap: 14}}><Lbl size={54}>{CHANNEL}</Lbl><LogoImg src="youtube.svg" size={54} /></div><Lbl size={34} color={MUTED} style={{marginTop: 8}}>बिझनेस ब्रेकडाउन, खरी आर्थिक बाजू</Lbl></div>
           <div style={{transform: `scale(${press})`, background: clicked ? 'rgba(0,0,0,0.08)' : '#FF0000', color: clicked ? TXT : '#fff', borderRadius: 999, padding: '24px 40px 16px', fontSize: 40, fontWeight: 700, whiteSpace: 'nowrap'}}>{clicked ? 'Subscribed' : 'Subscribe'}</div>
           {clicked && <div style={{transform: `rotate(${Math.sin(F / 2) * 18 * (1 - io(F, s(K.subscribe + 0.5), s(K.subscribe + 1.6)))}deg)`, transformOrigin: '50% 0%'}}><G size={70} color={TXT}>{I.bell}</G></div>}
         </Card>
@@ -1218,7 +1231,24 @@ const Next = ({F}) => (
     <Row y={640}><div style={fadeUp(F, K.next)}><Chip color={GOLD_T} size={48}>पुढचा बिझनेस ब्रेकडाउन</Chip></div></Row>
   </AbsoluteFill>
 );
-const Outro = ({F}) => <WideOutro F={F} at={OUTRO_AT} cta={<Chip color={GOLD_T} size={40}>सबस्क्राइब करा</Chip>} />;
+const Outro = ({F}) => {
+  const at = OUTRO_AT, m = pop(F, at + 0.05, 11), w = io(F, s(at + 0.3), s(at + 0.7));
+  const clicked = F >= s(at + 1.5);
+  return (
+    <AbsoluteFill>
+      <Glow x={960} y={360} r={360} o={0.45} />
+      <div style={{...abs(960 - 120, 170), transform: `scale(${m})`}}><ChAvatar size={240} /></div>
+      <div style={{...abs(0, 470), width: 1920, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+        <div style={{fontSize: 120, fontWeight: 700, color: TXT, letterSpacing: '-0.02em', opacity: w, transform: `translateY(${(1 - w) * 40}px)`, whiteSpace: 'nowrap'}}>{CHANNEL}</div>
+        <div style={{marginTop: 34, display: 'flex', alignItems: 'center', gap: 24, ...up(F, at + 0.9, 12, 20)}}>
+          <LogoImg src="youtube.svg" size={70} />
+          <div style={{transform: `scale(${F >= s(at + 1.4) && F < s(at + 1.55) ? 0.92 : 1})`, background: clicked ? 'rgba(0,0,0,0.08)' : '#FF0000', color: clicked ? TXT : '#fff', borderRadius: 999, padding: '20px 40px 12px', fontSize: 40, fontWeight: 700}}>{clicked ? 'Subscribed' : 'Subscribe'}</div>
+          {clicked && <div style={{transform: `rotate(${Math.sin(F / 2) * 16 * (1 - io(F, s(at + 1.5), s(at + 2.6)))}deg)`, transformOrigin: '50% 0%'}}><G size={60} color={TXT}>{I.bell}</G></div>}
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
 
 /* ---------- main ---------- */
 const COMPS = {
@@ -1243,7 +1273,7 @@ const Spores = ({f}) => (
   </AbsoluteFill>
 );
 const SporesNow = () => { const f = useCurrentFrame(); return <Spores f={f} />; };
-const Video = () => <WideVideo bgExtra={<SporesNow />} theme="light" scenes={SCENES} comps={COMPS} chunks={CHUNKS} total={TOTAL} chapters={CHAPTERS} outroAt={OUTRO_AT} />;
+const Video = () => <WideVideo watermark={<ChWatermark />} bgExtra={<SporesNow />} theme="light" scenes={SCENES} comps={COMPS} chunks={CHUNKS} total={TOTAL} chapters={CHAPTERS} outroAt={OUTRO_AT} />;
 // YouTube thumbnail (1920x1080 still; export with: npx remotion still ... Thumb)
 const Thumb = () => (
   <AbsoluteFill style={{fontFamily: 'Anek, sans-serif', background: '#F7F3EA'}}>

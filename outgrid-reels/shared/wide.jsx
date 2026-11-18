@@ -3,7 +3,7 @@
  * First used by reels/mushroom-youtube.
  *  - Content zone y 140-880. Subtitles centred at y 930 (one line, <= 4 words per chunk from align_whisper).
  *  - Watermark top-left, chapter chip top-right (chapters: [[fromSec, 'label'], ...]), thin progress bar on top.
- *  - WideOutro: Outgrid mark + name + handle, centred for 16:9.
+ *  - WideOutro: Outgrid mark + name + handle, centred for 16:9. For a client channel pass `watermark` and use your own outro.
  */
 import React from 'react';
 import {AbsoluteFill, Sequence, Audio, staticFile, useCurrentFrame, Easing} from 'remotion';
@@ -85,7 +85,7 @@ const WideOutro = ({F, at, cta}) => {
 
 // scenes: [[key, fromSec, toSec], ...]; comps: {key: Component({F})}; chunks: subtitles (frames); chapters: [[sec, label], ...]
 // bgExtra: optional node drawn over the background, under the scenes (ambient particles etc.)
-const WideVideo = ({scenes, comps, chunks, total, chapters = [], outroAt = Infinity, vo = 'vo.mp3', theme = 'light', transition = 'push', bgExtra = null}) => {
+const WideVideo = ({scenes, comps, chunks, total, chapters = [], outroAt = Infinity, vo = 'vo.mp3', theme = 'light', transition = 'push', bgExtra = null, watermark}) => {
   const f = useCurrentFrame();
   const t = THEMES[theme];
   return (
@@ -102,7 +102,7 @@ const WideVideo = ({scenes, comps, chunks, total, chapters = [], outroAt = Infin
           </Sequence>
         );
       })}
-      {f < s(outroAt) && <WideWatermark />}
+      {f < s(outroAt) && (watermark === undefined ? <WideWatermark /> : watermark)}
       {f < s(outroAt) && <ChapterChip f={f} chapters={chapters} />}
       <WideProgress f={f} total={total} />
       <WideCaptions f={f} chunks={chunks} />
