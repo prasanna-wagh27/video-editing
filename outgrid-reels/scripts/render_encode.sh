@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # usage (from outgrid-reels/): scripts/render_encode.sh reels/<name> <out_name> ['<props>'] [check_secs...]
 # Renders muted video in chunks (each retried, since a headless tab can stall on long renders),
-# joins them, muxes public/vo.mp3, encodes H.264/AAC faststart, then verifies.
+# joins them, muxes public/vo.mp3 (or public/$AUDIO, e.g. AUDIO=mix.wav from sfx_mix.py), encodes H.264/AAC faststart, then verifies.
 set -euo pipefail
 DIR=${1%/}; NAME=$2; PROPS=${3:-'{}'}; shift 3 || shift $#
 ENTRY="$DIR/reel.jsx"; COMP=${COMP:-Reel}; PUB="$DIR/public"
@@ -24,7 +24,7 @@ for ((a=0; a<TOTAL; a+=CHUNK)); do
   echo "file '$f'" >> "$TMP/list.txt"; i=$((i+1))
 done
 DUR=$(python3 -c "print($TOTAL/$FPS)")
-ffmpeg -hide_banner -loglevel error -y -f concat -safe 0 -i "$TMP/list.txt" -i "$PUB/vo.mp3" -map 0:v -map 1:a \
+ffmpeg -hide_banner -loglevel error -y -f concat -safe 0 -i "$TMP/list.txt" -i "$PUB/${AUDIO:-vo.mp3}" -map 0:v -map 1:a \
   -c:v libx264 -crf 18 -preset medium -pix_fmt yuv420p -c:a aac -b:a 160k -af apad -t "$DUR" -movflags +faststart "$DIR/out/${NAME}.mp4"
 ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames:format=duration -of compact "$DIR/out/${NAME}.mp4"
 ffmpeg -hide_banner -i "$DIR/out/${NAME}.mp4" -af volumedetect -vn -f null - 2>&1 | grep -E "mean_volume|max_volume"

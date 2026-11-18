@@ -14,7 +14,7 @@ How:
 Prints `export const CAPS = [...]` (frames @30fps: {a, b, words:[{w, t, hi}]}, <=4 words, never across a line)
 and a word-time report on stderr (use it for scene cues).
 """
-import json, re, subprocess, sys
+import json, os, re, subprocess, sys
 import numpy as np
 from faster_whisper import WhisperModel
 from faster_whisper.tokenizer import Tokenizer
@@ -111,8 +111,13 @@ def assign(model, tok, x, lines, words, segs):
     rate = sum(b - a for a, b in segs) / sum(LW)
     pre = np.concatenate([[0], np.cumsum(LW)])
     INF = 1e18; dp = np.full((n + 1, m + 1), INF); bk = {}; dp[0][0] = 0; cache = {}; got = {}
+    # optional band (env ALIGN_BAND=seconds of speech): line i may only end near its expected speech time; makes long VOs (5+ min) tractable
+    band = float(os.environ.get('ALIGN_BAND', 'inf'))
+    segcum = np.concatenate([[0], np.cumsum([b - a for a, b in segs])])
     for i in range(1, n + 1):
+        if i % 10 == 0: print(f'  dp line {i}/{n}', file=sys.stderr, flush=True)
         for j in range(1, m + 1):
+            if abs(segcum[j] - pre[i] * rate) > band: continue
             for i0 in range(max(0, i - 5), i):
                 for j0 in range(max(0, j - 4), j):
                     if dp[i0][j0] >= INF: continue

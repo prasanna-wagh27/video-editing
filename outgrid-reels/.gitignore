@@ -3,3 +3,4 @@ node_modules/
 .browser
 .cache/
 __pycache__/
+reels/*/public/mix.wav

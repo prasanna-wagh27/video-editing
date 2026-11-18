@@ -21,12 +21,13 @@ With Claude Code, open `outgrid-reels/` and ask for a reel. The skill in `.claud
 |---|---|
 | `.claude/skills/reel-motion-graphics/` | Claude skill: SKILL.md, scripts, example assets |
 | `shared/lean.jsx` | **Lean style** (dark, premium, one hero visual per scene, text hook): tokens, glass cards, chips, icons, real logos, `TextHook`, `LeanVideo`, `LeanOutro` |
-| `shared/logos/` | Real logo SVGs (99acres, Excel); lean reels link it as `public/logos` |
+| `shared/wide.jsx` | **16:9 YouTube layout** (1920×1080) on the lean kit: `WideVideo` (chapter chip, watermark, progress, one-line subtitles), `WideOutro` |
+| `shared/logos/` | Real logo SVGs (99acres, Excel, Google Maps/Pay/Play, App Store, PhonePe, Paytm, YouTube); lean reels link it as `public/logos` |
 | `shared/kit.jsx` | Brand (mark, lockup, watermark, outro), fonts, helpers, captions, HUD, transitions, chat mockups, icons |
 | `shared/fonts/` | Anek Devanagari (default), Baloo 2 |
 | `shared/brand/` | Outgrid Labs brand sheet |
 | `shared/templates/` | `lean-reel.jsx` (lean style starter), `starter-reel.jsx` (light style), `food-app-reel.jsx` (original reference) |
-| `scripts/` | `new_reel.sh`, `vo_pauses.sh`, `qa_stills.sh`, `render_encode.sh`, `find_browser.sh` |
+| `scripts/` | `new_reel.sh`, `vo_pauses.sh`, `qa_stills.sh`, `stills_fast.mjs` (many stills, one bundle), `render_encode.sh` (`AUDIO=mix.wav` for a mix), `sfx_mix.py` (synthesized sound effects under the VO), `align_whisper.py` (`ALIGN_BAND=20` for long VOs), `find_browser.sh` |
 | `reels/<name>/` | `reel.jsx`, `script.txt`, `public/vo.mp3`, `out/*.mp4` |
 
 ## Reels
@@ -39,4 +40,5 @@ With Claude Code, open `outgrid-reels/` and ask for a reel. The skill in `.claud
 | `realestate-crm`: Real Estate CRM, leads from 99acres / Facebook / walk-ins, WhatsApp automation, reports (Marathi, dark style) | 61.5 s | `out/realestate_crm_v2.mp4` (earlier: `_v1`) |
 | `homerun-startup`: HomeRun startup story (construction-material quick commerce), lean light style, real team photo + logo (Marathi) | 72 s | `out/homerun_startup_v3.mp4` (Whisper-aligned captions; earlier `_v1`, `_v2`) |
 | `country-delight`: Country Delight startup story (dairy subscription app), lean light style, real founders + product photos + logo (Marathi) | 73 s | `out/country_delight_v2.mp4` (Whisper-aligned captions; earlier `_v1`) |
+| `mushroom-youtube`: YouTube 16:9 (5.5 min) mushroom-farming business breakdown: how it's grown, 3 types, demand, investment, the math, the sales problem, value-added products, scaling, 3 rules; vector art, chapters, synthesized sound effects, thumbnail (Marathi) | 5 min 28 s | `out/mushroom_youtube_v1.mp4` |
 | `porter-app`: Porter-like tempo booking app for your city (how it works, 3 apps, 3 revenue streams, ₹3 lakh example, ₹2 lakh cost), lean light style, real Google Maps / GPay / PhonePe / Paytm / Play / App Store logos (Marathi) | 67 s | `out/porter_app_v2.mp4` (real Porter logo + photo in hook; earlier `_v1`) |
