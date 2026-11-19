@@ -8,7 +8,7 @@ import React from 'react';
 import {registerRoot, Composition, AbsoluteFill, Img, staticFile, Easing} from 'remotion';
 import {FPS, s, io, pop, abs, Y, Mark} from '../../shared/kit.jsx';
 import {BG, TXT, MUTED, LINE, GOLD_T, C_GREEN, C_RED, LAT, up, Glass, Chip, Ico, Tick, I_PIN, I_BELL, I_BLDG, Instagram, LeanOutro, LeanVideo} from '../../shared/lean.jsx';
-import {CAPS} from './prov_caps.js';
+import {CAPS} from './captions.js';
 import {w, C, K, SCENES, OUTRO_AT, HOOK_END} from './cues.mjs';
 
 const TOTAL = s(OUTRO_AT + 2.4);
@@ -318,13 +318,13 @@ const Funding = ({F}) => {
 
 /* 11-13. not just Delhi: Bhopal, Pune */
 const CityMap = ({F}) => {
-  const P = [['दिल्ली', 560, 330, C(15)], ['भोपाळ', 480, 690, K.nahi - 0.05], ['पुणे', 300, 1010, K.nahi + 0.15]];
+  const P = [['दिल्ली', 560, 330, C(15)], ['भोपाळ', 480, 690, K.delhi], ['पुणे', 300, 1010, K.nahi - 0.1]];
   return (
     <AbsoluteFill>
       <Glass x={90} y={220} w={900} h={1110} r={48} style={{...up(F, C(15), 12, 40), backgroundImage: 'radial-gradient(rgba(0,0,0,0.10) 2px, transparent 2.5px)', backgroundSize: '36px 36px'}} />
       <svg width={1080} height={1920} style={{position: 'absolute', left: 0, top: 0}}>
         {P.slice(1).map(([n, x, y, t]) => (
-          <path key={n} d={`M560 330 Q ${(560 + x) / 2 + 120} ${(330 + y) / 2} ${x} ${y}`} fill="none" stroke={SU} strokeWidth="6" strokeDasharray="4 16" strokeLinecap="round"
+          <path key={n} d={`M560 330 Q ${(560 + x) / 2 + 120} ${(330 + y) / 2} ${x} ${y}`} fill="none" stroke={SU} strokeWidth="8" strokeDasharray="3 9" strokeLinecap="round"
             pathLength="100" strokeDashoffset={0} style={{opacity: io(F, s(t) - 8, s(t))}} />
         ))}
       </svg>

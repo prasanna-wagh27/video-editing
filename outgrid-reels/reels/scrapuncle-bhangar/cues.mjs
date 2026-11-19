@@ -42,7 +42,7 @@ const S = [
   [C(6) + 0.2, 'tick'], [C(6) + 0.4, 'tick'], [K.book, 'pop'], [K.book + 0.3, 'ding', -3],
   [K.ghari - 0.1, 'pop_lo'], [C(8) + 0.25, 'thud'], [K.kata, 'type', -3], [K.paise, 'cash'],
   [K.shark - 0.1, 'swish'], [K.lakh - 0.05, 'stamp'], [K.r155 + 0.2, 'riser', -3], [K.y2026 - 0.05, 'pop_hi'], [K.r22, 'boom', -5], [K.r22 + 0.1, 'sparkle', -4],
-  [K.delhi - 0.1, 'pop'], [K.nahi - 0.05, 'pop_hi'], [K.nahi + 0.15, 'pop_hi'], [K.kab - 0.1, 'pop'], [K.tata - 0.3, 'whoosh'], [K.r10, 'coin'],
+  [C(15) + 0.05, 'pop'], [K.delhi, 'pop_hi'], [K.nahi - 0.1, 'pop_hi'], [K.kab - 0.1, 'pop'], [K.tata - 0.3, 'whoosh'], [K.r10, 'coin'],
   [K.sdeal - 0.1, 'pop'], [K.r2, 'coin'], [K.shahar - 0.1, 'pop_lo'], [K.ganit, 'pop_hi'],
   [K.p50, 'type', -4], [K.h10, 'pop'], [K.pct5, 'sparkle', -4], [K.pick500, 'type', -4], [C(27) + 0.25, 'thud'], [K.kg20, 'tick'],
   [K.kg10k + 0.5, 'riser', -4], [K.rs68, 'coin'], [K.r6080, 'cash'], [K.r6080 + 0.3, 'sparkle', -4],
