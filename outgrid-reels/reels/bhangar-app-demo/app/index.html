@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Digital Bhangarwala</title>
+<style>
+@font-face{font-family:Inter;font-weight:300;src:url(Inter-Light.otf)}
+@font-face{font-family:Inter;font-weight:400;src:url(Inter-Regular.otf)}
+@font-face{font-family:Inter;font-weight:500;src:url(Inter-Medium.otf)}
+@font-face{font-family:Inter;font-weight:600;src:url(Inter-SemiBold.otf)}
+:root{
+  --bg:#F4F5F2; --card:#FFFFFF; --ink:#18201A; --ink2:#2B332D; --mut:#87908A; --line:#E7EAE5;
+  --g:#2E9B46; --g2:#43B85D; --gd:#1D6B33; --gs:#E6F4EA; --amber:#F2A93B; --blue:#3B82F6;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:390px;height:844px;overflow:hidden;background:var(--bg);font-family:Inter,system-ui,sans-serif;color:var(--ink);letter-spacing:-.01em}
+button{font:inherit;border:0;background:none;color:inherit;cursor:pointer}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+#phone{position:relative;width:390px;height:844px;overflow:hidden;background:var(--bg)}
+.sb{position:absolute;top:0;left:0;right:0;height:54px;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 40px;font-weight:600;font-size:16px;pointer-events:none;transition:color .4s}
+.sb.light{color:#fff}
+.island{position:absolute;top:11px;left:50%;margin-left:-62px;width:124px;height:36px;border-radius:20px;background:#000;z-index:60}
+.sb .r{display:flex;gap:6px;align-items:center}
+.homeind{position:absolute;bottom:8px;left:50%;margin-left:-67px;width:134px;height:5px;border-radius:3px;background:#111;z-index:60}
+.scr{position:absolute;inset:0;background:var(--bg);transition:transform .45s cubic-bezier(.3,.7,.2,1),opacity .45s;overflow:hidden}
+.scr.off-r{transform:translateX(100%)}
+.scr.off-l{transform:translateX(-28%);opacity:0}
+.scroll{position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;padding-top:54px;padding-bottom:130px}
+.scroll::-webkit-scrollbar{display:none}
+.px{padding:0 20px}
+.row{display:flex;align-items:center}
+.between{justify-content:space-between}
+.circle-btn{width:46px;height:46px;border-radius:50%;background:#fff;display:grid;place-items:center;border:1px solid var(--line)}
+.card{background:var(--card);border-radius:24px;border:1px solid var(--line)}
+.chip{font-size:12px;padding:6px 12px;border-radius:20px;background:#F1F3EF;border:1px solid var(--line);white-space:nowrap}
+.mut{color:var(--mut)}
+.h-sec{font-size:17px;font-weight:500;margin:22px 0 12px}
+.see{font-size:12.5px;color:var(--mut)}
+.hdr{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;margin-top:4px}
+.hdr h2{font-weight:400;font-size:21px;letter-spacing:-.02em}
+/* splash + end */
+#splash,#end{background:linear-gradient(160deg,#4CC266 0%,#2E9B46 55%,#1D6B33 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center}
+#splash{z-index:40;transition:opacity .6s}
+.logo{width:108px;height:108px;border-radius:32px;background:rgba(255,255,255,.16);display:grid;place-items:center;border:1px solid rgba(255,255,255,.35)}
+#splash h1,#end h1{font-weight:600;font-size:32px;margin-top:22px;letter-spacing:-.03em}
+#splash p{font-weight:300;font-size:15px;opacity:.9;margin-top:6px}
+#end{opacity:0;transition:opacity .7s;z-index:90;pointer-events:none}
+#end.on{opacity:1}
+#end .feat{margin-top:24px;display:grid;gap:10px;width:290px}
+#end .feat div{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:18px;padding:12px 14px;font-size:14px;text-align:left;display:flex;gap:10px;align-items:center}
+#end .by{margin-top:26px;display:flex;align-items:center;gap:10px;font-size:13px;opacity:.95}
+/* home */
+.addr{margin-top:8px}
+.addr .lbl{font-size:12px;color:var(--mut)}
+.addr .val{font-size:15px;font-weight:500;margin-top:2px}
+.bell{position:relative}
+.bell .dot{position:absolute;top:9px;right:11px;width:8px;height:8px;border-radius:50%;background:var(--g);border:1.5px solid #fff}
+.hero{margin-top:16px;border-radius:28px;background:linear-gradient(150deg,#3DB257 0%,#2E9B46 50%,#1F7536 100%);color:#fff;padding:20px;position:relative;overflow:hidden;border:0}
+.hero .t{font-size:24px;font-weight:500;letter-spacing:-.03em;line-height:1.15}
+.hero .s{font-size:13px;opacity:.85;margin-top:6px}
+.hero .btn{margin-top:16px;height:50px;padding:0 20px;border-radius:26px;background:#fff;color:var(--gd);display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:15px}
+.hero .art{position:absolute;right:-10px;bottom:-8px}
+.wallet{margin-top:12px;padding:14px 16px;gap:12px}
+.wallet .ic{width:42px;height:42px;border-radius:14px;background:var(--gs);color:var(--g);display:grid;place-items:center}
+.rates{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px}
+.rates::-webkit-scrollbar{display:none}
+.rate{min-width:112px;padding:12px;border-radius:20px;background:#fff;border:1px solid var(--line)}
+.rate .tile{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;margin-bottom:10px}
+.rate .n{font-size:13px;color:var(--mut)}
+.rate .p{font-size:17px;font-weight:500;margin-top:2px}
+.rate .p small{font-size:11px;color:var(--mut);font-weight:400}
+.hist{padding:14px;gap:12px;margin-bottom:10px}
+.hist .t{font-size:14.5px;font-weight:500}
+.hist .s{font-size:12px;color:var(--mut);margin-top:2px}
+.amt{font-size:15px;font-weight:500;color:var(--g)}
+/* nav */
+.nav{position:absolute;left:18px;right:18px;bottom:26px;height:74px;border-radius:40px;background:#18201A;display:flex;align-items:center;justify-content:space-around;padding:0 10px;z-index:30;box-shadow:0 18px 40px rgba(0,0,0,.25);transition:transform .45s cubic-bezier(.3,.7,.2,1)}
+.nav.hide{transform:translateY(140px)}
+.nav button{display:flex;flex-direction:column;align-items:center;gap:5px;color:#97A099;font-size:11px;width:58px}
+.nav button.on{color:#fff}
+.nav .plus{width:60px;height:60px;border-radius:50%;background:var(--g);display:grid;place-items:center;color:#fff;border:3px solid #fff}
+/* categories */
+.cats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.cat{background:#fff;border:1.5px solid var(--line);border-radius:22px;padding:14px 8px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;transition:border-color .25s,box-shadow .25s,background .25s}
+.cat .tile{width:58px;height:58px;border-radius:18px;display:grid;place-items:center}
+.cat b{font-weight:500;font-size:13px}
+.cat small{font-size:11px;color:var(--mut);margin-top:-6px}
+.cat .tick{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:var(--g);color:#fff;display:grid;place-items:center;opacity:0;transform:scale(.4);transition:.25s}
+.cat.sel{border-color:var(--g);background:#F7FCF8;box-shadow:0 10px 24px rgba(46,155,70,.16)}
+.cat.sel .tick{opacity:1;transform:none}
+.wchips{display:flex;gap:8px;flex-wrap:wrap}
+.wchip{padding:10px 14px;border-radius:20px;border:1.5px solid var(--line);font-size:13px;background:#fff;transition:.25s}
+.wchip.sel{border-color:var(--g);background:var(--gs);color:var(--gd)}
+.cta{position:absolute;left:20px;right:20px;bottom:30px;height:64px;border-radius:34px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 24px;z-index:20;font-size:16px}
+.cta .go{height:50px;padding:0 22px;white-space:nowrap;border-radius:26px;background:var(--g);display:flex;align-items:center;gap:6px;font-weight:500}
+.cta .tot{font-size:12px;color:#A5ADA7}
+.cta .tot b{display:block;color:#fff;font-size:16px;font-weight:500;margin-top:1px}
+.dates{display:flex;gap:10px}
+.date{flex:1;border:1.5px solid var(--line);border-radius:18px;padding:10px 0;text-align:center;background:#fff;transition:.25s}
+.date small{font-size:11px;color:var(--mut);display:block}
+.date b{font-size:20px;font-weight:400;display:block;margin-top:2px}
+.date.sel{background:var(--ink);color:#fff;border-color:var(--ink)}
+.date.sel small{color:#aaa}
+.slots{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.slot{padding:14px;border-radius:18px;border:1.5px solid var(--line);font-size:13.5px;background:#fff;text-align:left;transition:.25s}
+.slot small{display:block;font-size:11px;color:var(--mut);margin-top:2px}
+.slot.sel{border-color:var(--g);background:var(--gs);color:var(--gd)}
+.info{padding:14px 16px;gap:12px;margin-top:12px}
+.info .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex-shrink:0}
+.info .t{font-size:14px;font-weight:500}
+.info .s{font-size:12px;color:var(--mut);margin-top:2px}
+/* success */
+#success{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#fff}
+.okring{width:120px;height:120px;border-radius:50%;background:var(--gs);display:grid;place-items:center}
+.okring > div{width:84px;height:84px;border-radius:50%;background:var(--g);display:grid;place-items:center;color:#fff;transform:scale(0);transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+.show .okring > div{transform:scale(1)}
+#success h3,#paid h3{font-weight:500;font-size:24px;margin-top:26px}
+#success p{color:var(--mut);font-size:14px;margin-top:8px;line-height:1.5}
+/* track */
+#track{background:#E9ECE7}
+.map{position:absolute;left:0;right:0;top:0;height:470px}
+.mhdr{position:absolute;top:58px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;z-index:5}
+.mhdr h2{font-weight:400;font-size:22px}
+.sheet{position:absolute;left:8px;right:8px;bottom:8px;top:430px;background:#18201A;border-radius:34px;color:#fff;padding:14px 20px 20px;transform:translateY(110%);transition:transform .7s cubic-bezier(.25,.8,.25,1)}
+.sheet.up{transform:none}
+.grab{width:44px;height:4px;border-radius:2px;background:#4A524C;margin:0 auto 14px}
+.sheet .lbl{font-size:12px;color:#8A938C}
+.sheet .big{font-size:24px;font-weight:400;margin-top:4px;letter-spacing:-.02em}
+.sheet .chip{background:#252D27;border-color:#353D37;color:#fff}
+.prog{display:flex;align-items:center;margin:18px 0 12px}
+.prog .n{width:24px;height:24px;border-radius:50%;flex-shrink:0;border:1.5px solid #4A524C;background:#18201A;display:grid;place-items:center}
+.prog .n.done{border-color:var(--g2);background:var(--g2)}
+.prog .n.done::after{content:'';width:12px;height:12px;display:block;background:#fff;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5' fill='none' stroke='black' stroke-width='3.4' stroke-linecap='round'/%3E%3C/svg%3E") center/12px no-repeat}
+.prog .dots{flex:1;height:2px;background-image:radial-gradient(circle,#4A524C 1.2px,transparent 1.4px);background-size:7px 3px;background-repeat:repeat-x;margin:0 4px}
+.prog .dots.done{background-image:radial-gradient(circle,var(--g2) 1.3px,transparent 1.5px)}
+.stagelbl{display:flex;justify-content:space-between;font-size:10.5px;color:#8A938C;margin-top:-6px}
+.stagelbl span.on{color:#fff}
+.partner{margin-top:16px;padding-top:16px;border-top:1px solid #2B332D;gap:12px}
+.partner .pic{width:52px;height:52px;border-radius:50%;overflow:hidden;flex-shrink:0}
+.partner .nm{font-size:15px}
+.partner .rl{font-size:12px;color:#8A938C;margin-top:2px}
+.rbtn{width:48px;height:48px;border-radius:50%;display:grid;place-items:center}
+.eta{margin-top:14px;background:#252D27;border-radius:20px;padding:14px 16px;gap:12px}
+.eta .v{font-size:26px;font-weight:400;letter-spacing:-.02em}
+.otp{display:flex;gap:6px}
+.otp span{width:30px;height:38px;border-radius:10px;background:#323A34;display:grid;place-items:center;font-size:17px}
+/* weigh */
+.scale{margin-top:4px;border-radius:28px;background:#18201A;color:#fff;padding:20px;position:relative;overflow:hidden;border:0}
+.scale .lcd{margin-top:10px;background:#B9E3A8;color:#173B12;border-radius:16px;padding:12px 16px;display:flex;align-items:baseline;justify-content:space-between;font-variant-numeric:tabular-nums;box-shadow:inset 0 2px 8px rgba(0,0,0,.18)}
+.scale .lcd b{font-size:44px;font-weight:500;letter-spacing:-.02em}
+.scale .lcd span{font-size:15px;font-weight:600}
+.scale .now{font-size:13px;color:#A5ADA7}
+.scale .now b{color:#fff;font-weight:500}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:#9BE3AE}
+.live i{width:7px;height:7px;border-radius:50%;background:#4ADE80;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+.witem{padding:12px 14px;gap:12px;margin-top:10px;opacity:.35;transition:opacity .4s,border-color .4s}
+.witem.on{opacity:1}
+.witem.cur{border-color:var(--g)}
+.witem .tile{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex-shrink:0}
+.witem .t{font-size:14.5px;font-weight:500}
+.witem .s{font-size:12px;color:var(--mut);margin-top:2px;font-variant-numeric:tabular-nums}
+.witem .a{font-size:15px;font-weight:500;font-variant-numeric:tabular-nums}
+.sum{margin-top:12px;padding:16px;gap:10px}
+.sum .row{font-size:13.5px;color:var(--mut)}
+.sum .row b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+.sum .tot{font-size:17px;color:var(--ink);font-weight:500}
+.sum .tot b{font-size:22px;color:var(--g)}
+/* paid */
+#paid{background:#fff}
+#paid .top{padding-top:110px;display:flex;flex-direction:column;align-items:center;text-align:center}
+#paid .amt-big{font-size:46px;font-weight:400;letter-spacing:-.04em;margin-top:8px;font-variant-numeric:tabular-nums}
+#paid .upi{margin-top:10px;font-size:13px;color:var(--mut);display:flex;gap:6px;align-items:center}
+.receipt{margin:26px 20px 0;padding:18px;background:var(--bg);border:0}
+.receipt .r{display:flex;justify-content:space-between;font-size:13.5px;padding:7px 0;color:var(--mut)}
+.receipt .r b{color:var(--ink);font-weight:500}
+.stars{display:flex;gap:10px;justify-content:center;margin-top:20px}
+.stars span{color:#D7DBD5;transition:color .2s,transform .2s}
+.stars span.on{color:var(--amber);transform:scale(1.1)}
+.stars svg{width:34px;height:34px;fill:currentColor;stroke:none}
+.donebtn{position:absolute;left:20px;right:20px;bottom:34px;height:60px;border-radius:32px;background:var(--ink);color:#fff;font-size:16px;font-weight:500}
+/* owner */
+.ownerTag{display:inline-flex;align-items:center;gap:6px;background:var(--ink);color:#fff;font-size:11px;padding:5px 10px;border-radius:12px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{padding:16px}
+.stat .l{font-size:12px;color:var(--mut)}
+.stat .v{font-size:24px;font-weight:400;margin-top:6px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat .d{font-size:11.5px;color:var(--g);margin-top:4px}
+.stat.dark{background:var(--ink);color:#fff;border:0}
+.stat.green{background:linear-gradient(150deg,#3DB257 0%,#2E9B46 60%,#1F7536 100%);color:#fff;border:0}
+.bars{display:flex;align-items:flex-end;gap:8px;height:96px;margin-top:14px}
+.bars div{flex:1;border-radius:8px;background:#E3EFE6;transition:height .8s cubic-bezier(.3,.8,.3,1)}
+.bars div.hi{background:var(--g)}
+.days{display:flex;gap:8px;margin-top:6px}
+.days span{flex:1;text-align:center;font-size:10.5px;color:var(--mut)}
+.req{padding:16px;border:1.5px solid var(--g);box-shadow:0 14px 30px rgba(46,155,70,.18);max-height:0;opacity:0;overflow:hidden;padding-top:0;padding-bottom:0;margin-bottom:0;transition:all .6s cubic-bezier(.3,.8,.3,1)}
+.req.on{max-height:240px;opacity:1;padding-top:16px;padding-bottom:16px;margin-bottom:12px}
+.req .acts{display:flex;gap:10px;margin-top:14px}
+.req .acts button{flex:1;height:44px;border-radius:22px;font-size:14px}
+.ordrow{padding:14px;gap:12px;margin-bottom:10px}
+.pill{font-size:11px;padding:5px 10px;border-radius:14px;background:#F1F3EF;border:1px solid var(--line);white-space:nowrap}
+.pill.g{background:var(--gs);border-color:#CBE8D3;color:var(--gd)}
+.pill.a{background:#FDF3E1;border-color:#F5DDB0;color:#9A6512}
+.toast{position:absolute;left:20px;right:20px;top:60px;background:var(--ink);color:#fff;border-radius:22px;padding:14px 16px;display:flex;gap:12px;align-items:center;z-index:80;transform:translateY(-260%);transition:transform .5s cubic-bezier(.3,1.3,.5,1)}
+.toast.on{transform:none}
+.toast .ic{width:38px;height:38px;border-radius:50%;background:var(--g);display:grid;place-items:center;flex-shrink:0}
+.toast b{font-weight:500;font-size:14px;display:block}
+.toast small{font-size:12px;color:#A5ADA7}
+.switch{position:absolute;inset:0;z-index:85;background:var(--ink);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;opacity:0;pointer-events:none;transition:opacity .4s}
+.switch.on{opacity:1}
+.switch b{font-weight:500;font-size:22px}
+.switch small{color:#A5ADA7;font-size:13px}
+#home::before,#owner::before,#book::before,#sched::before,#weigh::before{content:"";position:absolute;top:0;left:0;right:0;height:58px;background:linear-gradient(var(--bg) 82%,rgba(244,245,242,0));z-index:4;pointer-events:none}
+/* finger */
+#finger{position:absolute;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(120,120,128,.35);border:2px solid rgba(255,255,255,.85);box-shadow:0 2px 10px rgba(0,0,0,.18);z-index:100;pointer-events:none;opacity:0;transition:left .55s cubic-bezier(.4,.1,.2,1),top .55s cubic-bezier(.4,.1,.2,1),opacity .25s,transform .15s}
+#finger.on{opacity:1}
+#finger.down{transform:scale(.78);background:rgba(120,120,128,.5)}
+.ripple{position:absolute;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:2px solid rgba(46,155,70,.75);z-index:99;pointer-events:none;animation:rip .5s ease-out forwards}
+@keyframes rip{from{transform:scale(.6);opacity:1}to{transform:scale(1.9);opacity:0}}
+.pop{animation:popin .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes popin{from{transform:scale(.85)}to{transform:none}}
+</style>
+</head>
+<body>
+<div id="phone">
+  <div class="island"></div>
+  <div class="sb" id="sb"><span>9:41</span><span class="r">
+    <svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="currentColor"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="currentColor"/><rect x="10" y="3" width="3" height="9" rx="1" fill="currentColor"/><rect x="15" y="0" width="3" height="12" rx="1" fill="currentColor"/></svg>
+    <svg width="17" height="12" viewBox="0 0 17 12"><path d="M8.5 2.6c2.4 0 4.6.9 6.2 2.5l1.2-1.2A10.4 10.4 0 0 0 8.5.9 10.4 10.4 0 0 0 1.1 3.9l1.2 1.2a8.7 8.7 0 0 1 6.2-2.5zm0 3.4c1.5 0 2.8.6 3.8 1.5l1.2-1.2a7 7 0 0 0-10 0l1.2 1.2c1-.9 2.3-1.5 3.8-1.5zm0 3.4c-.6 0-1.1.2-1.5.6l1.5 1.5 1.5-1.5c-.4-.4-.9-.6-1.5-.6z" fill="currentColor"/></svg>
+    <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2" fill="currentColor"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="currentColor" opacity=".5"/></svg>
+  </span></div>
+
+  <!-- HOME -->
+  <section class="scr" id="home"><div class="scroll" id="homeScroll">
+    <div class="px">
+      <div class="row between addr">
+        <div class="row" style="gap:12px"><div class="circle-btn" data-ic="pin"></div>
+          <div><div class="lbl">Pickup at</div><div class="val">Flat 12, Shivaji Nagar</div></div></div>
+        <div class="circle-btn bell" data-ic="bell"><i class="dot"></i></div>
+      </div>
+      <div class="card hero">
+        <div class="t">Sell your scrap<br>from home</div>
+        <div class="s">Digital weighing · Instant UPI payment</div>
+        <button class="btn" id="bookBtn">Book a Pickup <span data-ic="arrow"></span></button>
+        <div class="art" id="heroArt"></div>
+      </div>
+      <div class="card wallet row"><div class="ic" data-ic="wallet"></div><div style="flex:1"><div style="font-size:12px" class="mut">Earned from scrap</div><div style="font-size:18px;font-weight:500;margin-top:2px">₹1,240 <span class="mut" style="font-size:12px;font-weight:400">· 4 pickups</span></div></div><span data-ic="chev" class="mut"></span></div>
+      <div class="row between"><div class="h-sec">Today's Rates</div><span class="see">Rate list</span></div>
+      <div class="rates" id="rates"></div>
+      <div class="row between"><div class="h-sec">Recent Pickups</div><span class="see">See All</span></div>
+      <div class="card hist row"><div class="circle-btn" style="background:var(--gs);border:0;color:var(--g)" data-ic="truck"></div><div style="flex:1"><div class="t">Paper + Cardboard</div><div class="s">12 Oct · 14.2 kg</div></div><div class="amt">+₹186</div></div>
+      <div class="card hist row"><div class="circle-btn" style="background:var(--gs);border:0;color:var(--g)" data-ic="truck"></div><div style="flex:1"><div class="t">Old cooler + Iron</div><div class="s">3 Sep · 21.0 kg</div></div><div class="amt">+₹612</div></div>
+    </div>
+  </div></section>
+
+  <!-- BOOK: categories -->
+  <section class="scr off-r" id="book"><div class="scroll">
+    <div class="hdr"><div class="circle-btn" data-ic="back" data-back></div><h2>What are you selling?</h2><div style="width:46px"></div></div>
+    <div class="px">
+      <div class="mut" style="font-size:13px;margin:4px 2px 14px">Select all that apply</div>
+      <div class="cats" id="cats"></div>
+      <div style="font-size:15px;font-weight:500;margin:22px 2px 10px">Approx. weight</div>
+      <div class="wchips" id="wchips"><button class="wchip">Below 10 kg</button><button class="wchip">10–20 kg</button><button class="wchip">20–50 kg</button><button class="wchip">50 kg +</button></div>
+      <div class="card info row"><div class="ic" style="background:var(--gs);color:var(--g)" data-ic="scale"></div><div style="flex:1"><div class="t">Weighed in front of you</div><div class="s">Certified digital scale · no hidden cuts</div></div></div>
+    </div>
+  </div>
+  <div class="cta"><div class="tot">Selected<b id="selN">0 items</b></div><button class="go" id="next1">Next <span data-ic="chev"></span></button></div>
+  </section>
+
+  <!-- SCHEDULE -->
+  <section class="scr off-r" id="sched"><div class="scroll">
+    <div class="hdr"><div class="circle-btn" data-ic="back" data-back></div><h2>Pickup time</h2><div style="width:46px"></div></div>
+    <div class="px">
+      <div class="mut" style="font-size:13px;margin:4px 2px 12px">Choose a day</div>
+      <div class="dates" id="dates"><button class="date"><small>Today</small><b>20</b></button><button class="date"><small>Sat</small><b>21</b></button><button class="date"><small>Sun</small><b>22</b></button><button class="date"><small>Mon</small><b>23</b></button></div>
+      <div class="mut" style="font-size:13px;margin:20px 2px 12px">Choose a slot</div>
+      <div class="slots" id="slots"><button class="slot">9 – 11 AM<small>Morning</small></button><button class="slot">11 AM – 1 PM<small>Late morning</small></button><button class="slot">4 – 6 PM<small>Evening</small></button><button class="slot">6 – 8 PM<small>Night</small></button></div>
+      <div class="card info row" style="margin-top:18px"><div class="ic" style="background:var(--gs);color:var(--g)" data-ic="pin"></div><div style="flex:1"><div class="t">Flat 12, Shivaji Nagar</div><div class="s">Near Ganesh Mandir · 2nd floor</div></div><span class="see">Change</span></div>
+      <div class="card info row"><div class="ic" style="background:#FDF3E1;color:#C27C14" data-ic="list"></div><div style="flex:1"><div class="t">Newspaper, Cardboard, Plastic</div><div class="s">10–20 kg · est. ₹180 – ₹260</div></div></div>
+    </div>
+  </div>
+  <div class="cta"><div class="tot">Pickup charge<b>Free</b></div><button class="go" id="confirm">Confirm Pickup <span data-ic="chev"></span></button></div>
+  </section>
+
+  <!-- SUCCESS -->
+  <section class="scr off-r" id="success">
+    <div class="okring"><div data-ic="check" class="big"></div></div>
+    <h3>Pickup booked!</h3>
+    <p>Today · 4 – 6 PM<br>Our bhangarwala partner will reach you</p>
+  </section>
+
+  <!-- TRACK -->
+  <section class="scr off-r" id="track">
+    <div class="map" id="map"></div>
+    <div class="mhdr"><div class="circle-btn" data-ic="back"></div><h2>Pickup on the way</h2><div class="circle-btn" data-ic="more"></div></div>
+    <div class="sheet" id="sheet">
+      <div class="grab"></div>
+      <div class="row between"><div><div class="lbl">Pickup Id</div><div class="big">BW-10482</div></div><div style="text-align:right"><div class="lbl">Status</div><span class="chip" id="tstat" style="display:inline-block;margin-top:6px">Assigned</span></div></div>
+      <div class="prog" id="tprog"><span class="n done"></span><span class="dots"></span><span class="n"></span><span class="dots"></span><span class="n"></span><span class="dots"></span><span class="n"></span></div>
+      <div class="stagelbl" id="tlbl"><span class="on">Booked</span><span>On the way</span><span>Weighing</span><span>Paid</span></div>
+      <div class="eta row between"><div><div class="lbl">Arriving in</div><div class="v" id="etaV">12 min</div></div><div style="text-align:right"><div class="lbl" style="margin-bottom:6px">Share OTP</div><div class="otp"><span>4</span><span>8</span><span>2</span><span>7</span></div></div></div>
+      <div class="partner row"><div class="pic" id="ppic"></div><div style="flex:1"><div class="nm">Ramesh Jadhav</div><div class="rl">★ 4.9 · Verified partner</div></div>
+        <div class="rbtn" style="background:var(--g)" data-ic="phone"></div><div class="rbtn" style="background:#fff;color:#111;margin-left:8px" data-ic="chat"></div></div>
+    </div>
+  </section>
+
+  <!-- WEIGH -->
+  <section class="scr off-r" id="weigh"><div class="scroll" id="weighScroll">
+    <div class="hdr"><div style="width:46px"></div><h2>Live Weighing</h2><div class="circle-btn" data-ic="more"></div></div>
+    <div class="px">
+      <div class="card scale">
+        <div class="row between"><div class="now">Now weighing: <b id="wNow">Newspaper</b></div><span class="live"><i></i>LIVE</span></div>
+        <div class="lcd"><b id="wKg">0.0</b><span>kg</span></div>
+      </div>
+      <div id="witems"></div>
+      <div class="card sum" id="sum" style="opacity:.35;transition:opacity .4s">
+        <div class="row between"><span>Total weight</span><b id="sKg">0.0 kg</b></div>
+        <div class="row between" style="margin-top:8px"><span>Pickup charge</span><b>₹0</b></div>
+        <div class="row between tot" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)"><span>You get</span><b id="sAmt">₹0</b></div>
+      </div>
+    </div>
+  </div>
+  <div class="cta" id="payCta" style="transform:translateY(140px);transition:transform .5s cubic-bezier(.3,.8,.3,1)"><div class="tot">Pay to<b>UPI ••4821</b></div><button class="go" id="approve">Approve &amp; Get Paid</button></div>
+  </section>
+
+  <!-- PAID -->
+  <section class="scr off-r" id="paid">
+    <div class="top">
+      <div class="okring"><div data-ic="check" class="big"></div></div>
+      <div class="mut" style="font-size:14px;margin-top:22px">Money sent to your account</div>
+      <div class="amt-big" id="paidAmt">₹243</div>
+      <div class="upi"><span data-ic="bank"></span>UPI ••4821 · just now</div>
+    </div>
+    <div class="card receipt">
+      <div class="r">Newspaper · 10.2 kg<b>₹153</b></div>
+      <div class="r">Cardboard · 5.4 kg<b>₹54</b></div>
+      <div class="r">Plastic · 3.0 kg<b>₹36</b></div>
+      <div class="r" style="border-top:1px solid #E1E5DF;margin-top:6px;padding-top:12px">Total · 18.6 kg<b style="color:var(--g)">₹243</b></div>
+    </div>
+    <div class="mut" style="text-align:center;font-size:13px;margin-top:22px">Rate Ramesh</div>
+    <div class="stars" id="stars"></div>
+    <button class="donebtn" id="doneBtn">Done</button>
+  </section>
+
+  <!-- OWNER -->
+  <section class="scr off-r" id="owner"><div class="scroll" id="ownerScroll">
+    <div class="px">
+      <div class="row between addr">
+        <div class="row" style="gap:12px"><div class="circle-btn" style="background:var(--g);border:0;color:#fff" data-ic="truck"></div><div><div class="lbl"><span class="ownerTag">OWNER APP</span></div><div class="val" style="margin-top:6px">My Bhangar Business</div></div></div>
+        <div class="circle-btn bell" data-ic="bell"><i class="dot"></i></div>
+      </div>
+      <div class="stats" style="margin-top:18px">
+        <div class="card stat dark"><div class="l" style="color:#97A099">Pickups this month</div><div class="v" id="oPick">0</div><div class="d" style="color:#7EE29A">5% of 10,000 homes</div></div>
+        <div class="card stat"><div class="l">Scrap collected</div><div class="v" id="oKg">0 kg</div><div class="d">avg 20 kg / pickup</div></div>
+      </div>
+      <div class="card stat green" style="margin-top:12px"><div class="row between"><div><div class="l" style="color:#D6F2DD">Your margin this month</div><div class="v" style="font-size:30px" id="oMar">₹0</div></div><div style="text-align:right;font-size:12px;color:#D6F2DD">₹6–8 / kg<br>after dealer sale</div></div></div>
+      <div class="card" style="padding:16px;margin-top:12px">
+        <div class="row between"><div style="font-size:15px;font-weight:500">Pickups this week</div><span class="see">count</span></div>
+        <div class="bars" id="bars"><div style="height:8%"></div><div style="height:8%"></div><div style="height:8%"></div><div style="height:8%"></div><div style="height:8%"></div><div class="hi" style="height:8%"></div><div style="height:8%"></div></div>
+        <div class="days"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+      </div>
+      <div class="row between"><div class="h-sec">New Requests</div><span class="see">Map</span></div>
+      <div class="card req" id="req">
+        <div class="row" style="gap:12px"><div class="circle-btn" style="background:#FDF3E1;border:0;color:#C27C14" data-ic="building"></div><div style="flex:1"><div style="font-size:15px;font-weight:500">Green Valley Society</div><div class="mut" style="font-size:12px;margin-top:2px">Bulk · ~120 kg · 64 flats · 1.8 km</div></div><span class="pill a">Bulk</span></div>
+        <div class="acts"><button style="border:1px solid var(--line)">Later</button><button id="accept" style="background:var(--g);color:#fff">Accept · Sat 10 AM</button></div>
+      </div>
+      <div id="ordList">
+        <div class="card ordrow row"><div class="circle-btn" style="background:var(--gs);border:0;color:var(--g)" data-ic="home"></div><div style="flex:1"><div style="font-size:14.5px;font-weight:500">Flat 12, Shivaji Nagar</div><div class="mut" style="font-size:12px;margin-top:2px">18.6 kg · paid ₹243</div></div><span class="pill g">Done</span></div>
+        <div class="card ordrow row"><div class="circle-btn" style="background:#F1F3EF;border:0" data-ic="store"></div><div style="flex:1"><div style="font-size:14.5px;font-weight:500">Sai Medical, Main Road</div><div class="mut" style="font-size:12px;margin-top:2px">Cardboard · ~40 kg</div></div><span class="pill">5 PM</span></div>
+      </div>
+    </div>
+  </div></section>
+
+  <nav class="nav" id="nav">
+    <button class="on"><span data-ic="home"></span>Home</button>
+    <button><span data-ic="list"></span>Pickups</button>
+    <button class="plus" data-ic="plus"></button>
+    <button><span data-ic="wallet"></span>Wallet</button>
+    <button><span data-ic="user"></span>Profile</button>
+  </nav>
+
+  <div class="toast" id="toast"><div class="ic" data-ic="check"></div><div><b id="toastT"></b><small id="toastS"></small></div></div>
+  <div class="switch" id="switch"><div class="logo" style="background:var(--g);border:0" id="swlogo"></div><b>Owner App</b><small>Your bhangar business, on one screen</small></div>
+
+  <section class="scr" id="splash"><div class="logo" id="slogo"></div><h1>Digital Bhangarwala</h1><p>Sell scrap from home. Get paid instantly.</p></section>
+  <section class="scr" id="end"><div class="logo" id="elogo"></div><h1>Digital Bhangarwala</h1>
+    <div class="feat"><div><span data-ic="calendar"></span>Book a pickup in 3 taps</div><div><span data-ic="pin"></span>Live tracking + OTP</div><div><span data-ic="scale"></span>Digital weighing, no cuts</div><div><span data-ic="bank"></span>Instant UPI payment</div><div><span data-ic="chart"></span>Owner app: pickups, kg, margin</div></div>
+    <div class="by"><span id="ogMark"></span>Concept demo by Outgrid Labs</div></section>
+
+  <div class="homeind"></div>
+  <div id="finger"></div>
+</div>
+
+<script>
+const IC={
+ home:'<path d="M3.5 10.5 12 3.5l8.5 7V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ pin:'<path d="M12 21s-7-6.1-7-11.2a7 7 0 0 1 14 0C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.6"/>',
+ bell:'<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
+ back:'<path d="M19 12H5M11 6l-6 6 6 6"/>',
+ arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+ more:'<circle cx="12" cy="5.5" r=".6" fill="currentColor"/><circle cx="12" cy="12" r=".6" fill="currentColor"/><circle cx="12" cy="18.5" r=".6" fill="currentColor"/>',
+ phone:'<path d="M21 16.4v2.8a1.9 1.9 0 0 1-2 1.9A18.5 18.5 0 0 1 2.9 5a1.9 1.9 0 0 1 1.9-2h2.8a1.9 1.9 0 0 1 1.9 1.6c.1.9.4 1.8.7 2.6a1.9 1.9 0 0 1-.4 2L8.6 10.3a15 15 0 0 0 5.1 5.1l1.1-1.1a1.9 1.9 0 0 1 2-.4c.8.3 1.7.6 2.6.7a1.9 1.9 0 0 1 1.6 1.8z"/>',
+ chat:'<path d="M20.5 12a8.5 8.5 0 0 1-12.3 7.6L3.5 20.5l1-4.4A8.5 8.5 0 1 1 20.5 12z"/>',
+ truck:'<path d="M2.5 6.5h11v9h-11zM13.5 9.5h4l3 3v3h-7"/><circle cx="6.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/>',
+ check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+ chev:'<path d="m9 6 6 6-6 6"/>',
+ wallet:'<path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect x="4" y="8" width="16.5" height="11" rx="2.5"/><circle cx="16" cy="13.5" r="1.2" fill="currentColor"/>',
+ list:'<path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r=".8" fill="currentColor"/><circle cx="4" cy="12" r=".8" fill="currentColor"/><circle cx="4" cy="18" r=".8" fill="currentColor"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+ scale:'<path d="M5 20h14l-1.5-9h-11z"/><path d="M12 11V5M8 5h8"/><path d="M10 15.5h4"/>',
+ bank:'<path d="M3 9.5 12 4l9 5.5zM5 10v7M9.5 10v7M14.5 10v7M19 10v7M3 20h18"/>',
+ calendar:'<rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+ chart:'<path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/>',
+ building:'<rect x="5" y="3.5" width="14" height="17" rx="1.5"/><path d="M9 7.5h2M13 7.5h2M9 11h2M13 11h2M9 14.5h2M13 14.5h2M10.5 20.5v-3h3v3"/>',
+ store:'<path d="M4 9.5V20h16V9.5M3 9.5 4.5 4h15L21 9.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/>',
+ star:'<path d="M12 3.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8-5.3-2.8-5.3 2.8 1-5.8-4.2-4.1 5.9-.9z"/>'
+};
+const ic=(n,s)=>`<svg class="i" viewBox="0 0 24 24"${s?` style="width:${s}px;height:${s}px"`:''}>${IC[n]}</svg>`;
+document.querySelectorAll('[data-ic]').forEach(el=>{const big=el.classList.contains('big');el.insertAdjacentHTML('afterbegin',ic(el.dataset.ic,big?44:0));});
+document.querySelectorAll('.big svg').forEach(s=>s.style.strokeWidth=2.6);
+
+// category illustrations (flat)
+const ART={
+ paper:`<svg viewBox="0 0 40 40" width="34" height="34"><rect x="7" y="9" width="24" height="26" rx="2" fill="#D9DED6"/><rect x="10" y="6" width="24" height="26" rx="2" fill="#fff" stroke="#9AA39C" stroke-width="1.4"/><rect x="13" y="10" width="10" height="7" rx="1" fill="#7C8A80"/><path d="M25 11h6M25 14h6M13 20h18M13 23h18M13 26h12" stroke="#9AA39C" stroke-width="1.4" stroke-linecap="round"/></svg>`,
+ box:`<svg viewBox="0 0 40 40" width="34" height="34"><path d="M6 14 20 8l14 6v15l-14 6-14-6z" fill="#D9A065"/><path d="M6 14l14 6 14-6M20 20v15" stroke="#A86F37" stroke-width="1.4" fill="none"/><path d="M13 11l14 6v5" stroke="#F3D3A9" stroke-width="2.4" fill="none"/></svg>`,
+ plastic:`<svg viewBox="0 0 40 40" width="34" height="34"><rect x="16" y="4" width="8" height="5" rx="1.5" fill="#2563EB"/><path d="M15 9h10l2 5v19a3 3 0 0 1-3 3h-8a3 3 0 0 1-3-3V14z" fill="#93C5FD"/><path d="M13 20h14v7H13z" fill="#3B82F6"/><path d="M17 13v18" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".6"/></svg>`,
+ iron:`<svg viewBox="0 0 40 40" width="34" height="34"><rect x="5" y="22" width="30" height="5" rx="2.5" fill="#6B7280" transform="rotate(-18 20 24)"/><rect x="5" y="15" width="30" height="5" rx="2.5" fill="#9CA3AF" transform="rotate(-18 20 17)"/><circle cx="29" cy="30" r="6" fill="none" stroke="#4B5563" stroke-width="3"/></svg>`,
+ ewaste:`<svg viewBox="0 0 40 40" width="34" height="34"><rect x="5" y="8" width="30" height="20" rx="3" fill="#374151"/><rect x="8" y="11" width="24" height="14" rx="1.5" fill="#60A5FA"/><path d="M8 11l10 14" stroke="#93C5FD" stroke-width="3" opacity=".6"/><path d="M15 33h10M20 28v5" stroke="#374151" stroke-width="2.4" stroke-linecap="round"/></svg>`,
+ appliance:`<svg viewBox="0 0 40 40" width="34" height="34"><rect x="9" y="5" width="22" height="30" rx="3" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.4"/><circle cx="20" cy="22" r="7" fill="#fff" stroke="#9CA3AF" stroke-width="1.4"/><circle cx="20" cy="22" r="4" fill="#BFDBFE"/><circle cx="13" cy="10" r="1.3" fill="#6B7280"/><circle cx="17" cy="10" r="1.3" fill="#6B7280"/></svg>`
+};
+const CATS=[['paper','Newspaper','₹15/kg','#EEF1EC'],['box','Cardboard','₹10/kg','#FBEEDD'],['plastic','Plastic','₹12/kg','#E3EEFD'],['iron','Iron / Metal','₹28/kg','#ECEEF1'],['ewaste','E-waste','On quote','#E6ECF5'],['appliance','Appliances','On quote','#F1F2F4']];
+const rates=document.getElementById('rates');
+CATS.forEach(c=>rates.insertAdjacentHTML('beforeend',`<div class="rate"><div class="tile" style="background:${c[3]}">${ART[c[0]]}</div><div class="n">${c[1]}</div><div class="p">${c[2].startsWith('₹')?c[2].replace('/kg',' <small>/kg</small>'):'<small style="font-size:13px">'+c[2]+'</small>'}</div></div>`));
+const cats=document.getElementById('cats');let selCount=0;
+CATS.forEach(c=>{const b=document.createElement('button');b.className='cat';b.innerHTML=`<span class="tick">${ic('check',12)}</span><div class="tile" style="background:${c[3]}">${ART[c[0]]}</div><b>${c[1]}</b><small>${c[2]}</small>`;b.onclick=()=>{b.classList.toggle('sel');selCount=cats.querySelectorAll('.sel').length;document.getElementById('selN').textContent=selCount+(selCount===1?' item':' items');bump('selN');};cats.appendChild(b);});
+document.querySelectorAll('.cat .tick svg').forEach(s=>s.style.strokeWidth=3);
+document.getElementById('heroArt').innerHTML=`<svg width="150" height="120" viewBox="0 0 150 120">
+<g opacity=".95"><path d="M18 72h66v32H18z" fill="#fff"/><path d="M84 80h26l16 14v10H84z" fill="#E6F4EA"/><path d="M90 84h16l10 10H90z" fill="#8FD3A1"/>
+<circle cx="38" cy="106" r="9" fill="#18201A"/><circle cx="38" cy="106" r="3.5" fill="#E7EAE5"/><circle cx="108" cy="106" r="9" fill="#18201A"/><circle cx="108" cy="106" r="3.5" fill="#E7EAE5"/>
+<rect x="24" y="52" width="26" height="22" rx="2" fill="#D9A065"/><path d="M24 58h26" stroke="#A86F37" stroke-width="1.5"/>
+<rect x="52" y="44" width="22" height="30" rx="2" fill="#F3F4F1"/><path d="M55 50h16M55 55h16M55 60h12" stroke="#9AA39C" stroke-width="1.5"/>
+<path d="M60 30h6l1.5 3v11h-9V33z" fill="#93C5FD"/></g></svg>`;
+const leaf=`<svg width="62" height="62" viewBox="0 0 64 64"><path d="M32 8 L38 18 H26 Z" fill="#fff"/><path d="M14 40 L22 30 L28 40 Z" fill="#fff" opacity=".9"/><path d="M50 40 L42 30 L36 40 Z" fill="#fff" opacity=".9"/><path d="M32 14c-12 0-20 9-20 20 0 7 4 13 10 16" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M32 14c12 0 20 9 20 20 0 7-4 13-10 16" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".7"/><path d="M22 50h20" stroke="#fff" stroke-width="5" stroke-linecap="round"/><text x="32" y="40" text-anchor="middle" font-family="Inter" font-weight="600" font-size="16" fill="#fff">₹</text></svg>`;
+const logo=`<svg viewBox="0 0 24 24" width="58" height="58" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5h11v9h-11zM13.5 9.5h4l3 3v3h-7"/><circle cx="6.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/><path d="M6 11.2l1.6 1.6 3-3.2" stroke-width="1.7"/></svg>`;['slogo','elogo','swlogo'].forEach(i=>document.getElementById(i).innerHTML=logo);
+document.getElementById('ogMark').innerHTML=`<svg viewBox="0 0 64 64" width="22" height="22"><path d="M23 3H55Q62 3 62 10V38L44 61H9Q2 61 2 54V24Z M22.5 18H42.5Q47 18 47 22.5V42.5Q47 47 42.5 47H22.5Q18 47 18 42.5V22.5Q18 18 22.5 18Z" fill="#fff" fill-rule="evenodd"/></svg>`;
+document.getElementById('ppic').innerHTML=`<svg viewBox="0 0 52 52" width="52" height="52"><rect width="52" height="52" fill="#DCEFE0"/><circle cx="26" cy="22" r="9.5" fill="#B9825A"/><path d="M16.5 19c0-8 19-8 19 0-2-3-17-3-19 0z" fill="#262626"/><path d="M20 27c2 3 10 3 12 0" stroke="#3a2a1e" stroke-width="2.2" fill="none"/><path d="M8 52c1-10 8-14 18-14s17 4 18 14z" fill="#2E9B46"/></svg>`;
+document.getElementById('stars').innerHTML=Array(5).fill(0).map(()=>`<span><svg viewBox="0 0 24 24">${IC.star}</svg></span>`).join('');
+
+const fmt=n=>n.toLocaleString('en-IN');
+function bump(id){const e=document.getElementById(id);e.classList.remove('pop');void e.offsetWidth;e.classList.add('pop');}
+function pick(sel){document.querySelectorAll(sel).forEach(d=>d.onclick=()=>{document.querySelectorAll(sel).forEach(x=>x.classList.remove('sel'));d.classList.add('sel');});}
+pick('.wchip');pick('.date');pick('.slot');
+
+// nav
+const nav=document.getElementById('nav');let cur='home';
+function go(id){const a=document.getElementById(cur),b=document.getElementById(id);b.classList.remove('off-r','off-l');a.classList.add('off-l');cur=id;nav.classList.toggle('hide',!['home'].includes(id));
+  setTimeout(()=>{a.classList.remove('off-l');a.classList.add('off-r');a.style.transition='none';void a.offsetWidth;a.style.transition='';},520);}
+function goBack(id){const a=document.getElementById(cur),b=document.getElementById(id);b.style.transition='none';b.classList.remove('off-r');b.classList.add('off-l');void b.offsetWidth;b.style.transition='';b.classList.remove('off-l');a.classList.add('off-r');cur=id;nav.classList.toggle('hide',id!=='home');}
+document.getElementById('bookBtn').onclick=()=>go('book');
+document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>goBack(cur==='sched'?'book':'home'));
+document.getElementById('next1').onclick=()=>go('sched');
+document.getElementById('confirm').onclick=()=>{go('success');setTimeout(()=>document.getElementById('success').classList.add('show'),250);};
+document.getElementById('approve').onclick=()=>{go('paid');setTimeout(()=>document.getElementById('paid').classList.add('show'),250);};
+
+// map
+function buildMap(){
+  const W=390,H=470;let s=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><rect width="${W}" height="${H}" fill="#F1F3EF"/>`;
+  for(let y=-10;y<H;y+=46)for(let x=-14;x<W;x+=58){const ww=48+((x*7+y*3)%12),hh=36+((x+y*5)%8);s+=`<rect x="${x+5}" y="${y+5}" width="${ww-8}" height="${hh-4}" rx="3" fill="${((x+y)/2)%5===0?'#D5E8D3':'#DEE1DC'}"/>`;}
+  s+=`<path d="M40 200 Q110 170 150 220 T250 250 Q300 270 340 230" stroke="#CFE5CB" stroke-width="40" fill="none" stroke-linecap="round" opacity=".85"/>`;
+  s+=`<path d="M-10 330 L400 270" stroke="#fff" stroke-width="12"/><path d="M200 -10 L230 480" stroke="#fff" stroke-width="10"/><path d="M-10 120 L400 150" stroke="#fff" stroke-width="8"/>`;
+  const d="M70 380 L70 330 Q70 318 82 318 L190 318 Q202 318 202 306 L202 250 Q202 238 214 238 L300 238 Q312 238 312 226 L312 175";
+  s+=`<path id="route" d="${d}" stroke="#18201A" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 9"/>`;
+  s+=`<path id="routeD" d="${d}" stroke="#2E9B46" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  s+=`<circle cx="312" cy="171" r="24" fill="#2E9B46" opacity=".2"/><circle cx="312" cy="171" r="14" fill="#2E9B46"/><g transform="translate(303,162) scale(.75)" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${IC.home}</g>`;
+  s+=`<g transform="translate(205,160)"><rect x="-6" y="-4" width="86" height="28" rx="14" fill="#fff"/><text x="37" y="15" font-size="11.5" text-anchor="middle" font-family="Inter" fill="#18201A">Your home</text></g>`;
+  s+=`<g id="truckG"><circle r="24" fill="#18201A"/><g transform="translate(-11,-11) scale(.92)" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC.truck}</g></g>`;
+  s+='</svg>';document.getElementById('map').innerHTML=s;
+}
+buildMap();
+const route=document.getElementById('route'),routeD=document.getElementById('routeD'),truckG=document.getElementById('truckG');
+const RL=route.getTotalLength();routeD.style.strokeDasharray=RL;routeD.style.strokeDashoffset=RL;
+function placeTruck(f){const p=route.getPointAtLength(RL*f);truckG.setAttribute('transform',`translate(${p.x},${p.y})`);routeD.style.strokeDashoffset=RL*(1-f);}
+placeTruck(0);
+function animate(dur,fn){return new Promise(r=>{const t0=performance.now();function step(t){const k=Math.min(1,(t-t0)/dur);fn(k);k<1?requestAnimationFrame(step):r();}requestAnimationFrame(step);});}
+const ease=k=>k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+const easeOut=k=>1-Math.pow(1-k,3);
+function setStage(n){const ns=[...document.querySelectorAll('#tprog .n')],ds=[...document.querySelectorAll('#tprog .dots')];
+  ns.forEach((e,i)=>e.classList.toggle('done',i<=n));ds.forEach((e,i)=>e.classList.toggle('done',i<n));
+  [...document.querySelectorAll('#tlbl span')].forEach((e,i)=>e.classList.toggle('on',i<=n));
+  const c=document.getElementById('tstat');c.textContent=['Assigned','On the way','Arrived','Paid'][n];bump('tstat');}
+
+// weighing
+const WITEMS=[['paper','Newspaper',10.2,15,'#EEF1EC'],['box','Cardboard',5.4,10,'#FBEEDD'],['plastic','Plastic',3.0,12,'#E3EEFD']];
+const wl=document.getElementById('witems');
+WITEMS.forEach((w,i)=>wl.insertAdjacentHTML('beforeend',`<div class="card witem row" id="wi${i}"><div class="tile" style="background:${w[4]}">${ART[w[0]].replace(/width="34" height="34"/,'width="28" height="28"')}</div><div style="flex:1"><div class="t">${w[1]}</div><div class="s" id="wis${i}">— kg × ₹${w[3]}</div></div><div class="a" id="wia${i}">—</div></div>`));
+let totKg=0,totAmt=0;
+async function weighAll(){
+  const lcd=document.getElementById('wKg');
+  for(let i=0;i<WITEMS.length;i++){const w=WITEMS[i];const el=document.getElementById('wi'+i);el.classList.add('on','cur');document.getElementById('wNow').textContent=w[1];
+    await animate(1300,k=>{const v=w[2]*easeOut(k)+(k<1?Math.sin(k*30)*0.15*(1-k):0);lcd.textContent=Math.max(0,v).toFixed(1);});
+    lcd.textContent=w[2].toFixed(1);const a=Math.round(w[2]*w[3]);totKg+=w[2];totAmt+=a;
+    document.getElementById('wis'+i).textContent=`${w[2].toFixed(1)} kg × ₹${w[3]}`;document.getElementById('wia'+i).textContent='₹'+a;bump('wia'+i);
+    await sleep(500);el.classList.remove('cur');if(i<WITEMS.length-1){await animate(350,k=>lcd.textContent=(w[2]*(1-k)).toFixed(1));}
+  }
+  document.getElementById('wNow').textContent='Done';
+  const s=document.getElementById('sum');s.style.opacity=1;document.getElementById('sKg').textContent=totKg.toFixed(1)+' kg';
+  await animate(700,k=>document.getElementById('sAmt').textContent='₹'+Math.round(totAmt*easeOut(k)));
+  document.getElementById('payCta').style.transform='none';
+}
+
+// owner
+function toast(t,s){document.getElementById('toastT').textContent=t;document.getElementById('toastS').textContent=s;const e=document.getElementById('toast');e.classList.add('on');setTimeout(()=>e.classList.remove('on'),2600);}
+async function ownerCount(){await animate(1400,k=>{const e=easeOut(k);document.getElementById('oPick').textContent=fmt(Math.round(500*e));document.getElementById('oKg').textContent=fmt(Math.round(10000*e))+' kg';document.getElementById('oMar').textContent='₹'+fmt(Math.round(70000*e/100)*100);});
+  const H=[56,64,48,72,80,100,44];[...document.getElementById('bars').children].forEach((b,i)=>b.style.height=H[i]+'%');}
+document.getElementById('accept').onclick=()=>{document.getElementById('req').classList.remove('on');
+  const el=document.createElement('div');el.className='card ordrow row pop';el.innerHTML=`<div class="circle-btn" style="background:#FDF3E1;border:0;color:#C27C14">${ic('building')}</div><div style="flex:1"><div style="font-size:14.5px;font-weight:500">Green Valley Society</div><div class="mut" style="font-size:12px;margin-top:2px">Bulk · ~120 kg · Sat 10 AM</div></div><span class="pill a">Scheduled</span>`;
+  document.getElementById('ordList').prepend(el);toast('Bulk pickup accepted','Green Valley Society · Sat, 10 AM');};
+
+// ---------- demo driver ----------
+const Z=+(new URLSearchParams(location.search).get('z')||1);
+if(Z>1){document.documentElement.style.cssText=`width:${390*Z}px;height:${844*Z}px`;document.body.style.cssText=`width:${390*Z}px;height:${844*Z}px`;const ph=document.getElementById('phone');ph.style.transform=`scale(${Z})`;ph.style.transformOrigin='0 0';}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const fg=document.getElementById('finger');let fx=300,fy=700;
+function at(x,y){fx=x;fy=y;fg.style.left=x+'px';fg.style.top=y+'px';}
+at(fx,fy);
+function center(el){const r=el.getBoundingClientRect();return [(r.left+r.width/2)/Z,(r.top+r.height/2)/Z];}
+async function moveTo(x,y,ms=550){fg.style.transition=`left ${ms}ms cubic-bezier(.4,.1,.2,1),top ${ms}ms cubic-bezier(.4,.1,.2,1),opacity .25s,transform .15s`;fg.classList.add('on');at(x,y);await sleep(ms+60);}
+async function tap(sel,{dx=0,dy=0,pre=550,hold=140}={}){const el=typeof sel==='string'?document.querySelector(sel):sel;const [x,y]=center(el);await moveTo(x+dx,y+dy,pre);
+  fg.classList.add('down');const rp=document.createElement('div');rp.className='ripple';rp.style.left=(x+dx)+'px';rp.style.top=(y+dy)+'px';document.getElementById('phone').appendChild(rp);setTimeout(()=>rp.remove(),600);
+  await sleep(hold);el.click();fg.classList.remove('down');await sleep(120);}
+async function swipe(scroller,dist,ms=900,horiz=false){const sc=document.getElementById(scroller)||document.querySelector(scroller);const sx=fx,sy=fy;fg.classList.add('down');fg.style.transition='opacity .25s,transform .15s';const s0=horiz?sc.scrollLeft:sc.scrollTop;
+  await animate(ms,k=>{const e=ease(k);if(horiz){sc.scrollLeft=s0+dist*e;at(sx-dist*e*0.9,sy);}else{sc.scrollTop=s0+dist*e;at(sx,sy-dist*e*0.9);}});fg.classList.remove('down');await sleep(150);}
+async function hideFinger(){fg.classList.remove('on');await sleep(250);}
+
+async function demo(){
+  await sleep(2200);document.getElementById('splash').style.opacity=0;await sleep(700);document.getElementById('splash').style.display='none';await sleep(800);
+  // rates swipe
+  await moveTo(300,560,700);await swipe('#rates',260,1100,true);await sleep(400);await swipe('#rates',-260,800,true);await sleep(300);
+  await tap('#bookBtn');await hideFinger();await sleep(900);
+  // categories
+  const cs=[...document.querySelectorAll('.cat')];
+  await tap(cs[0],{pre:600});await sleep(250);await tap(cs[1],{pre:380});await sleep(250);await tap(cs[2],{pre:380});await sleep(500);
+  await tap('#wchips .wchip:nth-child(2)',{pre:500});await sleep(600);
+  await tap('#next1');await hideFinger();await sleep(900);
+  await tap('#dates .date:nth-child(1)',{pre:600});await sleep(300);
+  await tap('#slots .slot:nth-child(3)',{pre:500});await sleep(700);
+  await tap('#confirm',{pre:600});await hideFinger();await sleep(2200);
+  // track
+  go('track');document.getElementById('sb');await sleep(500);document.getElementById('sheet').classList.add('up');await sleep(1000);
+  setStage(1);
+  await animate(4200,k=>{const e=ease(k);placeTruck(e);document.getElementById('etaV').textContent=Math.max(0,Math.round(12*(1-e)))+' min';});
+  document.getElementById('etaV').textContent='Arrived';bump('etaV');setStage(2);await sleep(1400);
+  // weigh
+  go('weigh');await sleep(900);await weighAll();await sleep(900);
+  await tap('#approve',{pre:650});await hideFinger();await sleep(1000);
+  const st=[...document.querySelectorAll('#stars span')];const [sx,sy]=center(st[4]);await moveTo(sx,sy,700);fg.classList.add('down');
+  for(const s of st){s.classList.add('on');await sleep(90);}fg.classList.remove('down');await sleep(1100);
+  await tap('#doneBtn',{pre:600});await hideFinger();
+  // owner app
+  const sw=document.getElementById('switch');sw.classList.add('on');await sleep(1700);
+  const o=document.getElementById('owner');o.style.transition='none';o.classList.remove('off-r');document.getElementById(cur).classList.add('off-r');cur='owner';nav.classList.add('hide');
+  sw.classList.remove('on');await sleep(400);await ownerCount();await sleep(900);
+  await moveTo(240,640,600);await swipe('ownerScroll',250,1000);await sleep(400);
+  document.getElementById('req').classList.add('on');await sleep(1500);
+  await tap('#accept',{pre:650});await hideFinger();await sleep(2800);
+  document.getElementById('end').classList.add('on');await sleep(4500);
+  window.__done=true;
+}
+window.__done=false;
+if(location.search.includes('demo'))demo();
+else if(location.search.includes('splash=0'))document.getElementById('splash').style.display='none';
+window.__shot=async(name)=>{document.getElementById('splash').style.display='none';const T=e=>{e.style.transition='none';};
+  document.querySelectorAll('.scr').forEach(T);
+  const show=id=>{document.getElementById(cur).classList.add('off-r');document.getElementById(id).classList.remove('off-r','off-l');cur=id;nav.classList.toggle('hide',id!=='home');};
+  if(name==='book'){show('book');[0,1,2].forEach(i=>cats.children[i].click());document.querySelectorAll('.wchip')[1].classList.add('sel');}
+  if(name==='sched'){show('sched');document.querySelectorAll('.date')[0].classList.add('sel');document.querySelectorAll('.slot')[2].classList.add('sel');}
+  if(name==='track'){show('track');document.getElementById('sheet').style.transition='none';document.getElementById('sheet').classList.add('up');setStage(1);placeTruck(.55);document.getElementById('etaV').textContent='5 min';}
+  if(name==='weigh'){show('weigh');WITEMS.forEach((w,i)=>{document.getElementById('wi'+i).classList.add('on');document.getElementById('wis'+i).textContent=`${w[2].toFixed(1)} kg × ₹${w[3]}`;document.getElementById('wia'+i).textContent='₹'+Math.round(w[2]*w[3]);});
+    document.getElementById('wKg').textContent='18.6';document.getElementById('wNow').textContent='Done';document.getElementById('sum').style.opacity=1;document.getElementById('sKg').textContent='18.6 kg';document.getElementById('sAmt').textContent='₹243';document.getElementById('payCta').style.transition='none';document.getElementById('payCta').style.transform='none';}
+  if(name==='paid'){show('paid');document.getElementById('paid').classList.add('show');document.querySelectorAll('#stars span').forEach(s=>s.classList.add('on'));}
+  if(name==='owner'){show('owner');document.getElementById('oPick').textContent='500';document.getElementById('oKg').textContent='10,000 kg';document.getElementById('oMar').textContent='₹70,000';const H=[56,64,48,72,80,100,44];[...document.getElementById('bars').children].forEach((b,i)=>{b.style.transition='none';b.style.height=H[i]+'%'});document.getElementById('req').style.transition='none';document.getElementById('req').classList.add('on');}
+};
+</script>
+</body>
+</html>

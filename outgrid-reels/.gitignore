@@ -4,4 +4,4 @@ node_modules/
 .cache/
 __pycache__/
 reels/*/public/mix.wav
-reels/kulhad-app-demo/frames/
+reels/bhangar-app-demo/frames/
