@@ -8,12 +8,12 @@
 import React from 'react';
 import {registerRoot, Composition, AbsoluteFill, Easing} from 'remotion';
 import {FPS, s, io, pop, abs, Y, Mark} from '../../shared/kit.jsx';
-import {BG, TXT, MUTED, LINE, GOLD_T, C_GREEN, C_RED, LAT, up, Glass, Chip, Ico, I_PIN, Instagram, LeanOutro, LeanVideo} from '../../shared/lean.jsx';
+import {BG, TXT, MUTED, LINE, GOLD_T, C_GREEN, C_RED, LAT, up, Glass, Chip, Ico, I_PIN, I_PHONE, Instagram, LeanOutro, LeanVideo} from '../../shared/lean.jsx';
 import {CAPS} from './captions.js';
 import {Z_D} from './zlogo.js';
 import {C, K, SCENES, OUTRO_AT} from './cues.mjs';
 
-const TOTAL = s(OUTRO_AT + 2.4);
+const TOTAL = s(OUTRO_AT + 3.4);
 const CHUNKS = CAPS;
 
 /* ---------- helpers ---------- */
@@ -530,7 +530,17 @@ const Dm = ({F}) => {
   );
 };
 
-const Outro = ({F}) => <LeanOutro F={F} at={OUTRO_AT} cta="DM करा" />;
+const Outro = ({F}) => (
+  <AbsoluteFill>
+    <LeanOutro F={F} at={OUTRO_AT} cta="DM करा" />
+    <Center y={1330} style={up(F, OUTRO_AT + 1.4, 12, 20)}>
+      <div style={{display: 'flex', alignItems: 'center', gap: 20, background: '#fff', borderRadius: 999, padding: '22px 46px 16px', boxShadow: '0 16px 40px rgba(60,45,10,0.14)'}}>
+        <Ico d={I_PHONE} size={54} color={C_GREEN} sw={2.4} />
+        <span style={{fontSize: 60, fontWeight: 800, color: TXT, letterSpacing: '0.02em'}}>80109 50380</span>
+      </div>
+    </Center>
+  </AbsoluteFill>
+);
 
 /* ---------- main ---------- */
 const COMPS = {hook: Hook, first: First, comm: Comm, amt: Amt, bill: Bill, y2023: Y2023, ads: Ads, cod: Cod, total: Total, cost: Cost, lakh: Lakh, eq: Eq, city: City, dm: Dm, outro: Outro};

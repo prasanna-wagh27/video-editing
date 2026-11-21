@@ -17,7 +17,7 @@ const SC = [
   ['cost', 19], ['lakh', 21], ['eq', 22], ['city', 23], ['dm', 25],
 ];
 export const OUTRO_AT = Math.round((END + 0.45) * 100) / 100;
-export const SCENES = SC.map(([k, i], n) => [k, n === 0 ? 0 : CUT[i], n + 1 < SC.length ? CUT[SC[n + 1][1]] : OUTRO_AT]).concat([['outro', OUTRO_AT, OUTRO_AT + 2.4]]);
+export const SCENES = SC.map(([k, i], n) => [k, n === 0 ? 0 : CUT[i], n + 1 < SC.length ? CUT[SC[n + 1][1]] : OUTRO_AT]).concat([['outro', OUTRO_AT, OUTRO_AT + 3.4]]);
 
 // named cues shared by visuals and SFX
 export const K = {
