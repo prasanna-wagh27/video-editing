@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="mr"><head><meta charset="utf-8"><title>KulhadKart — संकल्पना</title>
+<style>
+@font-face{font-family:Inter;font-weight:300;src:url(../app/Inter-Light.otf)}
+@font-face{font-family:Inter;font-weight:400;src:url(../app/Inter-Regular.otf)}
+@font-face{font-family:Inter;font-weight:500;src:url(../app/Inter-Medium.otf)}
+@font-face{font-family:Inter;font-weight:600;src:url(../app/Inter-SemiBold.otf)}
+@font-face{font-family:Anek;src:url(AnekDevanagari.ttf);font-weight:100 900}
+@page{size:A4;margin:0}
+:root{--bg:#F6F4F1;--ink:#1B1B1D;--mut:#7E7E84;--line:#E7E4DF;--acc:#EE6A3C;--soft:#FDEBE3;--clay:#B6562F}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,Anek,sans-serif;color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:210mm;height:297mm;position:relative;overflow:hidden;background:var(--bg);padding:52px 56px;page-break-after:always}
+.page:last-child{page-break-after:auto}
+.mr{font-family:Anek,Inter,sans-serif}
+h1{font-family:Inter;font-weight:600;font-size:64px;letter-spacing:-.04em;line-height:1}
+h2{font-family:Anek,Inter;font-weight:600;font-size:34px;line-height:1.15;letter-spacing:-.01em}
+h3{font-family:Anek,Inter;font-weight:600;font-size:19px;line-height:1.25}
+p,li{font-family:Anek,Inter;font-size:15.5px;line-height:1.55;color:#3A3A3E}
+.kick{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 14px;border-radius:16px;background:#fff;border:1px solid var(--line);font-size:12px;font-family:Inter;font-weight:500;letter-spacing:.02em;color:var(--ink);margin-bottom:16px}
+.kick i{width:7px;height:7px;border-radius:50%;background:var(--acc)}
+.foot{position:absolute;left:56px;right:56px;bottom:30px;display:flex;justify-content:space-between;font-family:Inter;font-size:10.5px;color:var(--mut)}
+.card{background:#fff;border-radius:22px;border:1px solid var(--line);padding:20px}
+.dark{background:var(--ink);color:#fff;border:0}
+.dark p,.dark li{color:#C9C9CE}
+.num{font-family:Inter;font-weight:400;letter-spacing:-.03em}
+.acc{color:var(--acc)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.shot{aspect-ratio:390/844;height:auto;border-radius:26px;box-shadow:0 24px 50px rgba(120,50,20,.18);border:5px solid #1B1B1D;display:block}
+.ic{width:42px;height:42px;border-radius:13px;background:var(--soft);color:var(--acc);display:grid;place-items:center;margin-bottom:12px}
+.ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.blob{position:absolute;border-radius:50%;filter:blur(70px)}
+ul.t{list-style:none;display:grid;gap:8px}
+ul.t li{display:flex;gap:10px}
+ul.t li::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--acc);margin-top:9px;flex-shrink:0}
+.step{display:flex;gap:16px;align-items:flex-start}
+.step .n{width:40px;height:40px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:Inter;font-weight:500;flex-shrink:0}
+table{width:100%;border-collapse:collapse;font-family:Anek,Inter;font-size:15px}
+td{padding:11px 0;border-bottom:1px solid var(--line)}
+td:last-child{text-align:right;font-family:Inter;font-variant-numeric:tabular-nums}
+tr.tot td{border-bottom:0;font-weight:600;font-size:17px}
+.note{font-size:12px;color:var(--mut);font-family:Anek,Inter;line-height:1.45}
+</style></head><body>
+
+<!-- 1 COVER -->
+<section class="page" style="padding:0;background:linear-gradient(160deg,#F7A07A 0%,#EE6A3C 55%,#C9532B 100%);color:#fff">
+  <div class="blob" style="width:500px;height:500px;right:-180px;top:-120px;background:#FFD2BC;opacity:.5"></div>
+  <div style="padding:56px 56px 0;position:relative">
+    <div style="display:flex;justify-content:space-between">
+      <span class="kick" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.45);color:#fff"><i style="background:#fff"></i>CONCEPT NOTE</span>
+      <span class="kick" style="background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.45);color:#fff">2026</span>
+    </div>
+    <h1 style="font-size:84px;margin-top:40px">KulhadKart</h1>
+    <h2 style="font-size:36px;margin-top:18px;font-weight:500;max-width:560px">जवळच्या युनिटमधून कुल्हड.<br>सुरक्षित डिलिव्हरी. आणि स्वतःचं युनिट सुरू करण्याची संधी.</h2>
+    <p style="color:#FFE6DB;font-size:17px;margin-top:18px;max-width:520px">चहावाले, कुल्हड युनिट आणि नवीन उद्योजक — तिघांना एकाच अ‍ॅपवर जोडणारी संकल्पना.</p>
+  </div>
+  <div style="position:absolute;left:0;right:0;top:500px;display:flex;justify-content:center;gap:22px;align-items:flex-start">
+    <img class="shot" src="img/order.png" style="width:220px;margin-top:60px;transform:rotate(-4deg)">
+    <img class="shot" src="img/home.png" style="width:260px">
+    <img class="shot" src="img/track.png" style="width:220px;margin-top:60px;transform:rotate(4deg)">
+  </div>
+</section>
+
+<!-- 2 PROBLEM + INSPIRATION -->
+<section class="page">
+  <span class="kick"><i></i>समस्या</span>
+  <h2>कुल्हड हवा आहे, पण तो<br>व्यवस्थित मिळवणं हाच प्रश्न आहे</h2>
+  <p style="margin-top:14px;max-width:600px">मातीचे कुल्हड नाजूक असतात. लांबून मागवले की प्रवासात काही फुटतात, पुरवठा नियमित नसतो आणि जवळ कोण बनवतं हे चहावाल्यांना माहीतच नसतं.</p>
+  <div class="grid3" style="margin-top:26px">
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M5 6h12l-1.6 13a2 2 0 0 1-2 1.8H8.6a2 2 0 0 1-2-1.8z"/><path d="m10 9 2 4-2 3M14 10l-1 3"/></svg></div><h3>प्रवासात तुटफूट</h3><p style="font-size:14px;margin-top:6px">लांबचा प्रवास, साधं पॅकिंग — माल पोहोचेपर्यंत काही कुल्हड फुटलेले.</p></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></div><h3>अनियमित पुरवठा</h3><p style="font-size:14px;margin-top:6px">ऑर्डर कधी येईल, किती येईल याचा भरवसा नाही. ट्रॅकिंग नाही.</p></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 21V10.5l5 3v-3l5 3v-3l5 3V3.5h3V21z"/></svg></div><h3>नवीन युनिटला मार्गदर्शन नाही</h3><p style="font-size:14px;margin-top:6px">मशीन, माती, भट्टी आणि खरेदीदार — सगळं स्वतः शोधावं लागतं.</p></div>
+  </div>
+
+  <div class="card dark" style="margin-top:30px;padding:28px;position:relative;overflow:hidden">
+    <div class="blob" style="width:260px;height:260px;right:-80px;top:-80px;background:#EE6A3C;opacity:.45"></div>
+    <span class="kick" style="background:#2A2A2D;border-color:#3A3A3E;color:#fff"><i></i>प्रेरणा · खरी गोष्ट</span>
+    <h3 style="font-size:22px;color:#fff">शोभित सोनी, अजमेर</h3>
+    <p style="margin-top:10px">चहाच्या व्यवसायासाठी मागवलेले कुल्हड पोहोचेपर्यंत फुटायचे. ही अडचण सोडवण्यासाठी त्यांनी अजमेरमध्ये स्वतःच कुल्हड बनवायला सुरुवात केली. सुमारे ₹५० लाख लावून कारखाना उभारला. २०२२ पासून इतरांना मशीन, प्रशिक्षण आणि जवळचा खरेदीदार देऊन युनिट उभारायला मदत सुरू केली.</p>
+    <div class="grid3" style="margin-top:22px">
+      <div><div class="num" style="font-size:38px;color:#fff">₹50 L</div><p style="font-size:13px">कारखान्याची सुरुवातीची गुंतवणूक</p></div>
+      <div><div class="num" style="font-size:38px;color:#fff">45+</div><p style="font-size:13px">देशभरात उभारलेली युनिट्स (२०२३)</p></div>
+      <div><div class="num" style="font-size:38px;color:var(--acc)">₹2.76 Cr</div><p style="font-size:13px">वार्षिक उलाढाल (२०२३ मधला त्यांचा हिशेब)</p></div>
+    </div>
+  </div>
+  <p class="note" style="margin-top:14px">स्रोत: २०२३ मधील मुलाखतीत शोभित सोनी यांनी सांगितलेले आकडे. KulhadKart ही त्यांच्या कंपनीशी संबंधित नसलेली, याच मॉडेलवर आधारित स्वतंत्र अ‍ॅप संकल्पना आहे.</p>
+  <div class="foot"><span>KulhadKart · Concept Note</span><span>@Tarunudyojak · 02</span></div>
+</section>
+
+<!-- 3 CONCEPT -->
+<section class="page">
+  <span class="kick"><i></i>संकल्पना</span>
+  <h2>एक अ‍ॅप, तीन लोक</h2>
+  <p style="margin-top:12px;max-width:620px">शोभित यांनी जे काम प्रत्यक्ष फिरून केलं — युनिट उभारणं आणि त्यांना खरेदीदार जोडून देणं — ते KulhadKart एका अ‍ॅपवर आणतं. त्यामुळे हे मॉडेल कोणत्याही शहरात वेगाने सुरू करता येतं.</p>
+  <div class="grid3" style="margin-top:24px">
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 9.5V20h16V9.5M3 9.5 4.5 4h15L21 9.5a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/></svg></div><h3>चहावाले / कॅफे</h3><ul class="t" style="margin-top:10px"><li style="font-size:14px">आकार निवडा, संख्या टाका, ऑर्डर करा</li><li style="font-size:14px">सर्वात जवळच्या युनिटमधून माल</li><li style="font-size:14px">लाइव्ह ट्रॅकिंग + तुटफूट कव्हर</li></ul></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg></div><h3>कुल्हड युनिट मालक</h3><ul class="t" style="margin-top:10px"><li style="font-size:14px">जवळच्या खरेदीदारांच्या ऑर्डर थेट फोनवर</li><li style="font-size:14px">एका टॅपवर ऑर्डर स्वीकारा</li><li style="font-size:14px">रोजचं उत्पादन, विक्री, डॅशबोर्ड</li></ul></div>
+    <div class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M2 9.5 12 4.5l10 5-10 5z"/><path d="M6 11.5v4.5c1.8 1.4 3.8 2 6 2s4.2-.6 6-2v-4.5"/></svg></div><h3>नवीन उद्योजक</h3><ul class="t" style="margin-top:10px"><li style="font-size:14px">मशीन पॅकेज निवडा</li><li style="font-size:14px">कमाईचा अंदाज कॅल्क्युलेटर</li><li style="font-size:14px">मोफत साइट व्हिजिट बुक करा</li></ul></div>
+  </div>
+
+  <h3 style="margin-top:34px;font-size:22px">ऑर्डर कशी फिरते</h3>
+  <div style="display:grid;gap:16px;margin-top:16px">
+    <div class="step"><span class="n">1</span><div><h3>चहावाला ऑर्डर करतो</h3><p style="font-size:14.5px">उदा. ९० ml चे २,००० कुल्हड. अ‍ॅप आपोआप सर्वात जवळचं युनिट निवडतं.</p></div></div>
+    <div class="step"><span class="n">2</span><div><h3>युनिट बॅच भाजतं आणि पॅक करतं</h3><p style="font-size:14.5px">स्टेटस अपडेट: Placed → Fired → Packed. गवताच्या क्रेटमध्ये सुरक्षित पॅकिंग.</p></div></div>
+    <div class="step"><span class="n">3</span><div><h3>जवळून डिलिव्हरी, लाइव्ह ट्रॅकिंग</h3><p style="font-size:14.5px">अंतर कमी, म्हणून तुटफूट कमी. ड्रायव्हरला कॉल / चॅट अ‍ॅपमधूनच.</p></div></div>
+    <div class="step"><span class="n">4</span><div><h3>फुटलेले कुल्हड पुढच्या डिलिव्हरीत मोफत</h3><p style="font-size:14.5px">तुटफूट कव्हरमुळे चहावाल्याचा विश्वास वाढतो आणि तो पुन्हा ऑर्डर करतो.</p></div></div>
+  </div>
+  <div class="foot"><span>KulhadKart · Concept Note</span><span>@Tarunudyojak · 03</span></div>
+</section>
+
+<!-- 4 SCREENS -->
+<section class="page">
+  <span class="kick"><i></i>अ‍ॅप डेमो</span>
+  <h2>अ‍ॅप कसं दिसतं</h2>
+  <p style="margin-top:10px">डेमो व्हिडिओमध्ये हा पूर्ण फ्लो पाहता येईल.</p>
+  <div class="grid3" style="margin-top:20px;gap:30px;padding:0 20px">
+    <div><img class="shot" src="img/home.png" style="width:150px"><h3 style="margin-top:14px">होम</h3><p style="font-size:13.5px">ऑर्डर करा, युनिट सुरू करा, चालू ऑर्डर आणि जवळची युनिट्स.</p></div>
+    <div><img class="shot" src="img/order.png" style="width:150px"><h3 style="margin-top:14px">ऑर्डर</h3><p style="font-size:13.5px">४ आकार, प्रति नग किंमत, संख्या आणि एकूण रक्कम लगेच.</p></div>
+    <div><img class="shot" src="img/track.png" style="width:150px"><h3 style="margin-top:14px">ट्रॅकिंग</h3><p style="font-size:13.5px">भट्टी ते दुकान — प्रत्येक टप्पा आणि नकाशावर गाडी.</p></div>
+  </div>
+  <div class="grid3" style="margin-top:18px;gap:30px;padding:0 20px">
+    <div><img class="shot" src="img/unit.png" style="width:150px"><h3 style="margin-top:14px">युनिट सुरू करा</h3><p style="font-size:13.5px">पॅकेज, कमाई कॅल्क्युलेटर, साइट व्हिजिट बुकिंग.</p></div>
+    <div><img class="shot" src="img/dash.png" style="width:150px"><h3 style="margin-top:14px">माझं युनिट</h3><p style="font-size:13.5px">उत्पादन, विक्री, आठवड्याच्या ऑर्डर आणि नवीन खरेदीदार विनंत्या.</p></div>
+    <div class="card dark" style="display:flex;flex-direction:column;justify-content:center">
+      <h3 style="color:#fff;font-size:20px">पहिल्या व्हर्जनमध्ये</h3>
+      <ul class="t" style="margin-top:12px"><li style="font-size:13.5px">OTP लॉगिन, ३ प्रकारचे यूजर</li><li style="font-size:13.5px">ऑर्डर + UPI पेमेंट</li><li style="font-size:13.5px">जवळचं युनिट आपोआप</li><li style="font-size:13.5px">लाइव्ह ट्रॅकिंग</li><li style="font-size:13.5px">WhatsApp अपडेट्स</li><li style="font-size:13.5px">अ‍ॅडमिन पॅनेल</li></ul>
+    </div>
+  </div>
+  <div class="foot"><span>KulhadKart · Concept Note</span><span>@Tarunudyojak · 04</span></div>
+</section>
+
+<!-- 5 MONEY -->
+<section class="page">
+  <span class="kick"><i></i>बिझनेस मॉडेल</span>
+  <h2>पैसा कुठून येतो</h2>
+  <div class="grid2" style="margin-top:22px">
+    <div class="card"><div class="num acc" style="font-size:15px;font-weight:600">01</div><h3 style="margin-top:6px">मशीन पॅकेज आणि सेटअप</h3><p style="font-size:14px;margin-top:6px">नवीन युनिटला मशीन, मिक्सर, भट्टी आणि इन्स्टॉलेशन — प्रत्येक पॅकेजवर मार्जिन.</p></div>
+    <div class="card"><div class="num acc" style="font-size:15px;font-weight:600">02</div><h3 style="margin-top:6px">प्रशिक्षण फी</h3><p style="font-size:14px;margin-top:6px">माती तयार करणं, मशीन चालवणं, भाजणं — प्रत्यक्ष प्रशिक्षण.</p></div>
+    <div class="card"><div class="num acc" style="font-size:15px;font-weight:600">03</div><h3 style="margin-top:6px">प्रत्येक ऑर्डरवर कमिशन</h3><p style="font-size:14px;margin-top:6px">चहावाले आणि युनिट यांच्यातील प्रत्येक ऑर्डरवर ठराविक टक्के.</p></div>
+    <div class="card"><div class="num acc" style="font-size:15px;font-weight:600">04</div><h3 style="margin-top:6px">युनिट सबस्क्रिप्शन</h3><p style="font-size:14px;margin-top:6px">डॅशबोर्ड, खरेदीदार लीड्स आणि प्रायोरिटी लिस्टिंगसाठी मासिक प्लॅन.</p></div>
+  </div>
+
+  <div class="grid2" style="margin-top:22px">
+    <div class="card">
+      <h3>उदाहरण: एका युनिटचा महिना</h3>
+      <table style="margin-top:8px">
+        <tr><td>रोजचं उत्पादन</td><td>6,000 pcs</td></tr>
+        <tr><td>कामाचे दिवस</td><td>26</td></tr>
+        <tr><td>महिन्याचे कुल्हड</td><td>1,56,000</td></tr>
+        <tr><td>सरासरी विक्री किंमत</td><td>₹1.80</td></tr>
+        <tr class="tot"><td>अंदाजे मासिक विक्री</td><td class="acc">₹2.81 L</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>उदाहरण: एका चहावाल्याची ऑर्डर</h3>
+      <table style="margin-top:8px">
+        <tr><td>आकार</td><td>90 ml</td></tr>
+        <tr><td>संख्या</td><td>2,000</td></tr>
+        <tr><td>प्रति नग</td><td>₹1.90</td></tr>
+        <tr><td>डिलिव्हरी अंतर</td><td>6 km</td></tr>
+        <tr class="tot"><td>ऑर्डर रक्कम</td><td class="acc">₹3,800</td></tr>
+      </table>
+    </div>
+  </div>
+  <p class="note" style="margin-top:14px">हे सर्व आकडे केवळ समजण्यासाठीचे उदाहरण आहेत (अ‍ॅप डेमोमधील). खरी किंमत, उत्पादन आणि कमाई शहर, मातीचा खर्च, मजुरी आणि मागणीनुसार बदलेल. गुंतवणुकीआधी स्थानिक माहिती तपासा.</p>
+
+  <div class="card dark" style="margin-top:22px;padding:24px;display:flex;gap:22px;align-items:center">
+    <div class="num" style="font-size:54px;color:var(--acc);line-height:1">∞</div>
+    <div><h3 style="color:#fff">का चालेल?</h3><p style="font-size:14.5px;margin-top:4px">प्लास्टिक कपांवरील बंदी आणि "कुल्हड चहा"ची वाढती मागणी. जवळ उत्पादन = कमी तुटफूट, कमी वाहतूक खर्च, आणि स्थानिक रोजगार.</p></div>
+  </div>
+  <div class="foot"><span>KulhadKart · Concept Note</span><span>@Tarunudyojak · 05</span></div>
+</section>
+
+<!-- 6 ROADMAP -->
+<section class="page">
+  <span class="kick"><i></i>सुरुवात</span>
+  <h2>पहिल्या ९० दिवसांचा प्लॅन</h2>
+  <div style="display:grid;gap:14px;margin-top:24px">
+    <div class="card" style="display:flex;gap:18px"><div class="num" style="font-size:30px;color:var(--acc);min-width:110px">0–30<br><span style="font-size:13px;color:var(--mut)">दिवस</span></div><div><h3>एक शहर, जमिनीवरचं काम</h3><p style="font-size:14.5px">शहरातील कुल्हड बनवणारे कारागीर/युनिट्स शोधा. ५० चहावाल्यांशी बोलून रोजची गरज, आकार आणि किंमत समजून घ्या.</p></div></div>
+    <div class="card" style="display:flex;gap:18px"><div class="num" style="font-size:30px;color:var(--acc);min-width:110px">31–60<br><span style="font-size:13px;color:var(--mut)">दिवस</span></div><div><h3>अ‍ॅपचं पहिलं व्हर्जन</h3><p style="font-size:14.5px">ऑर्डर, ट्रॅकिंग आणि युनिट डॅशबोर्ड. ३–५ युनिट्स आणि ३० चहावाल्यांसोबत पायलट.</p></div></div>
+    <div class="card" style="display:flex;gap:18px"><div class="num" style="font-size:30px;color:var(--acc);min-width:110px">61–90<br><span style="font-size:13px;color:var(--mut)">दिवस</span></div><div><h3>युनिट सेटअप सुरू</h3><p style="font-size:14.5px">मशीन पुरवठादाराशी टाय-अप, प्रशिक्षण कार्यक्रम आणि अ‍ॅपमधून साइट व्हिजिट बुकिंग. पहिली नवीन युनिट्स.</p></div></div>
+  </div>
+
+  <div style="margin-top:34px;border-radius:30px;padding:40px;background:linear-gradient(160deg,#F7A07A 0%,#EE6A3C 60%,#C9532B 100%);color:#fff;position:relative;overflow:hidden">
+    <div class="blob" style="width:300px;height:300px;right:-100px;top:-120px;background:#FFD2BC;opacity:.5"></div>
+    <h2 style="font-size:32px;position:relative">तुमच्या शहरासाठी असं अ‍ॅप हवं आहे?</h2>
+    <p style="color:#FFE6DB;margin-top:10px;font-size:16px;position:relative">डेमो व्हिडिओ पाहा, आणि अशाच उद्योजकांच्या यशोगाथा व बिझनेस आयडियांसाठी फॉलो करा.</p>
+    <div style="display:inline-flex;margin-top:22px;height:56px;padding:0 28px;border-radius:30px;background:#1B1B1D;align-items:center;font-family:Inter;font-weight:500;font-size:19px;position:relative">@Tarunudyojak</div>
+  </div>
+  <div class="foot"><span>KulhadKart · Concept Note · ही एक संकल्पना आहे; अ‍ॅपमधील नावं आणि आकडे उदाहरणादाखल.</span><span>06</span></div>
+</section>
+</body></html>
