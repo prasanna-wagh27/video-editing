@@ -6,9 +6,9 @@
  * Captions: captions.js from align_whisper.py; every cue is a real spoken word time (cues.mjs / timing.mjs via make_timing.py).
  */
 import React from 'react';
-import {registerRoot, Composition, AbsoluteFill, Easing} from 'remotion';
-import {FPS, s, io, pop, abs, Y, Mark} from '../../shared/kit.jsx';
-import {BG, TXT, MUTED, LINE, GOLD_T, C_GREEN, C_RED, LAT, up, Glass, Chip, Ico, I_PIN, I_PHONE, Instagram, LeanOutro, LeanVideo} from '../../shared/lean.jsx';
+import {registerRoot, Composition, AbsoluteFill, Easing, useCurrentFrame} from 'remotion';
+import {FPS, s, io, pop, abs, Y, Mark, BRAND} from '../../shared/kit.jsx';
+import {BG, TXT, MUTED, LINE, GOLD_T, C_GREEN, C_RED, LAT, up, Glass, Chip, Ico, I_PIN, I_PHONE, Instagram, LeanOutro, LeanVideo, LeanBg, ThemeCtx, THEMES} from '../../shared/lean.jsx';
 import {CAPS} from './captions.js';
 import {Z_D} from './zlogo.js';
 import {C, K, SCENES, OUTRO_AT} from './cues.mjs';
@@ -542,8 +542,43 @@ const Outro = ({F}) => (
   </AbsoluteFill>
 );
 
+
+/* ---------- plain 9:16 Instagram story (static image) ---------- */
+const STORY_LEN = 1;
+const Story = () => {
+  const th = THEMES.light;
+  const vars = Object.fromEntries(Object.entries(th).map(([k, v]) => [`--l-${k}`, v]));
+  return (
+    <ThemeCtx.Provider value={th}>
+      <AbsoluteFill style={{fontFamily: 'Anek, sans-serif', color: TXT, ...vars}}>
+        <LeanBg f={0} />
+        <Center y={270}><div style={{display: 'flex', alignItems: 'center', gap: 14}}><Mark size={48} color="#121212" /><div style={{...BRAND, fontSize: 34, fontWeight: 600}}>Outgrid Labs</div></div></Center>
+        <Center y={520}><ZIcon size={300} /></Center>
+        <Center y={940}>
+          <div style={{fontSize: 52, fontWeight: 600, color: MUTED, ...LAT}}>एका ₹300 order मधून</div>
+          <Big size={150} style={{marginTop: 30}}>₹75–100+</Big>
+          <div style={{width: 260, height: 14, borderRadius: 7, background: Y, marginTop: 18}} />
+          <div style={{fontSize: 52, fontWeight: 600, color: MUTED, marginTop: 26, ...LAT}}>Zomato ला मिळतात</div>
+        </Center>
+        <Center y={1390}>
+          <div style={{fontSize: 44, fontWeight: 700, ...LAT}}>तुमच्या शहरासाठी असं app हवंय?</div>
+          <div style={{display: 'flex', alignItems: 'center', gap: 20, marginTop: 30}}>
+            <div style={{background: Y, color: BG, borderRadius: 999, padding: '18px 36px 10px', fontSize: 40, fontWeight: 800, ...LAT}}>DM @outgridlabs</div>
+            <div style={{display: 'flex', alignItems: 'center', gap: 10, fontSize: 40, fontWeight: 700}}><Ico d={I_PHONE} size={40} color={C_GREEN} sw={2.4} /><span style={{marginTop: 6}}>80109 50380</span></div>
+          </div>
+        </Center>
+      </AbsoluteFill>
+    </ThemeCtx.Provider>
+  );
+};
+
 /* ---------- main ---------- */
 const COMPS = {hook: Hook, first: First, comm: Comm, amt: Amt, bill: Bill, y2023: Y2023, ads: Ads, cod: Cod, total: Total, cost: Cost, lakh: Lakh, eq: Eq, city: City, dm: Dm, outro: Outro};
 const Video = () => <LeanVideo theme="light" scenes={SCENES} comps={COMPS} chunks={CHUNKS} total={TOTAL} outroAt={OUTRO_AT} />;
-const Root = () => <Composition id="Reel" component={Video} durationInFrames={TOTAL} fps={FPS} width={1080} height={1920} />;
+const Root = () => (
+  <>
+    <Composition id="Reel" component={Video} durationInFrames={TOTAL} fps={FPS} width={1080} height={1920} />
+    <Composition id="Story" component={Story} durationInFrames={s(STORY_LEN)} fps={FPS} width={1080} height={1920} />
+  </>
+);
 registerRoot(Root);
