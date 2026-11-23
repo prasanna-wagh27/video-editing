@@ -5,3 +5,5 @@ node_modules/
 __pycache__/
 reels/*/public/mix.wav
 reels/kulhad-app-demo/frames/
+reels/_cw_test/
+reels/clinic-website/proto/
