@@ -1,0 +1,12 @@
+frames=2465 fps=30
+frames 0-499 ok
+frames 500-999 ok
+frames 1000-1499 ok
+frames 1500-1999 ok
+frames 2000-2464 ok
+stream|codec_name=h264|width=1080|height=1920|r_frame_rate=30/1|nb_frames=2465|
+stream|codec_name=aac|r_frame_rate=0/0|nb_frames=3853
+format|duration=82.166667
+[Parsed_volumedetect_0 @ 0x55c14cf0ce80] mean_volume: -17.4 dB
+[Parsed_volumedetect_0 @ 0x55c14cf0ce80] max_volume: -1.1 dB
+reels/mai-chatgpt-settings/stills/check_mai_chatgpt_settings_v1.jpg
