@@ -9,7 +9,7 @@ import {registerRoot, Composition, AbsoluteFill, Easing} from 'remotion';
 import {FPS, s, io, pop, abs, Y, Mark, BRAND, InstagramLogo} from '../../shared/kit.jsx';
 import {INK, MUTE, FAINT, GRN, RED, BLUE, LAT, up, popS, vis, P, Box, Stage, at, Person, Card, Tag, Plate, Dot, Logo, Ico, IsoVideo} from '../../shared/iso.jsx';
 import {OR, OR2, YEL, STEEL, TEAL, STONE10, STONE20, SANDC, Ground, Road, Pile, Dumper, Plant, Flood, Weighbridge, Cabin, Gate, Barricade, Beacon, Shed} from './props.jsx';
-import {CAPS} from './captions.tmp.js';
+import {CAPS} from './captions.js';
 import {K, SCENES, OUTRO_AT, TOTAL_S} from './cues.mjs';
 
 const TOTAL = s(TOTAL_S);
@@ -90,7 +90,7 @@ const QR = ({size = 200, seed = 3}) => {
 /* 1. hook: 2 AM, floodlit crusher, seven dumpers roll out one by one; counter climbs to 7 */
 const HK = {x: 540, y: 730, k: 40};
 const DEP = Array.from({length: 7}, (_, i) => -0.75 + i * 0.5);
-const hookX = (F, i) => drive(F, DEP[i], 1.9, -9.5, 9, Easing.inOut(Easing.quad));
+const hookX = (F, i) => drive(F, DEP[i], 1.9, -9.5, 9, Easing.linear);
 const Hook = ({F}) => {
   const xs = DEP.map((_, i) => hookX(F, i));
   const n = xs.filter((x) => x > 3.4).length;
@@ -522,9 +522,9 @@ const G3 = {x: 520, y: 780, k: 52};
 const S3 = ({F}) => {
   const a = sc('s3');
   const scanned = vis(F, K.qr + 0.5);
-  const open = scanned ? io(F, s(K.qr + 0.5), s(K.qr + 0.5) + 12, 0, 1, ease) * io(F, s(K.pavtishivay) - 6, s(K.pavtishivay) + 4, 1, 0) : 0;
-  const x1 = F < s(K.qr + 0.6) ? drive(F, a, 1.2, -9, -3.6, Easing.out(Easing.cubic)) : drive(F, K.qr + 0.6, 1.6, -3.6, 8, Easing.in(Easing.quad));
-  const x2 = drive(F, K.pavtishivay - 0.6, 1.2, -10, -4.2, Easing.out(Easing.cubic));
+  const open = scanned ? io(F, s(K.qr + 0.5), s(K.qr + 0.5) + 12, 0, 1, ease) * io(F, s(K.ekhi) - 7, s(K.ekhi) + 2, 1, 0) : 0;
+  const x1 = F < s(K.qr + 0.6) ? drive(F, a, 1.2, -9, -3.6, Easing.out(Easing.cubic)) : drive(F, K.qr + 0.6, 1.3, -3.6, 8, Easing.in(Easing.quad));
+  const x2 = drive(F, K.ekhi - 0.9, 1.0, -10, -4.2, Easing.out(Easing.cubic));
   const [gx, gy] = at(G3, 0.7, -1.9, 2.4);
   const [bx, by] = at(G3, x2 + 2.6, 0.2, 3.4);
   const scanY = (F % 24) / 24;
@@ -535,11 +535,11 @@ const S3 = ({F}) => {
         <Road x={-6} y={-1.3} w={12} d={3} />
         <Cabin x={-0.6} y={-4.2} w={1.6} d={1.4} h={1.7} />
         {x1 > -9 && x1 < 8 && <Dumper x={x1} y={-0.9} load={1} op={io(x1, 4.5, 7, 1, 0)} />}
-        {vis(F, K.pavtishivay - 0.6) && <Dumper x={x2} y={-0.9} load={1} />}
+        {vis(F, K.ekhi - 0.9) && <Dumper x={x2} y={-0.9} load={1} />}
         <Gate x={0.8} y={-1.9} open={open} len={3.5} />
       </Stage>
       {/* slip with QR + scanner */}
-      {vis(F, K.gate - 0.1) && F < s(K.pavtishivay) && <div style={{...abs(gx + 70, gy - 470), ...popS(F, K.gate - 0.1)}}>
+      {vis(F, K.gate - 0.1) && F < s(K.pavtishivay) && <div style={{...abs(700, 200), ...popS(F, K.gate - 0.1)}}>
         <Card x={0} y={0} w={280} h={360} r={20} style={{position: 'relative', padding: 24, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
           <T size={26} w={700}>पावती #1048</T>
           <div style={{position: 'relative', marginTop: 14, border: `3px solid ${INK}`, padding: 8, borderRadius: 10}}>
