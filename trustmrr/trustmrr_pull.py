@@ -10,7 +10,7 @@ if not KEY:
 BASE = "https://trustmrr.com/api/v1/startups"
 CATEGORIES = ["ai", "marketing", "customer-support", "sales", "social-media",
               "analytics", "productivity", "content-creation", "saas"]
-MIN_MRR_CENTS = 500_000
+MIN_MRR = 5000  # dollars
 MAX_PAGES = 6
 NEWER_THAN = "2025-01-01"
 PAUSE = 6.5
@@ -26,7 +26,8 @@ def get(params):
         except urllib.error.HTTPError as e:
             if e.code == 429:
                 reset = e.headers.get("X-RateLimit-Reset")
-                wait = max(int(reset) - int(time.time()), 5) if reset else 30
+                wait = int(reset) - int(time.time()) if reset else 30
+                wait = min(max(wait, 5), 65)
                 print(f"rate limited, waiting {wait}s", flush=True)
                 time.sleep(wait + 1)
                 continue
@@ -36,14 +37,14 @@ def get(params):
 rows = []
 for cat in CATEGORIES:
     for page in range(1, MAX_PAGES + 1):
-        res = get({"category": cat, "minMrr": MIN_MRR_CENTS, "sort": "revenue-desc",
+        res = get({"category": cat, "minMrr": MIN_MRR, "sort": "revenue-desc",
                    "limit": 10, "page": page})
         for s in res.get("data", []):
             rev = s.get("revenue") or {}
             rows.append({
                 "category": cat,
                 "name": s.get("name"),
-                "mrr_usd": round((rev.get("mrr") or 0) / 100),
+                "mrr_usd": round(rev.get("mrr") or 0),
                 "founded": (s.get("foundedDate") or "")[:10],
                 "new_2025plus": (s.get("foundedDate") or "") >= NEWER_THAN,
                 "growth_mrr_30d_pct": s.get("growthMRR30d"),
