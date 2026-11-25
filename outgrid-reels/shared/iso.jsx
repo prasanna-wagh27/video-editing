@@ -137,7 +137,7 @@ const Progress = ({f, total}) => (
   <div style={{...abs(0, 0), width: 1080, height: 5}}><div style={{height: '100%', width: `${(f / total) * 100}%`, background: INK}} /></div>
 );
 // bottom-left karaoke captions; *highlight* words = green, light weight
-const IsoCaptions = ({f, chunks}) => {
+const IsoCaptions = ({f, chunks, hi = GRN}) => {
   const c = chunks.find((k) => f >= k.a && f < k.b);
   if (!c) return null;
   const op = Math.min(io(f, c.a, c.a + 4), io(f, c.b - 4, c.b, 1, 0));
@@ -145,7 +145,7 @@ const IsoCaptions = ({f, chunks}) => {
     <div style={{position: 'absolute', left: 76, right: 150, top: 1400, display: 'flex', flexWrap: 'wrap', gap: '0 16px', opacity: op}}>
       {c.words.map((w, i) => {
         const on = f >= w.t, p = io(f, w.t, w.t + 5);
-        return <span key={i} style={{fontSize: 64, lineHeight: 1.28, ...LAT, fontWeight: w.hi ? 400 : 700, color: !on ? FAINT : w.hi ? GRN : INK, transform: `translateY(${(1 - p) * 10}px)`, display: 'inline-block'}}>{w.w}</span>;
+        return <span key={i} style={{fontSize: 64, lineHeight: 1.28, ...LAT, fontWeight: w.hi ? 400 : 700, color: !on ? FAINT : w.hi ? hi : INK, transform: `translateY(${(1 - p) * 10}px)`, display: 'inline-block'}}>{w.w}</span>;
       })}
     </div>
   );
@@ -157,7 +157,7 @@ const SceneT = ({dur, first, children}) => {
   const out = io(f, dur - 7, dur, 1, 0);
   return <AbsoluteFill style={{opacity: Math.min(inP, out), transform: `scale(${(0.94 + 0.06 * inP) * (1 + 0.03 * io(f, 0, dur, 0, 1, Easing.linear))})`}}>{children}</AbsoluteFill>;
 };
-const IsoVideo = ({scenes, comps, labels = {}, chunks, total, outroAt = Infinity, vo = 'vo.mp3', overlay}) => {
+const IsoVideo = ({scenes, comps, labels = {}, chunks, total, outroAt = Infinity, vo = 'vo.mp3', overlay, hi = GRN}) => {
   const f = useCurrentFrame();
   const cur = scenes.find(([, a, b]) => f >= s(a) && f < s(b));
   return (
@@ -170,7 +170,7 @@ const IsoVideo = ({scenes, comps, labels = {}, chunks, total, outroAt = Infinity
       })}
       {f < s(outroAt) && <Header label={(cur && labels[cur[0]]) || ''} />}
       <Progress f={f} total={total} />
-      <IsoCaptions f={f} chunks={chunks} />
+      <IsoCaptions f={f} chunks={chunks} hi={hi} />
       {overlay}
     </AbsoluteFill>
   );
