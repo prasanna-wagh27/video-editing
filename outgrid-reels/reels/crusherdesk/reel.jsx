@@ -14,7 +14,7 @@ import {IPhone, StatusBar, SW} from '../mai-chatgpt-settings/iphone.jsx';
 import {CAPS} from './captions.js';
 import {K, SCENES, OUTRO_AT, TOTAL_S} from './cues.mjs';
 
-const PHONE = '+91 XXXXX XXXXX'; // placeholder: replace with the real WhatsApp number
+const PHONE = '+91 80109 50380';
 const TOTAL = s(TOTAL_S);
 const ORT = '#E8590C';
 const WA_D = '#008069';
